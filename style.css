@@ -229,3 +229,206 @@ body {
         gap: 1.5rem;
     }
 }
+
+/*parte que o felipe colocou para as telas de conquista*/
+
+/* Estilos para a página de Conquistas do Usuário */
+.achievements-page {
+    text-align: center;
+}
+
+.achievements-header {
+    margin-bottom: 3rem;
+}
+
+.achievements-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.achievements-header p {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto 1.5rem auto;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.achievement-card {
+    background-color: var(--secondary-color);
+    padding: 2rem 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #444;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.achievement-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+.achievement-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    border: 3px solid var(--primary-color);
+    background-color: #fff;
+}
+
+.achievement-card h4 {
+    color: var(--primary-color);
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Estilos para a página de Administração */
+.admin-tag {
+    color: #E0E0E0;
+    font-size: 1rem;
+}
+
+.admin-form-container, .admin-list-container {
+    background-color: var(--secondary-color);
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 1px solid #444;
+}
+
+.admin-form-container h3, .admin-list-container h3 {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #444;
+    padding-bottom: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--background-color);
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: var(--text-color);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Tabela de Administração */
+.achievements-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.achievements-table th,
+.achievements-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #444;
+}
+
+.achievements-table thead {
+    background-color: #2c2c2c;
+}
+
+.achievements-table th {
+    color: var(--primary-color);
+}
+
+.achievements-table td img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+.btn-action {
+    padding: 0.4rem 0.8rem;
+    border: none;
+    border-radius: 5px;
+    color: var(--secondary-color);
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.btn-action:hover {
+    opacity: 0.8;
+}
+
+.btn-edit {
+    background-color: var(--primary-color);
+    margin-right: 0.5rem;
+}
+
+.btn-delete {
+    background-color: #E53935; /* Vermelho para ação destrutiva */
+}
+
+/* Responsividade da Tabela */
+@media (max-width: 768px) {
+    .achievements-table thead {
+        display: none; /* Esconde o cabeçalho em telas pequenas */
+    }
+
+    .achievements-table, 
+    .achievements-table tbody, 
+    .achievements-table tr, 
+    .achievements-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .achievements-table tr {
+        margin-bottom: 1rem;
+        border: 1px solid #444;
+        border-radius: 5px;
+        padding: 1rem;
+    }
+
+    .achievements-table td {
+        padding-left: 50%;
+        text-align: right;
+        position: relative;
+        border: none;
+    }
+
+    .achievements-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        width: calc(50% - 2rem);
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    .achievements-table td:last-child {
+        text-align: right;
+    }
+}
+/*fim da parte do felipe*/
