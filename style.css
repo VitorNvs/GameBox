@@ -431,4 +431,173 @@ body {
         text-align: right;
     }
 }
-/*fim da parte do felipe*/
+/*fim da parte das conquistas*/
+
+/*parte que o felipe colocou para os jogos*/
+
+/* --- Tela de Busca de Jogos --- */
+.search-section {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.search-bar {
+    display: flex;
+    max-width: 600px;
+    margin: 1rem auto 0;
+    gap: 0.5rem;
+}
+
+.search-input {
+    flex-grow: 1;
+    padding: 0.8rem;
+    background-color: var(--secondary-color);
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: var(--text-color);
+    font-size: 1rem;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.game-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.results-section h3 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Tela de Detalhes do Jogo --- */
+.game-detail-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2.5rem;
+    align-items: flex-start;
+}
+
+.game-detail-cover img {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.game-detail-info h1 {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.game-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.meta-item {
+    background-color: var(--secondary-color);
+    padding: 0.8rem 1rem;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.meta-item strong {
+    display: block;
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 0.25rem;
+}
+
+.meta-item span {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.game-tags {
+    margin-bottom: 1.5rem;
+}
+
+.game-tags h4 {
+    margin-bottom: 0.5rem;
+    color: #ccc;
+}
+
+.tag {
+    display: inline-block;
+    background-color: var(--secondary-color);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid #444;
+}
+
+.game-description h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--secondary-color);
+    padding-bottom: 0.5rem;
+}
+
+.game-description p {
+    color: #ccc;
+}
+
+.game-detail-info .btn-primary {
+    margin-top: 2rem;
+}
+
+/* --- Tela de Admin do Jogo --- */
+.admin-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+
+/* --- Responsividade --- */
+@media (max-width: 768px) {
+    .game-detail-container {
+        grid-template-columns: 1fr; /* Coluna única em telas menores */
+    }
+
+    .game-detail-cover {
+        max-width: 300px;
+        margin: 0 auto 2rem auto; /* Centraliza a capa */
+    }
+
+    .game-detail-info h1 {
+        font-size: 2.2rem;
+        text-align: center;
+    }
+
+    .game-meta {
+        justify-content: center;
+    }
+
+    .game-tags, .game-description {
+        text-align: center;
+    }
+
+    .admin-actions {
+        flex-direction: column;
+    }
+
+    .admin-actions .btn-primary,
+    .admin-actions .btn-action {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* fim da parte dos jogos*/

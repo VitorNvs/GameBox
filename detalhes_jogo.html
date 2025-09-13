@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Jogo - GameBox</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="games.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <h1>GameBox</h1>
+        </div>
+        <nav class="nav">
+            <ul class="nav-list">
+                <li><a href="principal.html">Início</a></li>
+                <li><a href="#">Listas</a></li>
+                <li><a href="#">Categorias</a></li>
+                <li><a href="procurar_jogos.html">Jogos</a></li>
+                <li><a href="#">Análises</a></li>
+                <li><a href="conquistas_usuario.html">Conquistas</a></li>
+                <li><a href="#" id="btn-login">Login</a></li>
+            </ul>
+        </nav>
+        <div class="menu-toggle">&#9776;</div>
+    </header>
+
+    <main class="main-content">
+        <div class="game-detail-container">
+            <div class="game-detail-cover">
+                <img src="https://via.placeholder.com/500x700?text=Capa+Cyberpunk+2077" alt="Capa do jogo Cyberpunk 2077">
+            </div>
+            <div class="game-detail-info">
+                <h1>Cyberpunk 2077</h1>
+                
+                <div class="game-meta">
+                    <div class="meta-item rating-box">
+                        <strong>NOTA</strong>
+                        <span>9.1 / 10</span>
+                    </div>
+                    <div class="meta-item price-box">
+                        <strong>PREÇO</strong>
+                        <span>R$ 249,99</span>
+                    </div>
+                </div>
+
+                <div class="game-tags">
+                    <h4>Gênero</h4>
+                    <span class="tag">RPG de Ação</span>
+                </div>
+                
+                <div class="game-tags">
+                    <h4>Categorias</h4>
+                    <span class="tag">Mundo Aberto</span>
+                    <span class="tag">Sci-Fi</span>
+                    <span class="tag">Primeira Pessoa</span>
+                </div>
+                
+                <div class="game-description">
+                    <h3>Descrição</h3>
+                    <p>Cyberpunk 2077 é uma história de ação e aventura de mundo aberto ambientada em Night City, uma megalópole obcecada por poder, glamour e modificações corporais. Você joga como V, um mercenário fora da lei indo atrás de um implante único que é a chave para a imortalidade.</p>
+                </div>
+                
+                <a href="admin_jogo.html" class="btn-primary">Editar Jogo (Admin)</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 GameBox. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navList = document.querySelector('.nav-list');
+        menuToggle.addEventListener('click', () => {
+            navList.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
