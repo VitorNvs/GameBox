@@ -1,11 +1,11 @@
 /* Estilos Globais e Variáveis */
 :root {
      /*--primary-color: #4CAF50; Cor principal verde */
-     --primary-color: #FFD700;
+     --primary-color: #F3DE21;
     --secondary-color: #333; /* Cor secundária */
     --background-color: #1E1E1E; /* Fundo escuro */
     --text-color: #E0E0E0; /* Texto claro */
-    --card-background: #1E1E1E;
+    --card-background: #434343;
 }
 
 * {
@@ -155,11 +155,6 @@ body {
     display: block;
 }
 
-.game-card h4 {
-    margin-top: 1rem;
-    font-size: 1.2rem;
-}
-
 .rating {
     display: flex;
     justify-content: center;
@@ -179,6 +174,147 @@ body {
     padding: 1.5rem;
     background-color: var(--secondary-color);
     border-top: 2px solid var(--primary-color);
+}
+
+/*Parte Nova - NOTAS*/
+/* Estilos para a página de Análise */
+.review-page {
+    max-width: 1000px; /* Ajuste a largura para acomodar as duas colunas */
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: var(--card-background);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.review-page h2 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Novo layout de grid para a página de análise */
+.review-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* Coluna da capa (1fr) e coluna do formulário (2fr) */
+    gap: 2rem;
+    align-items: start;
+}
+
+.cover-section {
+    text-align: center;
+}
+
+.game-cover {
+    width: 368px;
+    height: 172px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.review-form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.review-form .form-group {
+    margin-bottom: 0; /* Removido para usar o gap do flexbox */
+}
+
+.review-form label {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.review-form select,
+.review-form textarea {
+    width: 100%;
+    padding: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid #555;
+    border-radius: 5px;
+    resize: vertical;
+}
+
+.review-form select:focus,
+.review-form textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+.feedback-options {
+    margin-bottom: 2rem;
+}
+
+.feedback-buttons {
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.feedback-buttons input[type="radio"] {
+    display: none;
+}
+
+.feedback-btn {
+    padding: 0.5rem;
+    border-radius: 50%;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease;
+    border: 2px solid transparent;
+    text-align: center;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.feedback-btn i {
+    font-size: 1.5rem;
+}
+
+.feedback-btn.nao-gostei {
+    background-color: #f44336;
+    color: white;
+}
+
+.feedback-btn.gostei {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.feedback-btn.amei {
+    background-color: #2196F3;
+    color: white;
+}
+
+.feedback-buttons input[type="radio"]:checked + .feedback-btn {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
+    transform: scale(1.05);
+}
+
+/* Estilo para o botão de envio */
+.review-form .btn-primary {
+    display: inline-block;
+    width: auto;
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    cursor: pointer;
 }
 
 /* Responsividade (Media Queries) */
@@ -227,5 +363,18 @@ body {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(275px , 1fr));
         gap: 1.5rem;
+    }
+
+    .review-grid {
+        grid-template-columns: 1fr; /* Altera para uma única coluna em telas menores */
+    }
+
+    .game-cover {
+        max-width: 100%; /* Garante que a imagem se ajuste ao contêiner em telas pequenas */
+        height: auto;
+    }
+
+    .feedback-buttons {
+        justify-content: center;
     }
 }

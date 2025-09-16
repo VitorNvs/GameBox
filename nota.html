@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escreva sua Análise - Gameboxd</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <h1>Gameboxd</h1>
+        </div>
+        <nav class="nav">
+            <ul class="nav-list">
+                <li><a href="#">Início</a></li>
+                <li><a href="#">Jogos</a></li>
+                <li><a href="#">Minhas Análises</a></li>
+                <li><a href="#">Comunidade</a></li>
+                <li><a href="#" id="btn-login">Login</a></li>
+            </ul>
+        </nav>
+        <div class="menu-toggle">☰</div>
+    </header>
+
+    <main class="main-content">
+        <div class="review-page">
+            <h2>Counter Strike 2</h2>
+            
+            <form action="#" method="POST" class="review-form">
+                <div class="review-grid">
+                    <div class="review-form-section">
+                        <div class="cover-section">
+                            <img src="imgs/cs.jpg" alt="Capa do Jogo" class="game-cover">
+                        </div>
+
+                        <div class="feedback-options">
+                            <div class="feedback-buttons">
+                                <input type="radio" id="nao-gostei" name="feedback" value="nao-gostei" required>
+                                <label for="nao-gostei" class="feedback-btn nao-gostei">
+                                    <i class="fa-solid fa-thumbs-down"></i>
+                                </label>
+
+                                <input type="radio" id="gostei" name="feedback" value="gostei" required>
+                                <label for="gostei" class="feedback-btn gostei">
+                                    <i class="fa-solid fa-thumbs-up"></i>
+                                </label>
+                                
+                                <input type="radio" id="amei" name="feedback" value="amei" required>
+                                <label for="amei" class="feedback-btn amei">
+                                    <i class="fa-solid fa-heart"></i>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <textarea id="review-text" name="review-text" rows="15" placeholder="Escreva sua análise aqui..." required></textarea>
+                    </div>
+                    
+                </div>
+                <button type="submit" class="btn-primary" id="submit-review">Enviar Análise</button>
+                    
+            </form>
+            
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 Gameboxd. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
