@@ -1,0 +1,117 @@
+/* Estilos para a página de Análise */
+.review-page {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: var(--card-background);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.review-page h2 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.review-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.review-form label {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.review-form select,
+.review-form textarea {
+    width: 100%;
+    padding: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid #555;
+    border-radius: 5px;
+    resize: vertical;
+}
+
+.review-form select:focus,
+.review-form textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); /* Sombra dourada */
+}
+
+.feedback-options {
+    margin-bottom: 2rem;
+}
+
+.feedback-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.feedback-buttons input[type="radio"] {
+    display: none; /* Esconde os botões de rádio nativos */
+}
+
+.feedback-btn {
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease;
+    border: 2px solid transparent;
+    text-align: center;
+}
+
+.feedback-btn.nao-gostei {
+    background-color: #f44336; /* Vermelho */
+    color: white;
+}
+
+.feedback-btn.gostei {
+    background-color: #4CAF50; /* Verde */
+    color: white;
+}
+
+.feedback-btn.amei {
+    background-color: #2196F3; /* Azul */
+    color: white;
+}
+
+.feedback-buttons input[type="radio"]:checked + .feedback-btn {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
+    transform: scale(1.05);
+}
+
+/* Estilo para o botão de envio */
+.review-form .btn-primary {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 1rem;
+    border: none;
+    cursor: pointer;
+}
+
+/* Responsividade adicional */
+@media (max-width: 600px) {
+    .review-page {
+        padding: 1rem;
+        margin: 1rem;
+    }
+
+    .feedback-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
