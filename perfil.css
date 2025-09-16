@@ -1,54 +1,10 @@
-/* Estilos globais e do corpo */
-body {
-    background-color: #1a1a1a;
-    color: #e0e0e0;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-/* Estilos do cabeçalho (Header) */
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 40px;
-    background-color: #212121;
-    border-bottom: 2px solid #ffc107;
-}
-
-.header .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #ffc107;
-    text-decoration: none;
-}
-
-.header .nav ul {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.header .nav li a {
-    color: #e0e0e0;
-    text-decoration: none;
-    padding: 10px 15px;
-    font-size: 16px;
-    transition: color 0.3s;
-}
-
-.header .nav li a:hover {
-    color: #ffc107;
-}
-
-.header .nav .login-btn {
-    background-color: #ffc107;
-    color: #212121;
-    padding: 8px 20px;
-    border-radius: 5px;
-    font-weight: bold;
+:root {
+     /*--primary-color: #4CAF50; Cor principal verde */
+     --primary-color: #F3DE21;
+    --secondary-color: #333; /* Cor secundária */
+    --background-color: #1E1E1E; /* Fundo escuro */
+    --text-color: #E0E0E0; /* Texto claro */
+    --card-background: #434343;
 }
 
 /* Estilos da Página de Perfil */
@@ -60,7 +16,7 @@ body {
     width: 90%;
     max-width: 1000px;
     margin: 0 auto;
-    background-color: #2a2a2a;
+    background-color: var(--card-background);
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     overflow: hidden;
@@ -101,12 +57,12 @@ body {
 
 .profile-details h1 {
     font-size: 28px;
-    color: #ffc107;
+    color: var(--primary-color);
     margin-top: 15px;
 }
 
 .profile-details p {
-    color: #b0b0b0;
+    color: var(--text-color);
     margin: 5px 0 20px;
 }
 
@@ -126,12 +82,12 @@ body {
 .stat-item span {
     font-size: 24px;
     font-weight: bold;
-    color: #ffc107;
+    color: var(--primary-color);
 }
 
 .stat-item p {
     font-size: 14px;
-    color: #e0e0e0;
+    color: var(--text-color);
     margin: 0;
 }
 
@@ -142,7 +98,7 @@ body {
 
 .profile-sections h3 {
     font-size: 24px;
-    color: #ffc107;
+    color: var(--primary-color);
     border-bottom: 2px solid #333;
     padding-bottom: 10px;
     margin-top: 30px;
@@ -176,7 +132,7 @@ body {
 }
 
 .jogo-card h4 {
-    color: #e0e0e0;
+    color: var(--text-color);
     font-size: 16px;
     margin: 10px 0 5px;
 }
@@ -188,7 +144,7 @@ body {
 }
 
 .jogo-card .avaliacao span {
-    color: #ffc107;
+    color: var(--primary-color);
     font-weight: bold;
 }
 
@@ -219,7 +175,7 @@ body {
 
 .conquista-info h4 {
     margin: 0;
-    color: #e0e0e0;
+    color: var(--text-color);;
 }
 
 .conquista-info p {

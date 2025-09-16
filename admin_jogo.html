@@ -12,13 +12,16 @@
 <body>
     <header class="header">
         <div class="logo">
-            <h1>GameBox <span class="admin-tag">- Admin</span></h1>
+            <h1>GameBox</h1>
         </div>
         <nav class="nav">
             <ul class="nav-list">
-                <li><a href="procurar_jogos.html">Ver Jogos</a></li>
-                <li><a href="#">Dashboard</a></li>
-                <li><a href="#" id="btn-login">Sair</a></li>
+                <li><a href="principal.html">Início</a></li>
+                <li><a href="procurar_jogos.html">Jogos</a></li>
+                <li><a href="categorias.html">Categorias</a></li>
+                <li><a href="conquistas_usuario.html">Conquistas</a></li>
+                <li><a href="listas_usuario.html">Minhas Listas</a></li>
+                <li><a href="login.html" id="btn-login">Login</a></li>
             </ul>
         </nav>
         <div class="menu-toggle">&#9776;</div>
@@ -33,15 +36,15 @@
                 <form>
                     <div class="form-group">
                         <label for="game-title">Título do Jogo</label>
-                        <input type="text" id="game-title" value="Cyberpunk 2077">
+                        <input type="text" id="game-title" value="The Witcher 3: Wild Hunt">
                     </div>
                     <div class="form-group">
                         <label for="game-desc">Descrição</label>
-                        <textarea id="game-desc" rows="5">Cyberpunk 2077 é uma história de ação e aventura de mundo aberto ambientada em Night City...</textarea>
+                        <textarea id="game-desc" rows="5">You are Geralt of Rivia, mercenary monster slayer. Before you stands a war-torn, monster-infested continent you can explore...</textarea>
                     </div>
                     <div class="form-group">
                         <label for="game-cover-url">URL da Imagem de Capa</label>
-                        <input type="text" id="game-cover-url" value="https://via.placeholder.com/500x700?text=Capa+Cyberpunk+2077">
+                        <input type="text" id="game-cover-url" value="https://via.placeholder.com/500x700?text=Capa+The+Witcher+3">
                     </div>
                     <div class="form-group">
                         <label for="game-rating">Nota (0.0 a 10.0)</label>
@@ -49,7 +52,7 @@
                     </div>
                     <div class="form-group">
                         <label for="game-price">Preço</label>
-                        <input type="text" id="game-price" value="R$ 249,99">
+                        <input type="text" id="game-price" value="R$ 79,99">
                     </div>
                     <div class="form-group">
                         <label for="game-genre">Gênero</label>
@@ -57,7 +60,7 @@
                     </div>
                     <div class="form-group">
                         <label for="game-categories">Categorias (separadas por vírgula)</label>
-                        <input type="text" id="game-categories" value="Mundo Aberto, Sci-Fi, Primeira Pessoa">
+                        <input type="text" id="game-categories" value="Mundo Aberto, Medival, Terceira Pessoa">
                     </div>
                     <div class="admin-actions">
                         <button type="submit" class="btn-primary">Salvar Alterações</button>

@@ -73,7 +73,7 @@ body {
     cursor: pointer;
 }
 
-/* Main Content */
+/* ====== Página Principal ====== */
 .main-content {
     padding: 2rem;
 }
@@ -81,7 +81,6 @@ body {
 .hero {
     text-align: center;
     padding: 4rem 2rem;
-    background-image: url('https://via.placeholder.com/1200x500?text=Fundo+Gameboxd');
     background-size: cover;
     background-position: center;
     border-radius: 10px;
@@ -180,8 +179,71 @@ body {
     border-top: 2px solid var(--primary-color);
 }
 
-/*Parte Nova - NOTAS*/
-/* Estilos para a página de Análise */
+/* ====== Tela de Login ====== */
+.login-container {
+    max-width: 450px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background-color: var(--card-background);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.login-container h2 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+}
+
+.login-form .form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.login-form label {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid #555;
+    border-radius: 5px;
+}
+
+.login-form input[type="text"]:focus,
+.login-form input[type="password"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+.login-form .btn-primary {
+    width: 100%;
+    font-size: 1.2rem;
+    padding: 1rem;
+    border: none;
+    cursor: pointer;
+}
+
+/* Responsividade para a tela de login */
+@media (max-width: 600px) {
+    .login-container {
+        padding: 1.5rem;
+        margin: 2rem 1rem;
+    }
+}
+
+/* ====== Página de Análise ====== */
 .review-page {
     max-width: 1000px; /* Ajuste a largura para acomodar as duas colunas */
     margin: 2rem auto;
@@ -383,7 +445,7 @@ body {
     }
 }
 
-/*parte que o felipe colocou para as telas de conquista*/
+/* ====== CONQUISTAS ====== */
 
 /* Estilos para a página de Conquistas do Usuário */
 .achievements-page {
@@ -588,7 +650,7 @@ body {
 
 /*parte que o felipe colocou para os jogos*/
 
-/* --- Tela de Busca de Jogos --- */
+/* ====== Tela de Busca de Jogos ====== */
 .search-section {
     text-align: center;
     margin-bottom: 3rem;
@@ -628,7 +690,7 @@ body {
     margin-bottom: 1.5rem;
 }
 
-/* --- Tela de Detalhes do Jogo --- */
+/* ====== Tela de Detalhes do Jogo ====== */
 .game-detail-container {
     display: grid;
     grid-template-columns: 300px 1fr;

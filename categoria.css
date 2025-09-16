@@ -1,60 +1,16 @@
-/* Estilos globais e do corpo */
-body {
-    background-color: #1a1a1a;
-    color: #e0e0e0;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-/* Estilos do cabeçalho (Header) */
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 40px;
-    background-color: #212121;
-    border-bottom: 2px solid #ffc107;
-}
-
-.header .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #ffc107;
-    text-decoration: none;
-}
-
-.header .nav ul {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.header .nav li a {
-    color: #e0e0e0;
-    text-decoration: none;
-    padding: 10px 15px;
-    font-size: 16px;
-    transition: color 0.3s;
-}
-
-.header .nav li a:hover {
-    color: #ffc107;
-}
-
-.header .nav .login-btn {
-    background-color: #ffc107;
-    color: #212121;
-    padding: 8px 20px;
-    border-radius: 5px;
-    font-weight: bold;
+:root {
+     /*--primary-color: #4CAF50; Cor principal verde */
+     --primary-color: #F3DE21;
+    --secondary-color: #333; /* Cor secundária */
+    --background-color: #1E1E1E; /* Fundo escuro */
+    --text-color: #E0E0E0; /* Texto claro */
+    --card-background: #434343;
 }
 
 /* Estilos da Seção de Título */
 .section-banner {
     text-align: center;
-    background-color: #2a2a2a;
+    background-color: #000000;
     padding: 50px 20px;
     margin: 20px auto;
     width: 90%;
@@ -65,13 +21,13 @@ body {
 
 .section-banner h2 {
     font-size: 36px;
-    color: #ffc107;
+   
     margin-bottom: 10px;
 }
 
 .section-banner p {
     font-size: 18px;
-    color: #b0b0b0;
+    color: var(--text-color);
 }
 
 /* Estilos para a grade de categorias */
@@ -87,7 +43,7 @@ body {
 }
 
 .categoria-card {
-    background-color: #2a2a2a;
+    background-color: var(--card-background);
     border-radius: 8px;
     padding: 20px;
     text-align: center;
@@ -106,17 +62,17 @@ body {
     object-fit: cover;
     border-radius: 50%;
     margin-bottom: 15px;
-    border: 3px solid #ffc107;
+    border: 3px solid var(--primary-color);
 }
 
 .categoria-card h3 {
-    color: #ffc107;
+    color: var(--primary-color);
     font-size: 20px;
     margin: 0;
 }
 
 .categoria-card p {
     font-size: 14px;
-    color: #b0b0b0;
+    color: var(--text-color);
     margin-top: 5px;
 }
