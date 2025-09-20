@@ -1,0 +1,24 @@
+/* src/index.css */
+
+/* Suas variáveis de cor globais */
+:root {
+  --primary-color: #F3DE21;
+  --secondary-color: #333;
+  --background-color: #1E1E1E;
+  --text-color: #E0E0E0;
+  --card-background: #434343;
+}
+
+/* Reset básico e estilos do body */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
