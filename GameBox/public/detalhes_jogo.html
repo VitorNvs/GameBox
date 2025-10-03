@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Jogo - GameBox</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/gamebox/src/style.css">
+
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <h1>GameBox</h1>
+        </div>
+        <nav class="nav">
+            <ul class="nav-list">
+                <li><a href="principal.html">Início</a></li>
+                <li><a href="procurar_jogos.html">Jogos</a></li>
+                <li><a href="categorias.html">Categorias</a></li>
+                <li><a href="conquistas_usuario.html">Conquistas</a></li>
+                <li><a href="listas_usuario.html">Minhas Listas</a></li>
+                <li><a href="login.html" id="btn-login">Login</a></li>
+            </ul>
+        </nav>
+        <div class="menu-toggle">&#9776;</div>
+    </header>
+
+    <main class="main-content">
+        <div class="game-detail-container">
+            <div class="game-detail-cover">
+                <img src="imgs/witcher3.jpg" alt="Capa do jogo The Witcher 3">
+            </div>
+            <div class="game-detail-info">
+                <h1>The Witcher 3: Wild Hunt</h1>
+                <div class="game-meta">
+                    <div class="meta-item rating-box">
+                        <strong>NOTA</strong>
+                        <span>9.3 / 10</span>
+                    </div>
+                    <div class="meta-item price-box">
+                        <strong>PREÇO</strong>
+                        <span>R$ 79,99</span>
+                    </div>
+                </div>
+                <div class="game-tags">
+                    <h4>Gênero</h4>
+                    <span class="tag">RPG de Ação</span>
+                </div>
+                <div class="game-tags">
+                    <h4>Categorias</h4>
+                    <span class="tag">Mundo Aberto</span>
+                    <span class="tag">Medival</span>
+                    <span class="tag">Terceira Pessoa</span>
+                </div>
+                <div class="game-description">
+                    <h3>Descrição</h3>
+                    <p>You are Geralt of Rivia, mercenary monster slayer. Before you stands a war-torn, monster-infested continent you can explore...</p>
+                </div>
+                <a href="admin_jogo.html" class="btn-primary">Editar Jogo (Admin)</a>
+            </div>
+        </div>
+
+        <section class="reviews-section">
+            <h2>Avaliações de Usuários</h2>
+            <div class="review-list">
+                <a href="review-details.html" class="review-card-link">
+                    <div class="review-card">
+                        <div class="review-header">
+                            <img src="https://via.placeholder.com/50/E0E0E0/333?text=A" alt="Avatar do usuário" class="review-avatar">
+                            <span class="review-username">Alice</span>
+
+                            <label class="feedback-btn" data-tooltip="Amei">
+                                <i class="fa-solid fa-heart"></i>
+                            </label>
+                        </div>
+                        <p class="review-text">Que jogo incrível! A imersão nele é algo de outro mundo. As missões são cativantes...</p>
+                        <div class="review-date">Postado em 14 de setembro de 2025</div>
+                    </div>
+                </a>
+                <a href="review-details.html" class="review-card-link">
+                    <div class="review-card">
+                        <div class="review-header">
+                            <img src="https://via.placeholder.com/50/E0E0E0/333?text=B" alt="Avatar do usuário" class="review-avatar">
+                            <span class="review-username">Bruno</span>
+                            
+                            <label class="feedback-btn" data-tooltip="Gostei">
+                                <i class="fa-solid fa-thumbs-up"></i>
+                            </label>
+                        </div>
+                        <p class="review-text">O jogo é muito bom, com uma história principal excelente. No entanto, encontrei alguns bugs...</p>
+                        <div class="review-date">Postado em 12 de setembro de 2025</div>
+                    </div>
+                </a>
+                <a href="review-details.html" class="review-card-link">
+                    <div class="review-card">
+                        <div class="review-header">
+                            <img src="https://via.placeholder.com/50/E0E0E0/333?text=C" alt="Avatar do usuário" class="review-avatar">
+                            <span class="review-username">Carla</span>
+
+                            <label class="feedback-btn" data-tooltip="Amei">
+                                <i class="fa-solid fa-heart"></i>
+                            </label>
+                        </div>
+                        <p class="review-text">Visualmente deslumbrante e com uma trama que te prende do início ao fim...</p>
+                        <div class="review-date">Postado em 10 de setembro de 2025</div>
+                    </div>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 GameBox. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navList = document.querySelector('.nav-list');
+        menuToggle.addEventListener('click', () => {
+            navList.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
