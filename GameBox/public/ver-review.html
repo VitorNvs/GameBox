@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Jogo - Gamebox</title>
+    <link rel="stylesheet" href="/gamebox/src/style.css">
+    <link rel="stylesheet" href="/gamebox/src/ver-review.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <h1>GameBox</h1>
+        </div>
+        <nav class="nav">
+            <ul class="nav-list">
+                <li><a href="principal.html">Início</a></li>
+                <li><a href="procurar_jogos.html">Jogos</a></li>
+                <li><a href="categorias.html">Categorias</a></li>
+                <li><a href="conquistas_usuario.html">Conquistas</a></li>
+                <li><a href="listas_usuario.html">Minhas Listas</a></li>
+                <li><a href="login.html" id="btn-login">Login</a></li>
+            </ul>
+        </nav>
+        <div class="menu-toggle">&#9776;</div>
+    </header>
+
+    <main class="main-content">
+        <div class="review-page">
+            <h2>The Witcher 3: Wild Hunt</h2>
+            
+            <div class="review-grid">
+                <div class="cover-section">
+                    <img src="imgs/witcher3.jpg" alt="Capa do Jogo" class="game-cover">
+                    <p class="user-info">Análise de **NomeDoUsuário**</p>
+                </div>
+                
+                <div class="review-display-section">
+                    <div class="feedback-display-buttons">
+                        <label class="feedback-btn" data-tooltip="Não Gostei">
+                            <i class="fa-solid fa-thumbs-down"></i>
+                        </label>
+                        <label class="feedback-btn" data-tooltip="Gostei">
+                            <i class="fa-solid fa-thumbs-up"></i>
+                        </label>
+                        <label class="feedback-btn active" data-tooltip="Amei">
+                            <i class="fa-solid fa-heart"></i>
+                        </label>
+                    </div>
+
+                    <div class="review-text-display">
+                        The Witcher 3: Wild Hunt é, sem dúvida, um dos maiores RPGs de todos os tempos. A profundidade do mundo aberto é simplesmente impressionante, com missões secundárias que parecem ter a mesma importância das principais. A história de Geralt e Ciri é envolvente e cheia de reviravoltas, e a jogabilidade, apesar de algumas críticas, é fluida e satisfatória. A atenção aos detalhes em cada vila, floresta e personagem é o que realmente faz este jogo se destacar. Uma obra-prima moderna que merece ser jogada e re-jogada.
+                    </div>
+                </div>
+            </div>
+
+            <div class="comments-section">
+                <h3>Comentários</h3>
+                <div class="comment-box">
+                    <textarea placeholder="Adicione um comentário..." rows="3"></textarea>
+                    <button class="btn-primary">Comentar</button>
+                </div>
+
+                <div class="comment">
+                    <p class="comment-author">**OutroUsuário**</p>
+                    <p class="comment-text">Concordo plenamente! A história é incrível e a trilha sonora é de arrepiar. Jogo fantástico!</p>
+                </div>
+                 <div class="comment">
+                    <p class="comment-author">**TerceiroUsuário**</p>
+                    <p class="comment-text">Ainda não joguei, mas agora estou convencido. Parece ser um jogo épico!</p>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 Gameboxd. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

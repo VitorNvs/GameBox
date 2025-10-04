@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Listas - Gamebox</title>
+    <link rel="stylesheet" href="/gamebox/src/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilo para o grid de listas, similar ao grid de jogos */
+        .lists-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            text-align: center;
+        }
+
+        /* Estilo para o card de lista */
+        .list-card {
+            background-color: var(--secondary-color);
+            padding: 2rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #444;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: left;
+            position: relative;
+        }
+
+        .list-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .list-card h4 {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .list-card .category {
+            display: inline-block;
+            background-color: var(--card-background);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+
+        .list-card p {
+            font-size: 1rem;
+            color: #aaa;
+            margin-bottom: 1rem;
+        }
+
+        .list-card .games-count {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .list-card .list-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <h1>GameBox</h1>
+        </div>
+        <nav class="nav">
+            <ul class="nav-list">
+                <li><a href="principal.html">Início</a></li>
+                <li><a href="procurar_jogos.html">Jogos</a></li>
+                <li><a href="categorias.html">Categorias</a></li>
+                <li><a href="conquistas_usuario.html">Conquistas</a></li>
+                <li><a href="listas_usuario.html">Minhas Listas</a></li>
+                <li><a href="login.html" id="btn-login">Login</a></li>
+            </ul>
+        </nav>
+        <div class="menu-toggle">&#9776;</div>
+    </header>
+
+    <main class="main-content">
+        <section class="admin-section">
+            <div class="admin-list-container">
+                <h3>Minhas Listas</h3>
+                <div id="user-lists-grid" class="lists-grid">
+                    <div class="list-card">
+                        <h4>Melhores Indies de 2024</h4>
+                        <p>Uma lista com os jogos independentes que mais me surpreenderam este ano.</p>
+                        <span class="games-count">3 jogos na lista</span>
+                        <div class="list-actions">
+                            <button class="btn-action btn-edit">Editar</button>
+                            <button class="btn-action btn-delete">Excluir</button>
+                        </div>
+                    </div>
+
+                    <div class="list-card">
+                        <h4>Para Jogar no Fim de Semana</h4>
+                        <p>Jogos que estão na minha lista de espera para os próximos dias de folga.</p>
+                        <span class="games-count">5 jogos na lista</span>
+                        <div class="list-actions">
+                            <button class="btn-action btn-edit">Editar</button>
+                            <button class="btn-action btn-delete">Excluir</button>
+                        </div>
+                    </div>
+
+                    <div class="list-card">
+                        <h4>RPGs que Marcaram</h4>
+                        <p>Clássicos e modernos que me marcaram e me fizeram mergulhar em suas histórias.</p>
+                        <span class="games-count">8 jogos na lista</span>
+                        <div class="list-actions">
+                            <button class="btn-action btn-edit">Editar</button>
+                            <button class="btn-action btn-delete">Excluir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-form-container">
+                <h3>Criar Lista de Jogos</h3>
+                <form id="list-form">
+                    <div class="form-group">
+                        <label for="list-title">Título da Lista:</label>
+                        <input type="text" id="list-title" name="list-title" placeholder="Ex: Meus RPGs Favoritos" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="list-description">Descrição:</label>
+                        <textarea id="list-description" name="list-description" rows="4" placeholder="Uma breve descrição sobre a sua lista..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Salvar Lista</button>
+                </form>
+            </div>
+
+        </section>
+    </main>
+    
+    <footer class="footer">
+        <p>&copy; 2025 Gameboxd. Todos os direitos reservados.</p>
+    </footer>
+
+</body>
+</html>
