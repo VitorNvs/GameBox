@@ -1,3 +1,4 @@
+// src/components/Footer.jsx
 import React from 'react';
 import { Box, Typography, Container } from '@mui/material';
 
@@ -6,9 +7,11 @@ function Footer() {
     <Box
       component="footer"
       sx={{
-        backgroundColor: '#333',
-        color: 'white',
-        py: 2,
+        // As cores vêm do tema, garantindo consistência
+        backgroundColor: 'background.paper',
+        color: 'text.secondary',
+        borderTop: '1px solid #374151',
+        py: 3, // Aumentando o padding vertical
         mt: 'auto',
         textAlign: 'center'
       }}
