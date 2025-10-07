@@ -1,40 +1,33 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Box, CssBaseline } from '@mui/material';
+import { Box, CssBaseline, ThemeProvider } from '@mui/material'; // Importe o ThemeProvider
+import { darkTheme } from './theme'; // Importe nosso tema customizado
 
-// --- Imports Corrigidos ---
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
-// 1. Caminho corrigido para a nova página de autenticação
 import AuthPage from "./components/AuthPage.jsx"; 
-
-// Futuramente, você importaria suas outras páginas aqui
-// import HomePage from './pages/HomePage/HomePage';
+import HomePage from './components/HomePage.jsx';
 
 function App() {
   return (
-    <Router>
-      <CssBaseline />
-      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Header />
-        <Box component="main" sx={{ flexGrow: 1, py: 3 }}>
-            {/* O Roteador decide qual página renderizar aqui dentro */}
-            <Routes>
-              {/* --- Rotas Atualizadas --- */}
-
-              {/* 2. Rota padrão adicionada para a página inicial */}
-              <Route path="/" element={<AuthPage />} />
-
-              {/* Rota para /login, que também mostra a mesma página */}
-              <Route path="/login" element={<AuthPage />} />
-
-              {/* Adicione outras rotas aqui no futuro */}
-              {/* Ex: <Route path="/jogos" element={<GamesPage />} /> */}
-            </Routes>
+    // O ThemeProvider envolve toda a aplicação
+    <ThemeProvider theme={darkTheme}> 
+      <Router>
+        <CssBaseline /> {/* Garante que o fundo e as fontes do tema sejam aplicados */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
+          <Header />
+          {/* Removido o padding (py: 3) daqui para que cada página controle seu próprio espaçamento */}
+          <Box component="main" sx={{ flexGrow: 1 }}>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/login" element={<AuthPage />} />
+                {/* Adicione outras rotas aqui */}
+              </Routes>
+          </Box>
+          <Footer />
         </Box>
-        <Footer />
-      </Box>
-    </Router>
+      </Router>
+    </ThemeProvider>
   );
 }
 

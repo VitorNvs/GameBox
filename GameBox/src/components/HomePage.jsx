@@ -1,157 +1,173 @@
+// src/components/HomePage.jsx
 import React from 'react';
-import {
-  Container,
-  Box,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  Link,
-} from '@mui/material';
 
-// Importando os ícones que vamos usar
+// Importações do Material-UI
+import {
+    Box,
+    Card,
+    CardContent,
+    CardMedia,
+    Container,
+    CssBaseline,
+    Grid,
+    Typography
+} from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+// Importações de Ícones do Material-UI
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 
-// Dados de exemplo para os cards
+// --- DADOS MOCKADOS (Substitua pela sua API ou fonte de dados) ---
 const popularGames = [
-  { title: 'The Witcher 3: Wild Hunt', image: 'imgs/witcher3.jpg', rating: 45, icon: <FavoriteIcon sx={{ color: '#f44336' }} /> },
-  { title: 'Nome do Jogo 2', image: 'https://via.placeholder.com/275x380?text=Jogo+2', rating: 30, icon: <ThumbUpIcon sx={{ color: '#4CAF50' }} /> },
-  { title: 'Nome do Jogo 3', image: 'https://via.placeholder.com/275x380?text=Jogo+3', rating: 25, icon: <ThumbDownIcon sx={{ color: '#2196F3' }} /> },
-  { title: 'Nome do Jogo 4', image: 'https://via.placeholder.com/275x380?text=Jogo+4', rating: 20, icon: <FavoriteIcon sx={{ color: '#f44336' }} /> },
-  { title: 'Nome do Jogo 5', image: 'https://via.placeholder.com/275x380?text=Jogo+5', rating: 15, icon: <ThumbUpIcon sx={{ color: '#4CAF50' }} /> },
-  { title: 'Nome do Jogo 6', image: 'https://via.placeholder.com/275x380?text=Jogo+6', rating: 10, icon: <FavoriteIcon sx={{ color: '#f44336' }} /> },
+    { title: 'The Witcher 3: Wild Hunt', image: 'imgs/witcher3.jpg', rating: '45%' },
+    { title: 'Resident Evil 4 Remake', image: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2050650/header.jpg?t=1736385712', rating: '98%' },
+    { title: 'The Last of Us Part 2', image: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2531310/header.jpg?t=1750959180', rating: '95%' },
 ];
 
 const friendUpdates = [
-    { title: 'Nome do Jogo 1', image: 'https://via.placeholder.com/275x380?text=Jogo+1', icon: <ThumbUpIcon sx={{ color: '#4CAF50' }} /> },
-    { title: 'Nome do Jogo 2', image: 'https://via.placeholder.com/275x380?text=Jogo+2', icon: <FavoriteIcon sx={{ color: '#f44336' }} /> },
-    { title: 'Nome do Jogo 3', image: 'https://via.placeholder.com/275x380?text=Jogo+3', icon: <ThumbDownIcon sx={{ color: '#2196F3' }} /> },
+    { title: 'Hollow Knight: Silksong', image: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1030300/7983574d464e6559ac7e24275727f73a8bcca1f3/header.jpg?t=1756994410', feedback: 'up' },
+    { title: 'Grand Theft Auto V', image: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3240220/header.jpg?t=1753974947', feedback: 'up' },
+    { title: 'Resident Evil Village', image: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1196590/header.jpg?t=1741142800', feedback: 'up' },
+    { title: 'Counter-Strike 2', image: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/730/header.jpg?t=1749053861', feedback: 'down' },
+    { title: 'The Last of Us Parte 1', image: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1888930/header.jpg?t=1750959031', feedback: 'up' },
+    { title: 'Shadow of the Tomb Raider', image: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/750920/header.jpg?t=1729014037', feedback: 'up' },
+    { title: 'Life is Strange', image: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/319630/header.jpg?t=1724158918', feedback: 'up' },
+    { title: 'Resident Evil 3', image: 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/952060/header.jpg?t=1728438347', feedback: 'down' },
 ];
 
-const myLists = [
+const userLists = [
     { title: 'Favoritos' },
     { title: 'Jogando' },
     { title: 'Quero Jogar' },
 ];
 
-// Componente da Página Principal
+// --- TEMA CUSTOMIZADO BASEADO NO SEU CSS ---
+const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+        primary: {
+            main: '#38bdf8', // Cor de destaque (azul)
+        },
+        background: {
+            default: '#121829', // Cor de fundo do body
+            paper: '#1F2937',    // Cor de fundo dos cards e header
+        },
+        text: {
+            primary: '#f9f9f9',
+            secondary: '#9CA3AF',
+        },
+    },
+    typography: {
+        fontFamily: 'Montserrat, sans-serif',
+        h3: { fontSize: '1.75rem', marginBottom: '1.5rem' },
+    },
+});
+
 function HomePage() {
-  return (
-    <Box>
-      {/* Seção Hero */}
-      <Box
-        sx={{
-          py: { xs: 6, md: 10 },
-          textAlign: 'center',
-          position: 'relative',
-          borderRadius: 2,
-          overflow: 'hidden',
-          m: 2,
-          '&::before': { // Overlay escuro para melhor legibilidade
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            zIndex: 1,
-          },
-          // Adicione sua imagem de fundo aqui
-          // backgroundImage: 'url(https://sua-imagem-de-fundo.jpg)',
-          // backgroundSize: 'cover',
-          // backgroundPosition: 'center',
-        }}
-      >
-        <Container sx={{ position: 'relative', zIndex: 2 }}>
-          <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-            Descubra, Avalie e Compartilhe sua Experiência de Jogo
-          </Typography>
-          <Typography variant="h6" color="text.secondary">
-            O seu espaço para catalogar sua jornada gamer, criar listas e se conectar com outros jogadores.
-          </Typography>
-        </Container>
-      </Box>
 
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        {/* Seção Jogos Populares */}
-        <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 'bold' }}>
-          Jogos Populares
-        </Typography>
-        <Grid container spacing={3}>
-          {popularGames.map((game, index) => (
-            <Grid item key={index} xs={12} sm={4} md={3} lg={2}>
-              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}>
-                <Link href="/detalhes_jogo"> {/* Substitua pelo Link do React Router se estiver usando */}
-                  <CardMedia
-                    component="img"
-                    image={game.image}
-                    alt={game.title}
-                    sx={{ aspectRatio: '275/380' }}
-                  />
-                </Link>
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography variant="h6" component="h3" sx={{fontSize: '1rem'}}>
-                    {game.title}
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                    {game.icon}
-                    <Typography variant="body2" sx={{ ml: 1 }}>
-                      {game.rating}%
+    const getFeedbackIcon = (feedback) => {
+        if (feedback === 'up') return <ThumbUpIcon fontSize="small" />;
+        if (feedback === 'down') return <ThumbDownIcon fontSize="small" />;
+        return null;
+    };
+
+
+    return (
+        <ThemeProvider theme={darkTheme}>
+            <CssBaseline /> {/* Reseta o CSS e aplica o fundo do tema */}
+
+            {/* Conteúdo Principal */}
+            <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
+                
+                {/* Seção Jogos Populares */}
+                <Box component="section" sx={{ mb: 6 }}>
+                    <Typography variant="h3" component="h3" sx={{ borderLeft: '4px solid #38bdf8', pl: 2 }}>
+                        Jogos Populares
                     </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+                    <Grid container spacing={4}>
+                        {popularGames.map((game, index) => (
+                            <Grid item key={index} xs={12} sm={6} md={4}>
+                                <Card>
+                                    <CardMedia
+                                        component="img"
+                                        height="160"
+                                        image={game.image}
+                                        alt={`Capa de ${game.title}`}
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="h4" sx={{ fontSize: '1.25rem' }}>
+                                            {game.title}
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', color: '#facc15' }}>
+                                            <FavoriteIcon sx={{ mr: 1, color: 'primary.main' }} />
+                                            <Typography variant="body1">{game.rating}</Typography>
+                                        </Box>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Box>
 
-        {/* Seção Atualizações de Amigos */}
-        <Typography variant="h4" component="h2" gutterBottom sx={{ mt: 6, fontWeight: 'bold' }}>
-          Atualizações de amigos
-        </Typography>
-        <Grid container spacing={3}>
-            {friendUpdates.map((game, index) => (
-                 <Grid item key={index} xs={12} sm={4} md={3} lg={2}>
-                    <Card sx={{ height: '100%', transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}>
-                         <CardMedia
-                            component="img"
-                            image={game.image}
-                            alt={game.title}
-                            sx={{ aspectRatio: '275/380' }}
-                          />
-                        <CardContent>
-                            <Typography variant="h6" component="h3" sx={{fontSize: '1rem'}}>{game.title}</Typography>
-                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                                {game.icon}
-                            </Box>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            ))}
-        </Grid>
+                {/* Seção Atualizações de Amigos */}
+                <Box component="section" sx={{ mb: 6 }}>
+                    <Typography variant="h3" component="h3" sx={{ borderLeft: '4px solid #38bdf8', pl: 2 }}>
+                        Atualizações de amigos
+                    </Typography>
+                    <Grid container spacing={3}>
+                        {friendUpdates.map((game, index) => (
+                            <Grid item key={index} xs={6} sm={4} md={2}>
+                                <Card>
+                                    <CardMedia
+                                        component="img"
+                                        height="100"
+                                        image={game.image}
+                                        alt={`Capa de ${game.title}`}
+                                    />
+                                    <CardContent sx={{ p: 1.5 }}>
+                                        <Typography variant="body2" component="h4" noWrap>
+                                            {game.title}
+                                        </Typography>
+                                        <Box sx={{ color: 'primary.main', mt: 1 }}>
+                                            {getFeedbackIcon(game.feedback)}
+                                        </Box>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Box>
+                
+                 {/* Seção Suas Listas */}
+                <Box component="section">
+                    <Typography variant="h3" component="h3" sx={{ borderLeft: '4px solid #38bdf8', pl: 2 }}>
+                       Suas listas
+                    </Typography>
+                    <Grid container spacing={3}>
+                        {userLists.map((list, index) => (
+                           <Grid item key={index} xs={12} sm={4}>
+                               <Card sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px'}}>
+                                   <CardContent>
+                                       <Typography variant="h6">{list.title}</Typography>
+                                   </CardContent>
+                               </Card>
+                           </Grid>
+                        ))}
+                    </Grid>
+                </Box>
 
-        {/* Seção Suas Listas */}
-        <Typography variant="h4" component="h2" gutterBottom sx={{ mt: 6, fontWeight: 'bold' }}>
-          Suas listas
-        </Typography>
-        <Grid container spacing={3}>
-            {myLists.map((list, index) => (
-                 <Grid item key={index} xs={12} sm={4} md={3} lg={2}>
-                    <Card sx={{ height: 150, display: 'flex', justifyContent: 'center', alignItems: 'center', transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)', backgroundColor: 'action.hover' }, cursor: 'pointer' }}>
-                        <CardContent>
-                            <Typography variant="h5" component="h3">{list.title}</Typography>
-                        </CardContent>
-                    </Card>
-                 </Grid>
-            ))}
-        </Grid>
-      </Container>
-    </Box>
-  );
+            </Container>
+
+            {/* Footer */}
+            <Box component="footer" sx={{ textAlign: 'center', py: 3, mt: 2, borderTop: '1px solid #374151' }}>
+                <Typography variant="body2" color="text.secondary">
+                    &copy; {new Date().getFullYear()} Gamebox. Todos os direitos reservados.
+                </Typography>
+            </Box>
+        </ThemeProvider>
+    );
 }
 
 export default HomePage;

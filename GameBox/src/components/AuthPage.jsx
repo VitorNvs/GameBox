@@ -1,11 +1,9 @@
+// src/components/AuthPage.jsx
 import React, { useState } from 'react';
 import { Container, Box, Typography, TextField, Button, Grid, Link as MuiLink } from '@mui/material';
 
 function AuthPage() {
-  // Estado para controlar se estamos na tela de Login ou Cadastro
   const [isLoginView, setIsLoginView] = useState(true);
-
-  // Estados para os campos do formulário (unimos tudo em um objeto)
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -13,7 +11,6 @@ function AuthPage() {
     confirmPassword: '',
   });
 
-  // Função para atualizar o estado do formulário
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
@@ -22,14 +19,11 @@ function AuthPage() {
     }));
   };
 
-  // Função para lidar com o envio do formulário
   const handleSubmit = (event) => {
     event.preventDefault();
     if (isLoginView) {
-      // Lógica de Login
       alert(`LOGIN:\nUsuário: ${formData.username}\nSenha: ${formData.password}`);
     } else {
-      // Lógica de Cadastro
       if (formData.password !== formData.confirmPassword) {
         alert("As senhas não coincidem!");
         return;
@@ -38,31 +32,27 @@ function AuthPage() {
     }
   };
 
-  // Função para alternar entre as telas
-  const toggleView = () => {
-    setIsLoginView(!isLoginView);
-  };
+  const toggleView = () => setIsLoginView(!isLoginView);
 
   return (
     <Container component="main" maxWidth="xs">
       <Box
         sx={{
           marginTop: 8,
-          padding: 3,
-          backgroundColor: 'var(--card-background)',
-          borderRadius: '10px',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+          padding: 4, // Aumentando o padding
+          backgroundColor: 'background.paper', // Cor do tema
+          borderRadius: 2, // Bordas mais sutis
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
         }}
       >
-        <Typography component="h1" variant="h4" sx={{ color: 'var(--primary-color)', mb: 4 }}>
+        <Typography component="h1" variant="h4" sx={{ color: 'primary.main', mb: 3 }}>
           {isLoginView ? 'Login' : 'Cadastro'}
         </Typography>
         
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
-          {/* Campo de Nome de Usuário (comum para ambos) */}
           <TextField
             margin="normal"
             required
@@ -76,7 +66,6 @@ function AuthPage() {
             onChange={handleChange}
           />
 
-          {/* Campo de Email (apenas para Cadastro) */}
           {!isLoginView && (
             <TextField
               margin="normal"
@@ -91,7 +80,6 @@ function AuthPage() {
             />
           )}
 
-          {/* Campo de Senha (comum para ambos) */}
           <TextField
             margin="normal"
             required
@@ -105,7 +93,6 @@ function AuthPage() {
             onChange={handleChange}
           />
 
-          {/* Campo de Confirmar Senha (apenas para Cadastro) */}
           {!isLoginView && (
             <TextField
               margin="normal"
@@ -114,6 +101,7 @@ function AuthPage() {
               name="confirmPassword"
               label="Confirmar Senha"
               type="password"
+
               id="confirmPassword"
               autoComplete="new-password"
               value={formData.confirmPassword}
@@ -124,13 +112,12 @@ function AuthPage() {
           <Button
             type="submit"
             fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2, backgroundColor: 'var(--primary-color)', color: 'var(--secondary-color)', fontWeight: 'bold' }}
+            variant="contained" // variant="contained" usa a cor primária do tema por padrão
+            sx={{ mt: 3, mb: 2, fontWeight: 'bold' }}
           >
             {isLoginView ? 'Entrar' : 'Cadastrar'}
           </Button>
 
-          {/* Link para alternar entre as telas */}
           <Grid container justifyContent="flex-end">
             <Grid item>
               <MuiLink component="button" variant="body2" onClick={toggleView}>
