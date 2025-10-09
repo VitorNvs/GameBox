@@ -7,6 +7,8 @@ import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import AuthPage from "./components/AuthPage.jsx"; 
 import HomePage from './components/HomePage.jsx';
+import CategoriesPage from './components/CategoriesPage.jsx';
+import SearchGamesPage from './components/SearchGamesPage.jsx';
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<AuthPage />} />
+                <Route path="/categorias" element={<CategoriesPage />} />
+                <Route path="/jogos" element={<SearchGamesPage />} />
                 {/* Adicione outras rotas aqui */}
               </Routes>
           </Box>

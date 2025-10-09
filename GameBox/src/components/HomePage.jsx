@@ -161,11 +161,7 @@ function HomePage() {
             </Container>
 
             {/* Footer */}
-            <Box component="footer" sx={{ textAlign: 'center', py: 3, mt: 2, borderTop: '1px solid #374151' }}>
-                <Typography variant="body2" color="text.secondary">
-                    &copy; {new Date().getFullYear()} Gamebox. Todos os direitos reservados.
-                </Typography>
-            </Box>
+
         </ThemeProvider>
     );
 }
