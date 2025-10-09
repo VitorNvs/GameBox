@@ -8,7 +8,7 @@ import StarIcon from '@mui/icons-material/Star';
 const searchResults = [
     { id: 1, title: 'Cyberpunk 2077', rating: '9.1', image: 'https://cdn1.epicgames.com/offer/77f2b98e2cef40c8a7437518bf420e47/EGS_Cyberpunk2077_CDPROJEKTRED_S2_03_1200x1600-b1847981214ac013383111fc457eb9c5' },
     { id: 2, title: 'The Witcher 3', rating: '9.8', image: 'https://cdn1.epicgames.com/offer/14ee004dadc142faaaece5a6270fb628/EGS_TheWitcher3WildHuntCompleteEdition_CDPROJEKTRED_S2_1200x1600-53a8fb2c0201cd8aea410f2a049aba3f' },
-    { id: 3, title: 'Elden Ring', rating: '9.7', image: 'https://source.unsplash.com/400x550/?elden,ring,fantasy' },
+    { id: 3, title: 'Elden Ring', rating: '9.7', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCMdNWP6jHnRYbAqljnlZ5Cxro66NDLcK9xXBAly8jpPsiF-qArRSxZBU0mtfmc5xpPwE&usqp=CAU' },
     { id: 4, title: 'Red Dead Redemption 2', rating: '9.9', image: 'https://source.unsplash.com/400x550/?cowboy,western' },
     { id: 5, title: 'Hades', rating: '9.5', image: 'https://source.unsplash.com/400x550/?underworld,greek' },
     { id: 6, title: 'Stardew Valley', rating: '9.6', image: 'https://source.unsplash.com/400x550/?farm,pixel' },
