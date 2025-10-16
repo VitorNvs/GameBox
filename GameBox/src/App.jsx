@@ -9,8 +9,6 @@ import AuthPage from "./components/AuthPage.jsx";
 import HomePage from './components/HomePage.jsx';
 import CategoriesPage from './components/CategoriesPage.jsx';
 import SearchGamesPage from './components/SearchGamesPage.jsx';
-import MinhasListasPage from './components/MinhasListasPage.jsx';
-import DetalhesJogoPage from './components/DetalhesJogoPage.jsx';
 
 function App() {
   return (
@@ -27,8 +25,6 @@ function App() {
                 <Route path="/login" element={<AuthPage />} />
                 <Route path="/categorias" element={<CategoriesPage />} />
                 <Route path="/jogos" element={<SearchGamesPage />} />
-                <Route path="/minhas-listas" element={<MinhasListasPage/>} />
-                <Route path="/jogo/:id" element={<DetalhesJogoPage />} />
                 {/* Adicione outras rotas aqui */}
               </Routes>
           </Box>
