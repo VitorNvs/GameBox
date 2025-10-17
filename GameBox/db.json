@@ -33,6 +33,28 @@
       "description": "Cinco anos depois de sua perigosa jornada pelos Estados Unidos...",
       "image": "https://image.api.playstation.com/vulcan/ap/rnd/202311/1717/3a33a4b0a02b54074d4989a4118a4b594815d945b44a82cf.png"
     },
+  {
+    "id": 28,
+      "listType": "popular",
+      "title": "Silent Hill F (2025)",
+      "rating": "9.6",
+      "price": "R$ 349,90",
+      "genre": "Terror",
+      "tags": ["Terror-Psicológico", "Furtividade"],
+      "description": "Silent Hill f é um jogo de terror psicológico de survival horror ambientado no Japão dos anos 1960, com foco na história de Hinako Shimizu, uma estudante que vive na pacata cidade montanhosa de Ebisugaoka.",
+      "image": "https://assets.nuuvem.com/image/upload/t_boxshot_big/v1/products/67f9674ff0174f89298f3cf4/boxshots/yalk2lbqm7sesvmfbs25.jpg"
+    },
+     {
+      "id": 70,
+      "listType": "friend-update",
+      "title": "Spider-Man Remastered",
+      "rating": "9.5",
+      "price": "R$289,90",
+      "genre": "Ação",
+      "tags": ["Mundo Aberto", "Super-Heróis"],
+      "description": "CMarvel's Spider-Man Remastered é um jogo de ação e aventura onde o jogador controla um Peter Parker mais experiente que luta contra criminosos icônicos na Nova York da Marvel.",
+      "image": "https://image.api.playstation.com/vulcan/ap/rnd/202009/3021/BtsjAgHT9pqHRXtN9FCk7xc8.png"
+    },
     {
       "id": 4,
       "listType": "friend-update",
@@ -42,7 +64,7 @@
       "genre": "Metroidvania",
       "tags": ["Indie", "Plataforma"],
       "description": "Explore um vasto reino assombrado em Hollow Knight: Silksong!",
-      "image": "https://assets.nintendo.com/image/upload/c_fill,w_1200/q_auto:best/f_auto/dpr_2.0/ncom/software/switch/70010000012432/5a755918b29225a68ba432b53e9a42111a3b118721096a54f0a9117ac2d1538f"
+      "image": "https://upload.wikimedia.org/wikipedia/pt/8/86/Hollow_Knight_Silksong_cover.jpeg"
     },
     {
       "id": 5,
@@ -53,7 +75,7 @@
       "genre": "Ação-Aventura",
       "tags": ["Mundo Aberto", "Moderno"],
       "description": "Quando um malandro de rua, um ladrão de bancos aposentado e um psicopata se veem encrencados...",
-      "image": "https://image.api.playstation.com/vulcan/ap/rnd/202203/1410/J7tP6yq9Tz2EklF9H2zN3b3A.png"
+      "image": "https://upload.wikimedia.org/wikipedia/pt/8/80/Grand_Theft_Auto_V_capa.png"
     },
     {
       "id": 6,
@@ -64,7 +86,7 @@
       "genre": "Survival Horror",
       "tags": ["Ação", "Terror", "Primeira Pessoa"],
       "description": "A história se passa alguns anos após os eventos de Resident Evil 7. Ethan Winters vive com sua esposa Mia e sua filha recém-nascida, Rosemary.",
-      "image": "https://image.api.playstation.com/vulcan/ap/rnd/202010/2618/itbSmD90C2Zt2bT22f5_maU5.png"
+      "image": "https://i.redd.it/tqrl4tf4rt671.png"
     },
     {
       "id": 8,
@@ -74,7 +96,7 @@
       "genre": "RPG de Ação",
       "tags": ["Mundo Aberto", "Souls-like"],
       "description": "Levante-se, Maculado, e seja guiado pela graça para brandir o poder do Anel Prístino e se tornar um Lorde Prístino nas Terras Intermédias.",
-      "image": "https://image.api.playstation.com/vulcan/ap/rnd/202108/0410/0J04m9t3lGgO6wugXldPja52.png"
+      "image": "https://upload.wikimedia.org/wikipedia/pt/thumb/0/0d/Elden_Ring_capa.jpg/330px-Elden_Ring_capa.jpg"
     },
     {
       "id": 10,
@@ -84,10 +106,66 @@
       "genre": "Ação-Aventura",
       "tags": ["Mitologia", "História Profunda"],
       "description": "Junte-se a Kratos e Atreus em uma jornada mítica à procura de respostas e aliados antes que o Ragnarök comece.",
-      "image": "https://image.api.playstation.com/vulcan/ap/rnd/202207/1210/4xJ8klkYyvnsfAyoxIdHczCM.png"
+      "image": "https://upload.wikimedia.org/wikipedia/pt/thumb/a/a5/God_of_War_Ragnar%C3%B6k_capa.jpg/330px-God_of_War_Ragnar%C3%B6k_capa.jpg"
+    },
+    {
+      "id": 11,
+      "title": "Resident Evil 6",
+      "rating": "7.6",
+      "price": "R$ 89,00",
+      "genre": "Ação-Aventura",
+      "tags": ["Zumbi", "Ação"],
+      "description": "Resident Evil 6 é um jogo de ação e horror que mistura elementos de sobrevivência, ação intensa e uma história com quatro tramas distintas, porém entrelaçadas, que acompanham personagens icônicos como Leon S. Kennedy e Chris Redfield, além de novos protagonistas como Jake Muller e Ada Wong.",
+      "image": "https://upload.wikimedia.org/wikipedia/pt/7/73/Resident_evil_6.jpg"
+    },
+    {
+      "id": 12,
+      "listType": "friend-update",
+      "title": "Tomb Raider (2013)",
+      "rating": "9.4",
+      "price": "R$ 99,90",
+      "genre": "Ação-Aventura",
+      "tags": ["Aventura", "Sobrevivência"],
+      "description": " Após um naufrágio, Lara e sua tripulação ficam presos em uma ilha misteriosa e hostil, onde ela precisa lutar pela sobrevivência, enfrentar perigos e desvendar segredos. ",
+      "image": "https://laracroft.com.br/assets/uploads/2020/04/tr_2013_packshot-725x1024.jpg"
+    },
+    {
+      "id": 14,
+      "listType": "friend-update",
+      "title": "The Last of Us Part I",
+      "rating": "9.8",
+      "price": "R$ 250.00",
+      "genre": "Ação-Aventura",
+      "tags": ["Pós-apocalíptico", "Boa trama"],
+      "description": "The Last of Us Part I é o remake de alta fidelidade do aclamado jogo original de 2013, recriado do zero para o PlayStation 5 e PC.",
+      "image": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0720/aZKLRcjaZ8HL03ODxYMZDfaH.png"
     }
   ],
   "reviews": [
     { "id": 1, "gameId": 1, "username": "Alice", "ratingIcon": "heart", "text": "Que jogo incrível!...", "date": "14 de setembro de 2025" }
+  ],
+
+"achievements": [
+    {
+      "id": 1,
+      "icon": "https://img.icons8.com/emoji/48/trophy-emoji.png",
+      "title": "Pioneiro",
+      "description": "Fazer a sua primeira análise de um jogo.",
+      "rule": "reviews_count >= 1"
+    },
+    {
+      "id": 2,
+      "icon": "https://img.icons8.com/emoji/48/writing-hand-emoji.png",
+      "title": "Crítico Ativo",
+      "description": "Escrever 10 análises de jogos.",
+      "rule": "reviews_count >= 10"
+    },
+    {
+      "id": 3,
+      "icon": "https://img.icons8.com/emoji/48/star-emoji.png",
+      "title": "Formador de Opinião",
+      "description": "Sua análise recebeu 20 curtidas.",
+      "rule": "review_likes_count >= 20"
+    }
   ]
 }
