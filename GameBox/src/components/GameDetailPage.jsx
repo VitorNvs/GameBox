@@ -1,6 +1,6 @@
 // src/components/GameDetailPage.jsx
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchGameById } from '../redux/gamesSlice';
 import { Container, Box, Typography, Grid, CircularProgress, Chip, Button, Card, CardContent, Avatar } from '@mui/material';
@@ -14,7 +14,7 @@ const renderRatingIcon = (icon) => {
 };
 
 function GameDetailPage() {
-    const { gameId } = useParams(); // Pega o ID da URL, ex: "/games/1" -> gameId = 1
+    const { gameId } = useParams();
     const dispatch = useDispatch();
 
     const game = useSelector((state) => state.games.selectedGame);
@@ -27,7 +27,6 @@ function GameDetailPage() {
         }
     }, [gameId, dispatch]);
 
-    // Mostra um spinner enquanto carrega
     if (status === 'loading' || !game) {
         return <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress /></Box>;
     }
@@ -41,14 +40,14 @@ function GameDetailPage() {
             {/* Seção Principal de Detalhes */}
             <Grid container spacing={4}>
                 <Grid item xs={12} md={4}>
-                    <Box component="img" src={game.image} alt={`Capa de ${game.title}`} 
-                    sx={{ 
-            width: '100%', 
-            borderRadius: 2,
-            height: '450px',       // Define uma altura máxima para a imagem
-            objectFit: 'cover'     // Faz a imagem cobrir o espaço sem distorcer
-        }} 
-    /> 
+                    <Box component="img" src={game.image} alt={`Capa de ${game.title}`}
+                        sx={{
+                            width: '100%',
+                            borderRadius: 2,
+                            height: '450px',
+                            objectFit: 'cover'
+                        }}
+                    />
                 </Grid>
                 <Grid item xs={12} md={8}>
                     <Typography variant="h3" component="h1" fontWeight="700">{game.title}</Typography>
@@ -68,7 +67,25 @@ function GameDetailPage() {
                         <Typography variant="h5" gutterBottom>Descrição</Typography>
                         <Typography paragraph color="text.secondary">{game.description}</Typography>
                     </Box>
-                    <Button variant="contained">Editar Jogo (Admin)</Button>
+
+                    {/* BOTÕES DE AÇÃO */}
+                    <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+                        // PARA:
+                        <Button
+                            variant="contained"
+                            component={Link}
+                            to={`/review/criar/${gameId}`} // Passa o ID do jogo na URL
+                        >
+                            Escrever Análise
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            component={Link}
+                            to={`/admin/jogo/${gameId}`}
+                        >
+                            Editar Jogo (Admin)
+                        </Button>
+                    </Box>
                 </Grid>
             </Grid>
 
@@ -90,7 +107,7 @@ function GameDetailPage() {
                                 </CardContent>
                             </Card>
                         </Grid>
-                    )) : <Typography sx={{ml: 2}}>Ainda não há avaliações para este jogo.</Typography>}
+                    )) : <Typography sx={{ ml: 2 }}>Ainda não há avaliações para este jogo.</Typography>}
                 </Grid>
             </Box>
         </Container>

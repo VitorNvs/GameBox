@@ -1,93 +1,139 @@
 {
   "games": [
     {
-      "id": 1,
+      "id": "1",
       "listType": "popular",
       "title": "The Witcher 3: Wild Hunt",
       "rating": "9.3",
       "price": "R$ 79,99",
       "genre": "RPG de Ação",
-      "tags": ["Mundo Aberto", "Medieval"],
+      "tags": [
+        "Mundo Aberto",
+        "Medieval"
+      ],
       "description": "Você é Geralt de Rívia, um mercenário matador de monstros...",
       "image": "https://upload.wikimedia.org/wikipedia/pt/0/06/TW3_Wild_Hunt.png"
     },
     {
-      "id": 2,
+      "id": "2",
       "listType": "popular",
       "title": "Resident Evil 4 Remake",
       "rating": "9.8",
       "price": "R$ 249,00",
       "genre": "Survival Horror",
-      "tags": ["Ação", "Terror"],
+      "tags": [
+        "Ação",
+        "Terror"
+      ],
       "description": "Seis anos se passaram desde o desastre biológico em Raccoon City...",
       "image": "https://preview.redd.it/the-original-re4-had-so-many-iconic-cover-art-variants-to-v0-dp321hnyq85a1.png?width=600&format=png&auto=webp&s=3ce81d2a230d804660b616b8379be59b1dbdf853"
     },
     {
-      "id": 3,
+      "id": "3",
       "listType": "popular",
       "title": "The Last of Us Part II",
       "rating": "9.5",
       "price": "R$ 199,50",
       "genre": "Ação-Aventura",
-      "tags": ["Pós-apocalíptico", "Furtividade"],
+      "tags": [
+        "Pós-apocalíptico",
+        "Furtividade"
+      ],
       "description": "Cinco anos depois de sua perigosa jornada pelos Estados Unidos...",
       "image": "https://image.api.playstation.com/vulcan/ap/rnd/202311/1717/3a33a4b0a02b54074d4989a4118a4b594815d945b44a82cf.png"
     },
     {
-      "id": 4,
+      "id": "4",
       "listType": "friend-update",
       "title": "Hollow Knight: Silksong",
       "rating": "9.9",
       "price": "R$ 99,00",
       "genre": "Metroidvania",
-      "tags": ["Indie", "Plataforma"],
+      "tags": [
+        "Indie",
+        "Plataforma"
+      ],
       "description": "Explore um vasto reino assombrado em Hollow Knight: Silksong!",
       "image": "https://assets.nintendo.com/image/upload/c_fill,w_1200/q_auto:best/f_auto/dpr_2.0/ncom/software/switch/70010000012432/5a755918b29225a68ba432b53e9a42111a3b118721096a54f0a9117ac2d1538f"
     },
     {
-      "id": 5,
+      "id": "5",
       "listType": "friend-update",
       "title": "Grand Theft Auto V",
       "rating": "9.0",
       "price": "R$ 109,90",
       "genre": "Ação-Aventura",
-      "tags": ["Mundo Aberto", "Moderno"],
+      "tags": [
+        "Mundo Aberto",
+        "Moderno"
+      ],
       "description": "Quando um malandro de rua, um ladrão de bancos aposentado e um psicopata se veem encrencados...",
       "image": "https://image.api.playstation.com/vulcan/ap/rnd/202203/1410/J7tP6yq9Tz2EklF9H2zN3b3A.png"
     },
     {
-      "id": 6,
+      "id": "6",
       "listType": "friend-update",
       "title": "Resident Evil Village",
       "rating": "9.1",
       "price": "R$ 189,90",
       "genre": "Survival Horror",
-      "tags": ["Ação", "Terror", "Primeira Pessoa"],
+      "tags": [
+        "Ação",
+        "Terror",
+        "Primeira Pessoa"
+      ],
       "description": "A história se passa alguns anos após os eventos de Resident Evil 7. Ethan Winters vive com sua esposa Mia e sua filha recém-nascida, Rosemary.",
       "image": "https://image.api.playstation.com/vulcan/ap/rnd/202010/2618/itbSmD90C2Zt2bT22f5_maU5.png"
     },
     {
-      "id": 8,
+      "id": "8",
       "title": "Elden Ring",
       "rating": "9.7",
       "price": "R$ 299,90",
       "genre": "RPG de Ação",
-      "tags": ["Mundo Aberto", "Souls-like"],
+      "tags": [
+        "Mundo Aberto",
+        "Souls-like"
+      ],
       "description": "Levante-se, Maculado, e seja guiado pela graça para brandir o poder do Anel Prístino e se tornar um Lorde Prístino nas Terras Intermédias.",
       "image": "https://image.api.playstation.com/vulcan/ap/rnd/202108/0410/0J04m9t3lGgO6wugXldPja52.png"
     },
     {
-      "id": 10,
+      "id": "10",
       "title": "God of War Ragnarök",
       "rating": "9.4",
       "price": "R$ 349,90",
       "genre": "Ação-Aventura",
-      "tags": ["Mitologia", "História Profunda"],
+      "tags": [
+        "Mitologia",
+        "História Profunda"
+      ],
       "description": "Junte-se a Kratos e Atreus em uma jornada mítica à procura de respostas e aliados antes que o Ragnarök comece.",
       "image": "https://image.api.playstation.com/vulcan/ap/rnd/202207/1210/4xJ8klkYyvnsfAyoxIdHczCM.png"
+    },
+    {
+      "id": "9ab8",
+      "listType": "friend-update",
+      "title": "Battlefield 6",
+      "description": "A experiência da guerra total definitiva. Em uma guerra de tanques, jatos e enormes arsenais de combate, seu pelotão é a arma mais mortal.",
+      "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2807960/c12d12ce3c7d217398d3fcad77427bfc9d57c570/header.jpg?t=1760108538",
+      "rating": "9.6",
+      "price": "R$ 299,00",
+      "genre": "FPS",
+      "tags": [
+        "Ação",
+        "Guerra"
+      ]
     }
   ],
   "reviews": [
-    { "id": 1, "gameId": 1, "username": "Alice", "ratingIcon": "heart", "text": "Que jogo incrível!...", "date": "14 de setembro de 2025" }
+    {
+      "id": "1",
+      "gameId": 1,
+      "username": "Alice",
+      "ratingIcon": "heart",
+      "text": "Que jogo incrível!...",
+      "date": "14 de setembro de 2025"
+    }
   ]
 }
