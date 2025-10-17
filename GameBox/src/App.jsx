@@ -9,6 +9,7 @@ import AuthPage from "./components/AuthPage.jsx";
 import HomePage from './components/HomePage.jsx';
 import CategoriesPage from './components/CategoriesPage.jsx';
 import SearchGamesPage from './components/SearchGamesPage.jsx';
+import GameDetailPage from './components/GameDetailPage.jsx';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/login" element={<AuthPage />} />
                 <Route path="/categorias" element={<CategoriesPage />} />
                 <Route path="/jogos" element={<SearchGamesPage />} />
+                <Route path="/games/:gameId" element={<GameDetailPage />} />
                 {/* Adicione outras rotas aqui */}
               </Routes>
           </Box>
