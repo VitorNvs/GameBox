@@ -11,7 +11,6 @@ import CategoriesPage from './components/CategoriesPage.jsx';
 import SearchGamesPage from './components/SearchGamesPage.jsx';
 import GameDetailPage from './components/GameDetailPage.jsx';
 import MinhasListasPage from './components/MinhasListasPage.jsx';
-main
 
 function App() {
   return (
@@ -30,7 +29,6 @@ function App() {
                 <Route path="/jogos" element={<SearchGamesPage />} />
                 <Route path="/games/:gameId" element={<GameDetailPage />} />
                 <Route path="/minhas-listas" element={<MinhasListasPage />} />
- main
                 {/* Adicione outras rotas aqui */}
               </Routes>
           </Box>
