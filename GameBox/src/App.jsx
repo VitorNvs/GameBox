@@ -11,6 +11,9 @@ import CategoriesPage from './components/CategoriesPage.jsx';
 import SearchGamesPage from './components/SearchGamesPage.jsx';
 import GameDetailPage from './components/GameDetailPage.jsx';
 import MinhasListasPage from './components/MinhasListasPage.jsx';
+import CreateReviewPage from './components/CreateReviewPage.jsx';
+import ReviewDetailPage from './components/ReviewDetailPage.jsx';
+import AdminGamePage from './components/AdminGamePage.jsx';
 
 function App() {
   return (
@@ -29,7 +32,13 @@ function App() {
                 <Route path="/jogos" element={<SearchGamesPage />} />
                 <Route path="/games/:gameId" element={<GameDetailPage />} />
                 <Route path="/minhas-listas" element={<MinhasListasPage />} />
-                {/* Adicione outras rotas aqui */}
+                <Route path="/review/:reviewId" element={<ReviewDetailPage />} />
+                <Route path="/review/criar/:gameId" element={<CreateReviewPage />} />
+              {/* Adicione outras rotas aqui */}
+              
+              {/* Rotas de Administração */}
+                <Route path="/admin/jogo/adicionar" element={<AdminGamePage />} /> {/* ROTA PARA ADICIONAR */}
+                <Route path="/admin/jogo/:gameId" element={<AdminGamePage />} />
               </Routes>
           </Box>
           <Footer />

@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import StarIcon from '@mui/icons-material/Star';
+import AddIcon from '@mui/icons-material/Add'; // 1. Importar o ícone de Adicionar
 
 function SearchGamesPage() {
     const dispatch = useDispatch();
@@ -60,9 +61,21 @@ function SearchGamesPage() {
 
             {/* Seção de Resultados */}
             <Box component="section">
-                <Typography variant="h4" component="h2" sx={{ borderLeft: '4px solid', borderColor: 'primary.main', pl: 2, mb: 4 }}>
-                    Resultados
-                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+                    <Typography variant="h4" component="h2" sx={{ borderLeft: '4px solid', borderColor: 'primary.main', pl: 2 }}>
+                        Resultados
+                    </Typography>
+                    
+                    {/* 2. BOTÃO PARA ADICIONAR NOVO JOGO */}
+                    <Button
+                        variant="contained"
+                        component={Link}
+                        to="/admin/jogo/adicionar"
+                        startIcon={<AddIcon />}
+                    >
+                        Adicionar Novo Jogo
+                    </Button>
+                </Box>
                 
                 {gameStatus === 'loading' && <Box sx={{ display: 'flex', justifyContent: 'center' }}><CircularProgress /></Box>}
 
@@ -89,15 +102,14 @@ function SearchGamesPage() {
                                         alt={`Capa de ${game.title}`}
                                     />
                                     <CardContent sx={{ flexGrow: 1 }}>
-                                        {/* A SOLUÇÃO DEFINITIVA ESTÁ AQUI */}
                                         <Typography
                                             gutterBottom
                                             variant="h6"
                                             component="h4"
                                             sx={{
-                                                whiteSpace: 'nowrap',   // Impede que o texto quebre a linha
-                                                overflow: 'hidden',       // Esconde o texto que "sobra"
-                                                textOverflow: 'ellipsis' // Adiciona "..." no final do texto cortado
+                                                whiteSpace: 'nowrap',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis'
                                             }}
                                         >
                                             {game.title}
