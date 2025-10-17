@@ -9,8 +9,9 @@ import AuthPage from "./components/AuthPage.jsx";
 import HomePage from './components/HomePage.jsx';
 import CategoriesPage from './components/CategoriesPage.jsx';
 import SearchGamesPage from './components/SearchGamesPage.jsx';
+import GameDetailPage from './components/GameDetailPage.jsx';
 import MinhasListasPage from './components/MinhasListasPage.jsx';
-import DetalhesJogoPage from './components/DetalhesJogoPage.jsx';
+main
 
 function App() {
   return (
@@ -27,8 +28,9 @@ function App() {
                 <Route path="/login" element={<AuthPage />} />
                 <Route path="/categorias" element={<CategoriesPage />} />
                 <Route path="/jogos" element={<SearchGamesPage />} />
-                <Route path="/minhas-listas" element={<MinhasListasPage/>} />
-                <Route path="/jogo/:id" element={<DetalhesJogoPage />} />
+                <Route path="/games/:gameId" element={<GameDetailPage />} />
+                <Route path="/minhas-listas" element={<MinhasListasPage />} />
+ main
                 {/* Adicione outras rotas aqui */}
               </Routes>
           </Box>
