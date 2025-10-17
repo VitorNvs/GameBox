@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import StarIcon from '@mui/icons-material/Star';
+import AddIcon from '@mui/icons-material/Add'; // 1. Importar o ícone de Adicionar
 
 const categories = [
     'Todos', 'Ação', 'Ação-Aventura', 'Estratégia', 'Indie',
