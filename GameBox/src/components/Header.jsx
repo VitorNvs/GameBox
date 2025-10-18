@@ -20,7 +20,7 @@ const navItems = [
   { label: 'Jogos', path: '/jogos' },
   { label: 'Categorias', path: '/categorias' },
   { label: 'Conquistas', path: '/conquistas' },
-  { label: 'Minhas Listas', path: '/listas' },
+  { label: 'Minhas Listas', path: '/minhas-listas' },
 ];
 
 function Header() {
