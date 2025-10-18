@@ -13,6 +13,9 @@ import GameDetailPage from './components/GameDetailPage.jsx';
 import AchievementsPage from './components/AchievementsPage.jsx';
 import AdminAchievementsPage from './components/AdminAchievementsPage.jsx';
 import MinhasListasPage from './components/MinhasListasPage.jsx';
+import CreateReviewPage from './components/CreateReviewPage.jsx';
+import ReviewDetailPage from './components/ReviewDetailPage.jsx';
+import AdminGamePage from './components/AdminGamePage.jsx';
 
 function App() {
   return (
@@ -32,6 +35,13 @@ function App() {
                 <Route path="/games/:gameId" element={<GameDetailPage />} />
                 <Route path="/conquistas" element={<AchievementsPage />} />
                 <Route path="/admin/conquistas" element={<AdminAchievementsPage />} />
+                <Route path="/review/:reviewId" element={<ReviewDetailPage />} />
+                <Route path="/review/criar/:gameId" element={<CreateReviewPage />} />
+              {/* Adicione outras rotas aqui */}
+              
+              {/* Rotas de Administração */}
+                <Route path="/admin/jogo/adicionar" element={<AdminGamePage />} /> {/* ROTA PARA ADICIONAR */}
+                <Route path="/admin/jogo/:gameId" element={<AdminGamePage />} />
                 <Route path="/minhas-listas" element={<MinhasListasPage />} />
                 {/* Adicione outras rotas aqui */}
               </Routes>
