@@ -192,5 +192,39 @@
       "description": "Sua análise recebeu 20 curtidas.",
       "rule": "review_likes_count >= 20"
     }
+  ],
+  "categories": [
+    {
+        "title": "Survival Horror",
+        "description": "",
+        "image": "https://cdn.mos.cms.futurecdn.net/QU5FRX6V7PWaV7BKk9dBkS-970-80.jpg",
+        "alt": "Ícone de Survival Horror",
+        "color": ""
+    },
+    {
+        "title": "Ação",
+        "description": "Pura adrenalina, combate frenético e missões emocionantes esperam por você.",
+        "image": "https://uploads.jovemnerd.com.br/wp-content/uploads/Uncharted-4-Release.jpg",
+        "alt": "Ícone de Ação",
+        "color": ""
+    },
+    {
+        "title": "MOBA",
+        "description": "Estratégia em equipe para destruir a base inimiga.",
+        "image": "https://s2-techtudo.glbimg.com/gHl4rMr7ai07ba6THrrXvN3SJBg=/0x0:1200x630/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/9/F/JJADWjRrGJBNSfX1sESw/dota-heroes-1.png",
+        "alt": "Icone de MOBA"
+    },
+    {
+        "title": "RPG",
+        "description": "Crie seu herói, explore mundos vastos e viva uma história épica.",
+        "image": "https://conteudo.imguol.com.br/c/entretenimento/ef/2020/03/23/final-fantasy-vii-remake-1584986560767_v2_1x1.jpg",
+        "alt": "Ícone de RPG"
+    },
+    {
+        "title": "Visual Novel",
+        "description": "Viva uma história interativa através de texto, imagens e música.",
+        "image": "https://www.godisageek.com/wp-content/uploads/steins-gate-0-switch-main.jpg",
+        "alt": "Ícone de Visual Novel"
+    }
   ]
 }
