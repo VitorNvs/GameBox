@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import StarIcon from '@mui/icons-material/Star';
-import AddIcon from '@mui/icons-material/Add'; // 1. Importar o ícone de Adicionar
+import AddIcon from '@mui/icons-material/Add'; // Ícone de Adicionar
 
 const categories = [
     'Todos', 'Ação', 'Ação-Aventura', 'Estratégia', 'Indie',
@@ -37,16 +37,7 @@ function SearchGamesPage() {
     const games = useSelector((state) => state.games.items);
     const gameStatus = useSelector((state) => state.games.status);
 
-    // --- CONSOLE LOG #1 ---
-    // Mostra os dados brutos recebidos do Redux toda vez que o componente renderiza
-    console.log("=== SearchGamesPage RENDER ===");
-    console.log("1. 'games' recebido do Redux:", games);
-    // --- FIM CONSOLE LOG #1 ---
-
     useEffect(() => {
-        // --- CONSOLE LOG DENTRO DO USEEFFECT ---
-        console.log("-> useEffect rodando com status:", gameStatus);
-        // --- FIM CONSOLE LOG ---
         if (gameStatus === 'idle') {
             dispatch(fetchGames());
         }
@@ -60,11 +51,6 @@ function SearchGamesPage() {
         .filter((game) => {
             return game.title && game.title.toLowerCase().includes(searchTerm.toLowerCase());
         });
-
-    // --- CONSOLE LOG #2 ---
-    // Mostra o resultado após aplicar os filtros de categoria e nome
-    console.log("2. 'filteredGames' após filtros:", filteredGames);
-    // --- FIM CONSOLE LOG #2 ---
 
     return (
         <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
@@ -120,37 +106,42 @@ function SearchGamesPage() {
 
                     {/* Seção de Resultados */}
                     <Box component="section">
-                        <Typography variant="h4" component="h2" sx={{ borderLeft: '4px solid', borderColor: 'primary.main', pl: 2, mb: 4 }}>
-                            Resultados
-                        </Typography>
+                        {/* TÍTULO E BOTÃO NA MESMA LINHA */}
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+                            <Typography variant="h4" component="h2" sx={{ borderLeft: '4px solid', borderColor: 'primary.main', pl: 2 }}>
+                                Resultados
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                component={Link}
+                                to="/admin/jogo/adicionar"
+                                startIcon={<AddIcon />}
+                            >
+                                Adicionar Novo Jogo
+                            </Button>
+                        </Box>
 
                         {gameStatus === 'loading' && <Box sx={{ display: 'flex', justifyContent: 'center' }}><CircularProgress /></Box>}
 
                         {gameStatus === 'succeeded' && (
                             <Grid container spacing={4}>
-                                {filteredGames.length > 0 ? filteredGames.map((game) => { // <-- Abre chaves aqui
-                                    // --- CONSOLE LOG #3 ---
-                                    // Mostra qual jogo está sendo renderizado no loop
-                                    console.log("3. Renderizando card para:", game?.title, game?.id);
-                                    // --- FIM CONSOLE LOG #3 ---
-                                    return ( // <-- Adiciona return aqui
-                                        game && game.id ? (
-                                            <Grid item key={game.id} xs={12} sm={6} md={4}>
-                                                <Card component={Link} to={`/games/${game.id}`} sx={{ height: '100%', display: 'flex', flexDirection: 'column', textDecoration: 'none', transition: 'transform 0.3s ease-in-out', '&:hover': { transform: 'scale(1.05)' }}}>
-                                                    <CardMedia component="img" sx={{ height: 200, objectFit: 'cover' }} image={game.image} alt={`Capa de ${game.title || 'Jogo sem título'}`} />
-                                                    <CardContent sx={{ flexGrow: 1 }}>
-                                                        <Typography gutterBottom variant="h6" component="h4" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{game.title || 'Jogo sem título'}</Typography>
-                                                        <Box sx={{ display: 'flex', alignItems: 'center', color: '#facc15' }}>
-                                                            <StarIcon sx={{ mr: 0.5 }} />
-                                                            <Typography variant="body1">{game.rating || 'N/A'}</Typography>
-                                                        </Box>
-                                                    </CardContent>
-                                                </Card>
-                                            </Grid>
-                                        ) : null
-                                    ); // <-- Fecha parênteses do return
-                                }) : ( // <-- Fecha chaves do map
-                                    <Typography sx={{ ml: 2 }}>Nenhum jogo encontrado com esses filtros.</Typography>
+                                {filteredGames.length > 0 ? filteredGames.map((game) => (
+                                    game && game.id ? (
+                                        <Grid item key={game.id} xs={12} sm={6} md={4}>
+                                            <Card component={Link} to={`/games/${game.id}`} sx={{ height: '100%', display: 'flex', flexDirection: 'column', textDecoration: 'none', transition: 'transform 0.3s ease-in-out', '&:hover': { transform: 'scale(1.05)' }}}>
+                                                <CardMedia component="img" sx={{ height: 200, objectFit: 'cover' }} image={game.image} alt={`Capa de ${game.title || 'Jogo sem título'}`} />
+                                                <CardContent sx={{ flexGrow: 1 }}>
+                                                    <Typography gutterBottom variant="h6" component="h4" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{game.title || 'Jogo sem título'}</Typography>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', color: '#facc15' }}>
+                                                        <StarIcon sx={{ mr: 0.5 }} />
+                                                        <Typography variant="body1">{game.rating || 'N/A'}</Typography>
+                                                    </Box>
+                                                </CardContent>
+                                            </Card>
+                                        </Grid>
+                                    ) : null
+                                )) : (
+                                    <Typography sx={{ ml: 2, width: '100%' }}>Nenhum jogo encontrado com esses filtros.</Typography>
                                 )}
                             </Grid>
                         )}

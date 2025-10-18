@@ -47,17 +47,13 @@ function GameDetailPage() {
 
     return (
         <Container maxWidth="lg" sx={{ my: 4 }}>
-            {/* AQUI ESTÁ A ESTRUTURA CORRIGIDA USANDO FLEXBOX */}
             <Box 
                 sx={{ 
                     display: 'flex', 
-                    // Em telas 'xs' (celular), a direção é coluna (um em cima do outro)
-                    // Em telas 'sm' (tablet) e maiores, a direção é linha (lado a lado)
                     flexDirection: { xs: 'column', sm: 'row' }, 
                     gap: 4 
                 }}
             >
-                {/* Coluna da Imagem (ocupa 1/3 do espaço em telas maiores) */}
                 <Box sx={{ width: { xs: '100%', sm: '33.33%' } }}>
                     <Box 
                         component="img" 
@@ -66,13 +62,12 @@ function GameDetailPage() {
                         sx={{ 
                             width: '100%', 
                             borderRadius: 2,
-                            height: { xs: 'auto', sm: 450 }, // Altura ajustada
+                            height: { xs: 'auto', sm: 450 },
                             objectFit: 'cover'
                         }} 
                     />
                 </Box>
                 
-                {/* Coluna de Informações (ocupa 2/3 do espaço em telas maiores) */}
                 <Box sx={{ width: { xs: '100%', sm: '66.67%' } }}>
                     <Typography variant="h3" component="h1" fontWeight="700">{game.title}</Typography>
                     <Box display="flex" gap={2} my={2}>
@@ -91,14 +86,31 @@ function GameDetailPage() {
                         <Typography variant="h5" gutterBottom>Descrição</Typography>
                         <Typography paragraph color="text.secondary">{game.description}</Typography>
                     </Box>
-                    <Button variant="contained">Editar Jogo (Admin)</Button>
+                    
+                    {/* BOTÕES DE AÇÃO ATUALIZADOS */}
+                    <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+                        <Button
+                            variant="contained"
+                            component={Link}
+                            to={`/review/criar/${gameId}`}
+                        >
+                            Escrever Análise
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            component={Link}
+                            to={`/admin/jogo/${gameId}`}
+                        >
+                            Editar Jogo (Admin)
+                        </Button>
+                    </Box>
                 </Box>
             </Box>
 
-            {/* Seção de Avaliações (continua igual) */}
+            {/* Seção de Avaliações */}
             <Box mt={6}>
                 <Typography variant="h4" component="h2" fontWeight="700" gutterBottom>Avaliações de Usuários</Typography>
-                {/* ... (o restante do código das reviews continua aqui, sem alterações) ... */}
+                {/* O código das reviews continua aqui... */}
             </Box>
         </Container>
     );
