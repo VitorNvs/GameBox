@@ -16,6 +16,8 @@ import MinhasListasPage from './components/MinhasListasPage.jsx';
 import CreateReviewPage from './components/CreateReviewPage.jsx';
 import ReviewDetailPage from './components/ReviewDetailPage.jsx';
 import AdminGamePage from './components/AdminGamePage.jsx';
+import CategoryGamesPage from './components/CategoryGamesPage.jsx';
+import EditListPage from './components/EditListPage.jsx';
 
 function App() {
   return (
@@ -30,13 +32,15 @@ function App() {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<AuthPage />} />
-                <Route path="/categorias" element={<CategoriesPage />} />
+                <Route path="/categories" element={<CategoriesPage />} />
                 <Route path="/jogos" element={<SearchGamesPage />} />
-                <Route path="/games/:gameId" element={<GameDetailPage />} />
+                <Route path="/jogos/:gameId" element={<GameDetailPage />} />
                 <Route path="/conquistas" element={<AchievementsPage />} />
                 <Route path="/admin/conquistas" element={<AdminAchievementsPage />} />
                 <Route path="/review/:reviewId" element={<ReviewDetailPage />} />
                 <Route path="/review/criar/:gameId" element={<CreateReviewPage />} />
+                <Route path="/categories/:categoryName" element={<CategoryGamesPage />} />
+                <Route path="/minhas-listas/editar/:listId" element={<EditListPage />} />
               {/* Adicione outras rotas aqui */}
               
               {/* Rotas de Administração */}

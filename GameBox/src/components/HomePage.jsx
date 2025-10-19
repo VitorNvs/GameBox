@@ -19,9 +19,9 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 
 // Dados locais para a seção de listas, pois ela é estática
 const userLists = [
-    { title: 'Favoritos' },
-    { title: 'Jogando' },
-    { title: 'Quero Jogar' },
+    { id: '1', title: 'Melhores Indies de 2024' },
+    { id: '2', title: 'Para Jogar no Fim de Semana' },
+    { id: '3', title: 'RPGs que Marcaram' },
 ];
 
 function HomePage() {
@@ -59,7 +59,7 @@ function HomePage() {
                     <Grid container spacing={4}>
                         {popularGames.map((game) => (
                             <Grid item key={game.id} xs={12} sm={6} md={10}>
-                                <Card component={Link} to={`/games/${game.id}`} sx={{ textDecoration: 'none', height: '100%', display: 'flex', flexDirection: 'column', transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out', '&:hover': { transform: 'scale(1.05)', boxShadow: 6, zIndex: 1 }}}>
+                                <Card component={Link} to={`/jogos/${game.id}`} sx={{ textDecoration: 'none', height: '100%', display: 'flex', flexDirection: 'column', transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out', '&:hover': { transform: 'scale(1.05)', boxShadow: 6, zIndex: 1 }}}>
                                     <CardMedia component="img" height="200" image={game.image} alt={`Capa de ${game.title}`} />
                                     <CardContent sx={{ flexGrow: 1 }}>
                                         <Typography gutterBottom variant="h6" component="h4" sx={{ fontSize: '1.25rem' }}>{game.title}</Typography>
@@ -86,7 +86,7 @@ function HomePage() {
                             <Grid item key={game.id} xs={6} sm={4} md={2}>
                                 <Card
                                     component={Link}
-                                    to={`/games/${game.id}`}
+                                    to={`/jogos/${game.id}`}
                                     sx={{
                                         textDecoration: 'none',
                                         height: '100%',
@@ -118,9 +118,27 @@ function HomePage() {
                    Suas listas
                 </Typography>
                 <Grid container spacing={3}>
-                    {userLists.map((list, index) => (
-                       <Grid item key={index} xs={12} sm={4}>
-                           <Card sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px'}}>
+                    {userLists.map((list) => (
+                       <Grid item key={list.id} xs={12} sm={4}>
+                           {/* O Card agora é um Link que leva para a página de edição */}
+                           <Card 
+                                component={Link}
+                                to={`/minhas-listas/editar/${list.id}`}
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    height: '100px',
+                                    textDecoration: 'none',
+                                    color: 'inherit',
+                                    transition: 'transform 0.3s, box-shadow 0.3s',
+                                    '&:hover': {
+                                        transform: 'scale(1.05)',
+                                        boxShadow: 6,
+                                        zIndex: 1,
+                                    }
+                                }}
+                            >
                                <CardContent>
                                    <Typography variant="h6">{list.title}</Typography>
                                </CardContent>

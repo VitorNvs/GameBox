@@ -18,7 +18,7 @@ import MenuIcon from '@mui/icons-material/Menu'; // Ícone de Hambúrguer
 const navItems = [
   { label: 'Início', path: '/' },
   { label: 'Jogos', path: '/jogos' },
-  { label: 'Categorias', path: '/categorias' },
+  { label: 'Categorias', path: '/categories' },
   { label: 'Conquistas', path: '/conquistas' },
   { label: 'Minhas Listas', path: '/minhas-listas' },
 ];
