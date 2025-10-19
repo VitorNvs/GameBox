@@ -15,6 +15,7 @@ import {
     Link,
 } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
+import { Link as RouterLink } from 'react-router-dom';
 
 // Tema customizado baseado no seu arquivo theme.js
 const darkTheme = createTheme({
@@ -68,7 +69,7 @@ const ListCard = ({ list, onDelete }) => (
         <Card sx={{
             height: '100%',
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: 'column',
             justifyContent: 'space-between',
             border: '1px solid #444',
             transition: 'transform 0.3s ease, box-shadow 0.3s ease',
@@ -89,7 +90,15 @@ const ListCard = ({ list, onDelete }) => (
                 </Typography>
             </CardContent>
             <CardActions sx={{ justifyContent: 'flex-end', padding: '16px' }}>
-                <Button size="small" variant="outlined" color="primary">Editar</Button>
+                <Button 
+                    size="small" 
+                    variant="outlined" 
+                    color="primary"
+                    component={RouterLink} // Usa o RouterLink
+                    to={`/minhas-listas/editar/${list.id}`} // Nova rota: /minhas-listas/editar/1
+                >
+                    Editar
+                </Button>
                 <Button size="small" variant="contained" color="error" onClick={() => onDelete(list.id)}>Excluir</Button>
             </CardActions>
         </Card>
@@ -135,7 +144,7 @@ const MinhasListasPage = () => {
                 <Container component="main" sx={{ py: 4 }}>
                     <Grid container spacing={5}>
                         {/* Seção de Listas do Usuário */}
-                        <Grid item xs={12} md={8}>
+                        <Grid item xs={12} md={9}>
                             <Typography variant="h3">Minhas Listas</Typography>
                             <Grid container spacing={3}>
                                 {lists.map((list) => (
@@ -145,38 +154,40 @@ const MinhasListasPage = () => {
                         </Grid>
 
                         {/* Seção do Formulário de Criação */}
-                        <Grid item xs={12} md={4}>
-                            <Box component="form" onSubmit={handleCreateList} sx={{
-                                backgroundColor: 'background.paper',
-                                padding: 3,
-                                borderRadius: 2,
-                                border: '1px solid #444',
-                            }}>
-                                <Typography variant="h3">Criar Lista</Typography>
-                                <TextField
-                                    label="Título da Lista"
-                                    variant="outlined"
-                                    fullWidth
-                                    required
-                                    value={newListTitle}
-                                    onChange={(e) => setNewListTitle(e.target.value)}
-                                    placeholder="Ex: Meus RPGs Favoritos"
-                                    margin="normal"
-                                />
-                                <TextField
-                                    label="Descrição"
-                                    variant="outlined"
-                                    fullWidth
-                                    multiline
-                                    rows={4}
-                                    value={newListDescription}
-                                    onChange={(e) => setNewListDescription(e.target.value)}
-                                    placeholder="Uma breve descrição sobre a sua lista..."
-                                    margin="normal"
-                                />
-                                <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
-                                    Salvar Lista
-                                </Button>
+                        <Grid item xs={12} md={3}>
+                            <Box sx={{ position: 'sticky', top: 20 }}>
+                                <Box component="form" onSubmit={handleCreateList} sx={{
+                                    backgroundColor: 'background.paper',
+                                    padding: 3,
+                                    borderRadius: 2,
+                                    border: '1px solid #444',
+                                }}>
+                                    <Typography variant="h3">Criar Lista</Typography>
+                                    <TextField
+                                        label="Título da Lista"
+                                        variant="outlined"
+                                        fullWidth
+                                        required
+                                        value={newListTitle}
+                                        onChange={(e) => setNewListTitle(e.target.value)}
+                                        placeholder="Ex: Meus RPGs Favoritos"
+                                        margin="normal"
+                                    />
+                                    <TextField
+                                        label="Descrição"
+                                        variant="outlined"
+                                        fullWidth
+                                        multiline
+                                        rows={4}
+                                        value={newListDescription}
+                                        onChange={(e) => setNewListDescription(e.target.value)}
+                                        placeholder="Uma breve descrição sobre a sua lista..."
+                                        margin="normal"
+                                    />
+                                    <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+                                        Salvar Lista
+                                    </Button>
+                                </Box>
                             </Box>
                         </Grid>
                     </Grid>

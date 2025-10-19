@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Box, Typography, Grid, Card, CardContent, CardMedia, CircularProgress, Alert } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 // URL do seu JSON Server ou endpoint de API
 // (Ajuste a porta/caminho conforme sua configuração)
@@ -93,9 +94,7 @@ function CategoriesPage() {
     <Grid container spacing={4}>
         {categories.map((category) => (
             <Grid item key={category.id || category.title} xs={12} sm={6} md={4}>
-                {/* 1. O Card agora é nosso contêiner principal para posicionamento relativo.
-                  2. 'position: relative' é crucial para que o conteúdo interno absoluto funcione.
-                */}
+                <Link to={`/categories/${category.title}`} style={{ textDecoration: 'none' }}>
                 <Card 
                     sx={{ 
                         position: 'relative', // Ponto de referência para o conteúdo absoluto
@@ -171,6 +170,7 @@ function CategoriesPage() {
                         */}
                     </CardContent>
                 </Card>
+              </Link>
             </Grid>
         ))}
     </Grid>
