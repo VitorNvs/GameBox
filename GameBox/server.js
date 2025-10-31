@@ -396,14 +396,13 @@ let lists = [
 let nextGameId = games.length ? Math.max(...games.map(g => parseInt(g.id))) + 1 : 1;
 const generateId = () => Math.random().toString(16).slice(2, 6);
 
+// --- Endpoints de GAMES (CORRIGIDOS) ---
 
-// --- Endpoints de GAMES ---
-
-// GET /games (Busca todos os jogos)
+// GET /games
 app.get('/games', (req, res) => {
     const categoryGenre = req.query.genre;
     if (categoryGenre) {
-        console.log(`Filtro Ativo: Buscando jogos com gênero/tag: ${categoryGenre}`);
+        // ... (sua lógica de filtro) ...
         const filteredGames = games.filter(game => {
             const gameGenre = game.genre || '';
             const gameTags = game.tags || [];
@@ -416,7 +415,7 @@ app.get('/games', (req, res) => {
         console.log("200 OK: Enviando todos os jogos (sem filtro)");
         res.json(games);
     }
-}); // <-- GET /games TERMINA AQUI. CORRIGIDO!
+}); // <-- GET /games TERMINA AQUI
 
 // PATCH /games/:id (Atualiza um jogo) - AGORA DO LADO DE FORA
 app.patch('/games/:id', (req, res) => {
@@ -427,7 +426,6 @@ app.patch('/games/:id', (req, res) => {
         console.log("200 OK: Jogo atualizado com ID:", id);
         res.json(game);
     } else {
-        console.log("404 Error: Jogo não encontrado para atualizar com ID:", id);
         res.status(404).json({ message: 'Jogo não encontrado' });
     }
 });
@@ -441,12 +439,11 @@ app.delete('/games/:id', (req, res) => {
         console.log("204 No Content: Jogo deletado com ID:", id);
         res.status(204).send();
     } else {
-        console.log("404 Error: Jogo não encontrado para deletar com ID:", id);
         res.status(404).json({ message: 'Jogo não encontrado' });
     }
 });
 
-// GET /games/:id (Busca um jogo específico)
+// GET /games/:id
 app.get('/games/:id', (req, res) => {
     const id = req.params.id;
     const game = games.find(g => g.id == id); 
@@ -459,7 +456,7 @@ app.get('/games/:id', (req, res) => {
     }
 });
 
-// POST /games (Cria um novo jogo)
+// POST /games
 app.post('/games', (req, res) => {
     const newGame = { ...req.body, id: (nextGameId++).toString() };
     games.push(newGame);
@@ -475,24 +472,65 @@ app.post('/reviews', (req, res) => {
     res.status(201).json(newReview);
 });
 
-// --- Endpoints de LISTS ---
+// --- Endpoints de LISTS (AGORA PREENCHIDOS!) ---
 app.get('/lists', (req, res) => { res.json(lists); });
-app.post('/lists', (req, res) => { /* ... (código POST) ... */ });
-app.delete('/lists/:id', (req, res) => { /* ... (código DELETE) ... */ });
-app.patch('/lists/:id', (req, res) => { /* ... (código PATCH) ... */ });
+
+// POST /lists
+app.post('/lists', (req, res) => {
+    const newList = { 
+        ...req.body, 
+        id: generateId(), 
+        gamesCount: 0, 
+        games: [] 
+    }; 
+    lists.push(newList); // Salva na variável 'lists'
+    console.log("201 Created: Nova lista salva:", newList.title);
+    res.status(201).json(newList);
+});
+
+// DELETE /lists/:id
+app.delete('/lists/:id', (req, res) => {
+    const id = req.params.id;
+    const listIndex = lists.findIndex(l => l.id === id);
+    if (listIndex > -1) {
+        lists.splice(listIndex, 1); // Remove da variável
+        console.log("204 No Content: Lista deletada com ID:", id);
+        res.status(204).send();
+    } else {
+        console.log("404 Error: Lista não encontrada com ID:", id);
+        res.status(404).json({ message: 'Lista não encontrada' });
+    }
+});
+
+// PATCH /lists/:id
+app.patch('/lists/:id', (req, res) => {
+    const id = req.params.id;
+    const list = lists.find(l => l.id === id);
+    if (list) {
+        Object.assign(list, req.body); // Atualiza a variável
+        console.log("200 OK: Lista atualizada com ID:", id);
+        res.json(list);
+    } else {
+        console.log("404 Error: Lista não encontrada com ID:", id);
+        res.status(404).json({ message: 'Lista não encontrada' });
+    }
+});
 
 // --- Endpoints de CATEGORIES ---
-app.get('/categories', (req, res) => { res.json(categories); });
+app.get('/categories', (req, res) => {
+    console.log("200 OK: Enviando todas as categorias");
+    res.json(categories);
+});
 
-// --- Endpoints de ACHIEVEMENTS (CORRIGIDOS!) ---
+// --- Endpoints de ACHIEVEMENTS (AGORA CORRIGIDOS!) ---
 
 // GET /achievements
 app.get('/achievements', (req, res) => {
     console.log("200 OK: Enviando todas as conquistas");
     res.json(achievements);
-}); // <-- GET /achievements TERMINA AQUI. CORRIGIDO!
+}); // <-- GET TERMINA AQUI
 
-// POST /achievements (Cria uma nova conquista) - AGORA DO LADO DE FORA
+// POST /achievements
 app.post('/achievements', (req, res) => {
     const newAchievement = { ...req.body, id: generateId() }; 
     achievements.push(newAchievement); // Salva na variável 'achievements'
@@ -500,7 +538,7 @@ app.post('/achievements', (req, res) => {
     res.status(201).json(newAchievement);
 });
 
-// PATCH /achievements/:id (Atualiza uma conquista) - AGORA DO LADO DE FORA
+// PATCH /achievements/:id
 app.patch('/achievements/:id', (req, res) => {
     const id = req.params.id;
     const achievement = achievements.find(a => a.id === id); 
@@ -512,11 +550,16 @@ app.patch('/achievements/:id', (req, res) => {
     }
 });
 
-// DELETE /achievements/:id (Deleta uma conquista) - AGORA DO LADO DE FORA
+// DELETE /achievements/:id
 app.delete('/achievements/:id', (req, res) => {
     const id = req.params.id;
-    achievements = achievements.filter(a => a.id !== id);
-    res.status(204).send();
+    const achievementIndex = achievements.findIndex(a => a.id === id);
+    if (achievementIndex > -1) {
+        achievements.splice(achievementIndex, 1); // Remove da variável
+        res.status(204).send();
+    } else {
+        res.status(404).json({ message: 'Conquista não encontrada' });
+    }
 });
 
 // --- Iniciar o Servidor ---
