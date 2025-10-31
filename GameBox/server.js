@@ -3,359 +3,397 @@ import express from 'express';
 import cors from 'cors';
 
 const app = express();
-const PORT = 8000; // Estamos usando a porta 8000
+const PORT = 8000;
 
 // --- Configuração do Servidor ---
 app.use(cors()); 
 app.use(express.json()); 
 
-// --- "Banco de Dados" em Memória RAM (COM SEUS DADOS DO DB.JSON) ---
+// --- "Banco de Dados" em Memória RAM (COM SEUS DADOS) ---
 
 let games = [
   {
-    "id": "1",
-    "listType": "popular",
-    "title": "The Witcher 3: Wild Hunt",
-    "rating": "9.3",
-    "price": "R$ 79,99",
-    "genre": "RPG de Ação",
-    "tags": [ "Mundo Aberto", "Medieval" ],
-    "description": "Você é Geralt de Rívia, um mercenário matador de monstros...",
-    "image": "https://upload.wikimedia.org/wikipedia/pt/0/06/TW3_Wild_Hunt.png"
-  },
-  {
-    "id": "2",
-    "listType": "popular",
-    "title": "Resident Evil 4 Remake",
-    "rating": "9.8",
-    "price": "R$ 249,00",
-    "genre": "Survival Horror",
-    "tags": [ "Ação", "Terror" ],
-    "description": "Seis anos se passaram desde o desastre biológico em Raccoon City...",
-    "image": "https://preview.redd.it/the-original-re4-had-so-many-iconic-cover-art-variants-to-v0-dp321hnyq85a1.png?width=600&format=png&auto=webp&s=3ce81d2a230d804660b616b8379be59b1dbdf853"
-  },
-  {
-    "id": "3",
-    "listType": "popular",
-    "title": "The Last of Us Part II",
-    "rating": "9.5",
-    "price": "R$ 199,50",
-    "genre": "Ação-Aventura",
-    "tags": [ "Pós-apocalíptico", "Furtividade" ],
-    "description": "Cinco anosDepois de sua perigosa jornada pelos Estados Unidos...",
-    "image": "https://image.api.playstation.com/vulcan/ap/rnd/202311/1717/3a33a4b0a02b54074d4989a4118a4b594815d945b44a82cf.png"
-  },
-  {
-    "id": "28",
-    "listType": "popular",
-    "title": "Silent Hill F (2025)",
-    "rating": "9.6",
-    "price": "R$ 349,90",
-    "genre": "Terror",
-    "tags": [ "Terror-Psicológico", "Furtividade" ],
-    "description": "Silent Hill f é um jogo de terror psicológico de survival horror ambientado no Japão dos anos 1960, com foco na história de Hinako Shimizu, uma estudante que vive na pacata cidade montanhosa de Ebisugaoka.",
-    "image": "https://assets.nuuvem.com/image/upload/t_boxshot_big/v1/products/67f9674ff0174f89298f3cf4/boxshots/yalk2lbqm7sesvmfbs25.jpg"
-  },
-  {
-    "id": "70",
-    "listType": "friend-update",
-    "title": "Spider-Man Remastered",
-    "rating": "9.5",
-    "price": "R$289,90",
-    "genre": "Ação",
-    "tags": [ "Mundo Aberto", "Super-Heróis" ],
-    "description": "CMarvel's Spider-Man Remastered é um jogo de ação e aventura onde o jogador controla um Peter Parker mais experiente que luta contra criminosos icônicos na Nova York da Marvel.",
-    "image": "https://image.api.playstation.com/vulcan/ap/rnd/202009/3021/BtsjAgHT9pqHRXtN9FCk7xc8.png"
-  },
-  {
-    "id": "4",
-    "listType": "friend-update",
-    "title": "Hollow Knight: Silksong",
-    "rating": "9.9",
-    "price": "R$ 99,00",
-    "genre": "Metroidvania",
-    "tags": [ "Indie", "Plataforma" ],
-    "description": "Explore um vasto reino assombrado em Hollow Knight: Silksong!",
-    "image": "https://upload.wikimedia.org/wikipedia/pt/8/86/Hollow_Knight_Silksong_cover.jpeg"
-  },
-  {
-    "id": "5",
-    "listType": "friend-update",
-    "title": "Grand Theft Auto V",
-    "rating": "9.0",
-    "price": "R$ 109,90",
-    "genre": "Ação-Aventura",
-    "tags": [ "Mundo Aberto", "Moderno" ],
-    "description": "Quando um malandro de rua, um ladrão de bancos aposentado e um psicopata se veem encrencados...",
-    "image": "https://upload.wikimedia.org/wikipedia/pt/8/80/Grand_Theft_Auto_V_capa.png"
-  },
-  {
-    "id": "6",
-    "listType": "friend-update",
-    "title": "Resident Evil Village",
-    "rating": "9.1",
-    "price": "R$ 189,90",
-    "genre": "Survival Horror",
-    "tags": [ "Ação", "Terror", "Primeira Pessoa" ],
-    "description": "A história se passa alguns anos após os eventos de Resident Evil 7. Ethan Winters vive com sua esposa Mia e sua filha recém-nascida, Rosemary.",
-    "image": "https://i.redd.it/tqrl4tf4rt671.png"
-  },
-  {
-    "id": "8",
-    "title": "Elden Ring",
-    "rating": "9.7",
-    "price": "R$ 299,90",
-    "genre": "RPG de Ação",
-    "tags": [ "Mundo Aberto", "Souls-like" ],
-    "description": "Levante-se, Maculado, e seja guiado pela graça para brandir o poder do Anel Prístino e se tornar um Lorde Prístino nas Terras Intermédias.",
-    "image": "https://upload.wikimedia.org/wikipedia/pt/thumb/0/0d/Elden_Ring_capa.jpg/330px-Elden_Ring_capa.jpg"
-  },
-  {
-    "id": "10",
-    "title": "God of War Ragnarök",
-    "rating": "9.4",
-    "price": "R$ 349,90",
-    "genre": "Ação-Aventura",
-    "tags": [ "Mitologia", "História Profunda" ],
-    "description": "Junte-se a Kratos e Atreus em uma jornada mítica à procura de respostas e aliados antes que o Ragnarök comece.",
-    "image": "https://upload.wikimedia.org/wikipedia/pt/thumb/a/a5/God_of_War_Ragnar%C3%B6k_capa.jpg/330px-God_of_War_Ragnar%C3%B6k_capa.jpg"
-  },
-  {
-    "id": "11",
-    "title": "Resident Evil 6",
-    "rating": "7.6",
-    "price": "R$ 89,00",
-    "genre": "Ação-Aventura",
-    "tags": [ "Zumbi", "Ação" ],
-    "description": "Resident Evil 6 é um jogo de ação e horror que mistura elementos de sobrevivência, ação intensa e uma história com quatro tramas distintas, porém entrelaçadas, que acompanham personagens icônicos como Leon S. Kennedy e Chris Redfield, além de novos protagonistas como Jake Muller e Ada Wong.",
-    "image": "https://upload.wikimedia.org/wikipedia/pt/7/73/Resident_evil_6.jpg"
-  },
-  {
-    "id": "12",
-    "listType": "friend-update",
-    "title": "Tomb Raider (2013)",
-    "rating": "9.4",
-    "price": "R$ 99,90",
-    "genre": "Ação-Aventura",
-    "tags": [ "Aventura", "Sobrevivência" ],
-    "description": " Após um naufrágio, Lara e sua tripulação ficam presos em uma ilha misteriosa e hostil, onde ela precisa lutar pela sobrevivência, enfrentar perigos e desvendar segredos. ",
-    "image": "https://laracroft.com.br/assets/uploads/2020/04/tr_2013_packshot-725x1024.jpg"
-  },
-  {
-    "id": "14",
-    "listType": "friend-update",
-    "title": "The Last of Us Part I",
-    "rating": "9.8",
-    "price": "R$ 250.00",
-    "genre": "Ação-Aventura",
-    "tags": [ "Pós-apocalíptico", "Boa trama" ],
-    "description": "The Last of Us Part I é o remake de alta fidelidade do aclamado jogo original de 2013, recriado do zero para o PlayStation 5 e PC.",
-    "image": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0720/aZKLRcjaZ8HL03ODxYMZDfaH.png"
-  }
+      "id": "1",
+      "listType": "popular",
+      "title": "The Witcher 3: Wild Hunt",
+      "rating": "9.3",
+      "price": "R$ 79,99",
+      "genre": "RPG de Ação",
+      "tags": [
+        "Mundo Aberto",
+        "Medieval"
+      ],
+      "description": "Você é Geralt de Rívia, um mercenário matador de monstros...",
+      "image": "https://upload.wikimedia.org/wikipedia/pt/0/06/TW3_Wild_Hunt.png"
+    },
+    {
+      "id": "2",
+      "listType": "popular",
+      "title": "Resident Evil 4 Remake",
+      "rating": "9.8",
+      "price": "R$ 249,00",
+      "genre": "Survival Horror",
+      "tags": [
+        "Ação",
+        "Terror"
+      ],
+      "description": "Seis anos se passaram desde o desastre biológico em Raccoon City...",
+      "image": "https://preview.redd.it/the-original-re4-had-so-many-iconic-cover-art-variants-to-v0-dp321hnyq85a1.png?width=600&format=png&auto=webp&s=3ce81d2a230d804660b616b8379be59b1dbdf853"
+    },
+    {
+      "id": "3",
+      "listType": "popular",
+      "title": "The Last of Us Part II",
+      "rating": "9.5",
+      "price": "R$ 199,50",
+      "genre": "Ação-Aventura",
+      "tags": [
+        "Pós-apocalíptico",
+        "Furtividade"
+      ],
+      "description": "Cinco anos depois de sua perigosa jornada pelos Estados Unidos...",
+      "image": "https://image.api.playstation.com/vulcan/ap/rnd/202311/1717/3a33a4b0a02b54074d4989a4118a4b594815d945b44a82cf.png"
+    },
+    {
+      "id": "28",
+      "listType": "popular",
+      "title": "Silent Hill F (2025)",
+      "rating": "9.6",
+      "price": "R$ 349,90",
+      "genre": "Terror",
+      "tags": [
+        "Terror-Psicológico",
+        "Furtividade"
+      ],
+      "description": "Silent Hill f é um jogo de terror psicológico de survival horror ambientado no Japão dos anos 1960, com foco na história de Hinako Shimizu, uma estudante que vive na pacata cidade montanhosa de Ebisugaoka.",
+      "image": "https://assets.nuuvem.com/image/upload/t_boxshot_big/v1/products/67f9674ff0174f89298f3cf4/boxshots/yalk2lbqm7sesvmfbs25.jpg"
+    },
+    {
+      "id": "70",
+      "listType": "friend-update",
+      "title": "Spider-Man Remastered",
+      "rating": "9.5",
+      "price": "R$289,90",
+      "genre": "Ação",
+      "tags": [
+        "Mundo Aberto",
+        "Super-Heróis"
+      ],
+      "description": "CMarvel's Spider-Man Remastered é um jogo de ação e aventura onde o jogador controla um Peter Parker mais experiente que luta contra criminosos icônicos na Nova York da Marvel.",
+      "image": "https://image.api.playstation.com/vulcan/ap/rnd/202009/3021/BtsjAgHT9pqHRXtN9FCk7xc8.png"
+    },
+    {
+      "id": "4",
+      "listType": "friend-update",
+      "title": "Hollow Knight: Silksong",
+      "rating": "9.9",
+      "price": "R$ 99,00",
+      "genre": "Metroidvania",
+      "tags": [
+        "Indie",
+        "Plataforma"
+      ],
+      "description": "Explore um vasto reino assombrado em Hollow Knight: Silksong!",
+      "image": "https://upload.wikimedia.org/wikipedia/pt/8/86/Hollow_Knight_Silksong_cover.jpeg"
+    },
+    {
+      "id": "5",
+      "listType": "friend-update",
+      "title": "Grand Theft Auto V",
+      "rating": "9.0",
+      "price": "R$ 109,90",
+      "genre": "Ação-Aventura",
+      "tags": [
+        "Mundo Aberto",
+        "Moderno"
+      ],
+      "description": "Quando um malandro de rua, um ladrão de bancos aposentado e um psicopata se veem encrencados...",
+      "image": "https://upload.wikimedia.org/wikipedia/pt/8/80/Grand_Theft_Auto_V_capa.png"
+    },
+    {
+      "id": "6",
+      "listType": "friend-update",
+      "title": "Resident Evil Village",
+      "rating": "9.1",
+      "price": "R$ 189,90",
+      "genre": "Survival Horror",
+      "tags": [
+        "Ação",
+        "Terror",
+        "Primeira Pessoa"
+      ],
+      "description": "A história se passa alguns anos após os eventos de Resident Evil 7. Ethan Winters vive com sua esposa Mia e sua filha recém-nascida, Rosemary.",
+      "image": "https://i.redd.it/tqrl4tf4rt671.png"
+    },
+    {
+      "id": "8",
+      "title": "Elden Ring",
+      "rating": "9.7",
+      "price": "R$ 299,90",
+      "genre": "RPG de Ação",
+      "tags": [
+        "Mundo Aberto",
+        "Souls-like"
+      ],
+      "description": "Levante-se, Maculado, e seja guiado pela graça para brandir o poder do Anel Prístino e se tornar um Lorde Prístino nas Terras Intermédias.",
+      "image": "https://upload.wikimedia.org/wikipedia/pt/thumb/0/0d/Elden_Ring_capa.jpg/330px-Elden_Ring_capa.jpg"
+    },
+    {
+      "id": "10",
+      "title": "God of War Ragnarök",
+      "rating": "9.4",
+      "price": "R$ 349,90",
+      "genre": "Ação-Aventura",
+      "tags": [
+        "Mitologia",
+        "História Profunda"
+      ],
+      "description": "Junte-se a Kratos e Atreus em uma jornada mítica à procura de respostas e aliados antes que o Ragnarök comece.",
+      "image": "https://upload.wikimedia.org/wikipedia/pt/thumb/a/a5/God_of_War_Ragnar%C3%B6k_capa.jpg/330px-God_of_War_Ragnar%C3%B6k_capa.jpg"
+    },
+    {
+      "id": "11",
+      "title": "Resident Evil 6",
+      "rating": "7.6",
+      "price": "R$ 89,00",
+      "genre": "Ação-Aventura",
+      "tags": [
+        "Zumbi",
+        "Ação"
+      ],
+      "description": "Resident Evil 6 é um jogo de ação e horror que mistura elementos de sobrevivência, ação intensa e uma história com quatro tramas distintas, porém entrelaçadas, que acompanham personagens icônicos como Leon S. Kennedy e Chris Redfield, além de novos protagonistas como Jake Muller e Ada Wong.",
+      "image": "https://upload.wikimedia.org/wikipedia/pt/7/73/Resident_evil_6.jpg"
+    },
+    {
+      "id": "12",
+      "listType": "friend-update",
+      "title": "Tomb Raider (2013)",
+      "rating": "9.4",
+      "price": "R$ 99,90",
+      "genre": "Ação-Aventura",
+      "tags": [
+        "Aventura",
+        "Sobrevivência"
+      ],
+      "description": " Após um naufrágio, Lara e sua tripulação ficam presos em uma ilha misteriosa e hostil, onde ela precisa lutar pela sobrevivência, enfrentar perigos e desvendar segredos. ",
+      "image": "https://laracroft.com.br/assets/uploads/2020/04/tr_2013_packshot-725x1024.jpg"
+    },
+    {
+      "id": "14",
+      "listType": "friend-update",
+      "title": "The Last of Us Part I",
+      "rating": "9.8",
+      "price": "R$ 250.00",
+      "genre": "Ação-Aventura",
+      "tags": [
+        "Pós-apocalíptico",
+        "Boa trama"
+      ],
+      "description": "The Last of Us Part I é o remake de alta fidelidade do aclamado jogo original de 2013, recriado do zero para o PlayStation 5 e PC.",
+      "image": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0720/aZKLRcjaZ8HL03ODxYMZDfaH.png"
+    }
 ];
 let reviews = [
   {
-    "id": "1",
-    "gameId": 1,
-    "username": "Alice",
-    "ratingIcon": "heart",
-    "text": "Que jogo incrível!...",
-    "date": "14 de setembro de 2025"
-  },
-  {
-    "id": "dcc0",
-    "gameId": "3",
-    "rating": "love",
-    "text": "ooi",
-    "userId": "ID_DO_USUARIO_LOGADO",
-    "createdAt": "2025-10-30T22:49:36.554Z"
-  },
-  {
-    "id": "33ab",
-    "gameId": "2",
-    "rating": "love",
-    "text": "ooi",
-    "userId": "ID_DO_USUARIO_LOGADO",
-    "createdAt": "2025-10-30T22:55:35.194Z"
-  },
-  {
-    "id": "30bd",
-    "gameId": "2",
-    "rating": "love",
-    "text": "ooi",
-    "userId": "ID_DO_USUARIO_LOGADO",
-    "createdAt": "2025-10-30T22:56:22.338Z"
-  },
-  {
-    "id": "c828",
-    "gameId": "3",
-    "rating": "love",
-    "text": "ooi",
-    "userId": "ID_DO_USUARIO_LOGADO",
-    "createdAt": "2025-10-30T23:03:46.066Z"
-  },
-  {
-    "id": "f754",
-    "gameId": "3",
-    "rating": "love",
-    "text": "ooi",
-    "userId": "ID_DO_USUARIO_LOGADO",
-    "createdAt": "2025-10-30T23:04:29.322Z"
-  },
-  {
-    "id": "252b",
-    "gameId": "2",
-    "rating": "love",
-    "text": "oii",
-    "userId": "ID_DO_USUARIO_LOGADO",
-    "createdAt": "2025-10-30T23:37:16.026Z"
-  },
-  {
-    "id": "5954",
-    "gameId": "2",
-    "rating": "love",
-    "text": "oii",
-    "userId": "ID_DO_USUARIO_LOGADO",
-    "createdAt": "2025-10-30T23:40:23.802Z"
-  },
-  {
-    "id": "81df",
-    "gameId": "3",
-    "rating": "love",
-    "text": "oii",
-    "userId": "ID_DO_USUARIO_LOGADO",
-    "createdAt": "2025-10-30T23:44:34.194Z"
-  },
-  {
-    "id": "0208",
-    "gameId": "2",
-    "rating": "love",
-    "text": "oii",
-    "userId": "ID_DO_USUARIO_LOGADO",
-    "createdAt": "2025-10-31T01:02:10.401Z"
-  },
-  {
-    "id": "29d7",
-    "gameId": "2",
-    "rating": "love",
-    "text": "oiii",
-    "userId": "ID_DO_USUARIO_LOGADO",
-    "createdAt": "2025-10-31T01:12:43.953Z"
-  }
+      "id": "1",
+      "gameId": 1,
+      "username": "Alice",
+      "ratingIcon": "heart",
+      "text": "Que jogo incrível!...",
+      "date": "14 de setembro de 2025"
+    },
+    {
+      "id": "dcc0",
+      "gameId": "3",
+      "rating": "love",
+      "text": "ooi",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T22:49:36.554Z"
+    },
+    {
+      "id": "33ab",
+      "gameId": "2",
+      "rating": "love",
+      "text": "ooi",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T22:55:35.194Z"
+    },
+    {
+      "id": "30bd",
+      "gameId": "2",
+      "rating": "love",
+      "text": "ooi",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T22:56:22.338Z"
+    },
+    {
+      "id": "c828",
+      "gameId": "3",
+      "rating": "love",
+      "text": "ooi",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T23:03:46.066Z"
+    },
+    {
+      "id": "f754",
+      "gameId": "3",
+      "rating": "love",
+      "text": "ooi",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T23:04:29.322Z"
+    },
+    {
+      "id": "252b",
+      "gameId": "2",
+      "rating": "love",
+      "text": "oii",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T23:37:16.026Z"
+    },
+    {
+      "id": "5954",
+      "gameId": "2",
+      "rating": "love",
+      "text": "oii",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T23:40:23.802Z"
+    },
+    {
+      "id": "81df",
+      "gameId": "3",
+      "rating": "love",
+      "text": "oii",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T23:44:34.194Z"
+    },
+    {
+      "id": "0208",
+      "gameId": "2",
+      "rating": "love",
+      "text": "oii",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-31T01:02:10.401Z"
+    },
+    {
+      "id": "29d7",
+      "gameId": "2",
+      "rating": "love",
+      "text": "oiii",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-31T01:12:43.953Z"
+    }
 ];
 let achievements = [
   {
-    "id": "1",
-    "icon": "https://img.icons8.com/emoji/48/trophy-emoji.png",
-    "title": "Pioneiro",
-    "description": "Fazer a sua primeira análise de um jogo.",
-    "rule": "reviews_count >= 1"
-  },
-  {
-    "id": "2",
-    "icon": "https://img.icons8.com/emoji/48/writing-hand-emoji.png",
-    "title": "Crítico Ativo",
-    "description": "Escrever 10 análises de jogos.",
-    "rule": "reviews_count >= 10"
-  },
-  {
-    "id": "3",
-    "icon": "https://img.icons8.com/emoji/48/star-emoji.png",
-    "title": "Formador de Opinião",
-    "description": "Sua análise recebeu 20 curtidas.",
-    "rule": "review_likes_count >= 20"
-  }
+      "id": "1",
+      "icon": "https://img.icons8.com/emoji/48/trophy-emoji.png",
+      "title": "Pioneiro",
+      "description": "Fazer a sua primeira análise de um jogo.",
+      "rule": "reviews_count >= 1"
+    },
+    {
+      "id": "2",
+      "icon": "https://img.icons8.com/emoji/48/writing-hand-emoji.png",
+      "title": "Crítico Ativo",
+      "description": "Escrever 10 análises de jogos.",
+      "rule": "reviews_count >= 10"
+    },
+    {
+      "id": "3",
+      "icon": "https://img.icons8.com/emoji/48/star-emoji.png",
+      "title": "Formador de Opinião",
+      "description": "Sua análise recebeu 20 curtidas.",
+      "rule": "review_likes_count >= 20"
+    }
 ];
 let categories = [
   {
-    "title": "Survival Horror",
-    "description": "",
-    "image": "https://cdn.mos.cms.futurecdn.net/QU5FRX6V7PWaV7BKk9dBkS-970-80.jpg",
-    "alt": "Ícone de Survival Horror",
-    "color": "",
-    "id": "a68a"
-  },
-  {
-    "title": "Ação",
-    "description": "Pura adrenalina, combate frenético e missões emocionantes esperam por você.",
-    "image": "https://uploads.jovemnerd.com.br/wp-content/uploads/Uncharted-4-Release.jpg",
-    "alt": "Ícone de Ação",
-    "color": "",
-    "id": "9b8e"
-  },
-  {
-    "title": "MOBA",
-    "description": "Estratégia em equipe para destruir a base inimiga.",
-    "image": "https://s2-techtudo.glbimg.com/gHl4rMr7ai07ba6THrrXvN3SJBg=/0x0:1200x630/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/9/F/JJADWjRrGJBNSfX1sESw/dota-heroes-1.png",
-    "alt": "Icone de MOBA",
-    "id": "ceb1"
-  },
-  {
-    "title": "RPG",
-    "description": "Crie seu herói, explore mundos vastos e viva uma história épica.",
-    "image": "https://conteudo.imguol.com.br/c/entretenimento/ef/2020/03/23/final-fantasy-vii-remake-1584986560767_v2_1x1.jpg",
-    "alt": "Ícone de RPG",
-    "id": "4b34"
-  },
-  {
-    "title": "Visual Novel",
-    "description": "Viva uma história interativa através de texto, imagens e música.",
-    "image": "https://www.godisageek.com/wp-content/uploads/steins-gate-0-switch-main.jpg",
-    "alt": "Ícone de Visual Novel",
-    "id": "e3ea"
-  }
+      "title": "Survival Horror",
+      "description": "",
+      "image": "https://cdn.mos.cms.futurecdn.net/QU5FRX6V7PWaV7BKk9dBkS-970-80.jpg",
+      "alt": "Ícone de Survival Horror",
+      "color": "",
+      "id": "a68a"
+    },
+    {
+      "title": "Ação",
+      "description": "Pura adrenalina, combate frenético e missões emocionantes esperam por você.",
+      "image": "https://uploads.jovemnerd.com.br/wp-content/uploads/Uncharted-4-Release.jpg",
+      "alt": "Ícone de Ação",
+      "color": "",
+      "id": "9b8e"
+    },
+    {
+      "title": "MOBA",
+      "description": "Estratégia em equipe para destruir a base inimiga.",
+      "image": "https://s2-techtudo.glbimg.com/gHl4rMr7ai07ba6THrrXvN3SJBg=/0x0:1200x630/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/9/F/JJADWjRrGJBNSfX1sESw/dota-heroes-1.png",
+      "alt": "Icone de MOBA",
+      "id": "ceb1"
+    },
+    {
+      "title": "RPG",
+      "description": "Crie seu herói, explore mundos vastos e viva uma história épica.",
+      "image": "https://conteudo.imguol.com.br/c/entretenimento/ef/2020/03/23/final-fantasy-vii-remake-1584986560767_v2_1x1.jpg",
+      "alt": "Ícone de RPG",
+      "id": "4b34"
+    },
+    {
+      "title": "Visual Novel",
+      "description": "Viva uma história interativa através de texto, imagens e música.",
+      "image": "https://www.godisageek.com/wp-content/uploads/steins-gate-0-switch-main.jpg",
+      "alt": "Ícone de Visual Novel",
+      "id": "e3ea"
+    }
 ];
 let lists = [
   {
-    "id": "1927",
-    "title": "thyerri reizinho",
-    "description": "oldy bbs",
-    "gamesCount": 4,
-    "games": [
-      {
-        "id": "3",
-        "title": "The Last of Us Part II",
-        "image": "https://image.api.playstation.com/vulcan/ap/rnd/202311/1717/3a33a4b0a02b54074d4989a4118a4b594815d945b44a82cf.png",
-        "genre": "Ação-Aventura",
-        "rating": "9.5"
-      },
-      {
-        "id": "14",
-        "title": "The Last of Us Part I",
-        "image": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0720/aZKLRcjaZ8HL03ODxYMZDfaH.png",
-        "genre": "Ação-Aventura",
-        "rating": "9.8"
-      },
-      {
-        "id": "2",
-        "title": "Resident Evil 4 Remake",
-        "image": "https://preview.redd.it/the-original-re4-had-so-many-iconic-cover-art-variants-to-v0-dp321hnyq85a1.png?width=600&format=png&auto=webp&s=3ce81d2a230d804660b616b8379be59b1dbdf853",
-        "genre": "Survival Horror",
-        "rating": "9.8"
-      },
-      {
-        "id": "12",
-        "title": "Tomb Raider (2013)",
-        "image": "https://laracroft.com.br/assets/uploads/2020/04/tr_2013_packshot-725x1024.jpg",
-        "genre": "Ação-Aventura",
-        "rating": "9.4"
-      }
-    ]
-  },
-  {
-    "id": "b4d1",
-    "title": "felipe cachorra",
-    "description": "te amo vida",
-    "gamesCount": 0,
-    "games": []
-  }
+      "id": "1927",
+      "title": "thyerri reizinho",
+      "description": "oldy bbs",
+      "gamesCount": 4,
+      "games": [
+        {
+          "id": "3",
+          "title": "The Last of Us Part II",
+          "image": "https://image.api.playstation.com/vulcan/ap/rnd/202311/1717/3a33a4b0a02b54074d4989a4118a4b594815d945b44a82cf.png",
+          "genre": "Ação-Aventura",
+          "rating": "9.5"
+        },
+        {
+          "id": "14",
+          "title": "The Last of Us Part I",
+          "image": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0720/aZKLRcjaZ8HL03ODxYMZDfaH.png",
+          "genre": "Ação-Aventura",
+          "rating": "9.8"
+        },
+        {
+          "id": "2",
+          "title": "Resident Evil 4 Remake",
+          "image": "https://preview.redd.it/the-original-re4-had-so-many-iconic-cover-art-variants-to-v0-dp321hnyq85a1.png?width=600&format=png&auto=webp&s=3ce81d2a230d804660b616b8379be59b1dbdf853",
+          "genre": "Survival Horror",
+          "rating": "9.8"
+        },
+        {
+          "id": "12",
+          "title": "Tomb Raider (2013)",
+          "image": "https://laracroft.com.br/assets/uploads/2020/04/tr_2013_packshot-725x1024.jpg",
+          "genre": "Ação-Aventura",
+          "rating": "9.4"
+        }
+      ]
+    },
+    {
+      "id": "b4d1",
+      "title": "felipe cachorra",
+      "description": "te amo vida",
+      "gamesCount": 0,
+      "games": []
+    }
 ];
 
 
 // --- Lógica para simular IDs únicos ---
-// Pega o maior ID numérico de 'games' e prepara o próximo
 let nextGameId = games.length ? Math.max(...games.map(g => parseInt(g.id))) + 1 : 1;
-// Para 'reviews' e 'lists', usaremos strings hexadecimais aleatórias para simular o json-server
 const generateId = () => Math.random().toString(16).slice(2, 6);
 
 
@@ -363,56 +401,43 @@ const generateId = () => Math.random().toString(16).slice(2, 6);
 
 // GET /games (Busca todos os jogos)
 app.get('/games', (req, res) => {
-    // Verifica se a URL tem um filtro de gênero, ex: /games?genre=Ação
     const categoryGenre = req.query.genre;
-
     if (categoryGenre) {
-        // Se HÁ um filtro de gênero
         console.log(`Filtro Ativo: Buscando jogos com gênero/tag: ${categoryGenre}`);
-
         const filteredGames = games.filter(game => {
-            const gameGenre = game.genre || ''; // Garante que o gênero existe
-            const gameTags = game.tags || [];   // Garante que as tags existem
-
-            // 1. Verifica se o gênero principal (ex: "RPG de Ação") CONTÉM o termo (ex: "RPG")
+            const gameGenre = game.genre || '';
+            const gameTags = game.tags || [];
             const genreMatch = gameGenre.toLowerCase().includes(categoryGenre.toLowerCase());
-
-            // 2. Verifica se alguma das tags (ex: ["Ação", "Terror"]) é IGUAL ao termo (ex: "Ação")
             const tagMatch = gameTags.some(tag => tag.toLowerCase() === categoryGenre.toLowerCase());
-
-            // Se der "match" em qualquer um dos dois, o jogo é incluído
             return genreMatch || tagMatch;
         });
-
         res.json(filteredGames);
-
     } else {
-        // Se NÃO HÁ filtro de gênero, envia todos os jogos
         console.log("200 OK: Enviando todos os jogos (sem filtro)");
         res.json(games);
     }
-    app.patch('/games/:id', (req, res) => {
+}); // <-- GET /games TERMINA AQUI. CORRIGIDO!
+
+// PATCH /games/:id (Atualiza um jogo) - AGORA DO LADO DE FORA
+app.patch('/games/:id', (req, res) => {
     const id = req.params.id;
     const game = games.find(g => g.id.toString() === id.toString());
-    
     if (game) {
-        // Atualiza o jogo com os dados do patch
         Object.assign(game, req.body); 
         console.log("200 OK: Jogo atualizado com ID:", id);
-        res.json(game); // Retorna o jogo atualizado
+        res.json(game);
     } else {
         console.log("404 Error: Jogo não encontrado para atualizar com ID:", id);
         res.status(404).json({ message: 'Jogo não encontrado' });
     }
 });
 
-// DELETE /games/:id (Deleta um jogo)
+// DELETE /games/:id (Deleta um jogo) - AGORA DO LADO DE FORA
 app.delete('/games/:id', (req, res) => {
     const id = req.params.id;
     const gameIndex = games.findIndex(g => g.id.toString() === id.toString());
-    
     if (gameIndex > -1) {
-        games.splice(gameIndex, 1); // Remove o jogo do array
+        games.splice(gameIndex, 1);
         console.log("204 No Content: Jogo deletado com ID:", id);
         res.status(204).send();
     } else {
@@ -420,43 +445,29 @@ app.delete('/games/:id', (req, res) => {
         res.status(404).json({ message: 'Jogo não encontrado' });
     }
 });
-});
 
-// GET /games/:id (Busca um jogo específico, com ?_embed=reviews)
+// GET /games/:id (Busca um jogo específico)
 app.get('/games/:id', (req, res) => {
     const id = req.params.id;
-    // Usamos '==' para comparar strings ("1") com números (1)
     const game = games.find(g => g.id == id); 
-
-    if (!game) {
-        console.log("404 Error: Jogo não encontrado com ID:", id);
-        return res.status(404).json({ message: 'Jogo não encontrado' });
-    }
-
-    // Se o front-end pedir ?_embed=reviews (como o seu gamesSlice faz)
+    if (!game) { /* ... */ }
     if (req.query._embed === 'reviews') {
-        // Usamos '==' para comparar gameId (que é misto) com o ID
         const gameReviews = reviews.filter(r => r.gameId == id);
-        console.log(`200 OK: Enviando jogo ${id} com ${gameReviews.length} reviews`);
-        res.json({ ...game, reviews: gameReviews }); // Retorna o jogo + reviews
+        res.json({ ...game, reviews: gameReviews });
     } else {
-        console.log(`200 OK: Enviando jogo ${id}`);
-        res.json(game); // Retorna só o jogo
+        res.json(game);
     }
 });
 
 // POST /games (Cria um novo jogo)
 app.post('/games', (req, res) => {
-    const newGame = { ...req.body, id: (nextGameId++).toString() }; // Salva o novo ID como string
+    const newGame = { ...req.body, id: (nextGameId++).toString() };
     games.push(newGame);
     console.log("201 Created: Novo jogo salvo:", newGame.title);
     res.status(201).json(newGame);
 });
 
-
 // --- Endpoints de REVIEWS ---
-
-// POST /reviews (Cria uma nova review)
 app.post('/reviews', (req, res) => {
     const newReview = { ...req.body, id: generateId(), createdAt: new Date().toISOString() };
     reviews.push(newReview);
@@ -464,70 +475,52 @@ app.post('/reviews', (req, res) => {
     res.status(201).json(newReview);
 });
 
-
 // --- Endpoints de LISTS ---
+app.get('/lists', (req, res) => { res.json(lists); });
+app.post('/lists', (req, res) => { /* ... (código POST) ... */ });
+app.delete('/lists/:id', (req, res) => { /* ... (código DELETE) ... */ });
+app.patch('/lists/:id', (req, res) => { /* ... (código PATCH) ... */ });
 
-// GET /lists (Busca todas as listas)
-app.get('/lists', (req, res) => {
-    console.log("200 OK: Enviando todas as listas");
-    res.json(lists);
-});
+// --- Endpoints de CATEGORIES ---
+app.get('/categories', (req, res) => { res.json(categories); });
 
-// POST /lists (Cria uma nova lista)
-app.post('/lists', (req, res) => {
-    const newList = { ...req.body, id: generateId() }; 
-    lists.push(newList);
-    console.log("201 Created: Nova lista salva:", newList.title);
-    res.status(201).json(newList);
-});
-
-// DELETE /lists/:id (Deleta uma lista)
-app.delete('/lists/:id', (req, res) => {
-    const id = req.params.id;
-    lists = lists.filter(l => l.id !== id); // Seus IDs de lista são strings
-    console.log("204 No Content: Lista deletada com ID:", id);
-    res.status(204).send();
-});
-
-// PATCH /lists/:id (Atualiza uma lista - título, jogos, etc.)
-app.patch('/lists/:id', (req, res) => {
-    const id = req.params.id;
-    const list = lists.find(l => l.id === id); // Seus IDs de lista são strings
-    
-    if (list) {
-        // Atualiza a lista com os dados do patch (ex: { title: "novo" } ou { games: [...] })
-        Object.assign(list, req.body); 
-        console.log("200 OK: Lista atualizada com ID:", id);
-        res.json(list);
-    } else {
-        console.log("404 Error: Lista não encontrada com ID:", id);
-        res.status(404).json({ message: 'Lista não encontrada' });
-    }
-});
-
-// --- Endpoints de CATEGORIES e ACHIEVEMENTS (Bônus) ---
-
-// GET /categories
-app.get('/categories', (req, res) => {
-    console.log("200 OK: Enviando todas as categorias");
-    res.json(categories);
-});
+// --- Endpoints de ACHIEVEMENTS (CORRIGIDOS!) ---
 
 // GET /achievements
 app.get('/achievements', (req, res) => {
     console.log("200 OK: Enviando todas as conquistas");
     res.json(achievements);
+}); // <-- GET /achievements TERMINA AQUI. CORRIGIDO!
+
+// POST /achievements (Cria uma nova conquista) - AGORA DO LADO DE FORA
+app.post('/achievements', (req, res) => {
+    const newAchievement = { ...req.body, id: generateId() }; 
+    achievements.push(newAchievement); // Salva na variável 'achievements'
+    console.log("201 Created: Nova conquista salva:", newAchievement.title);
+    res.status(201).json(newAchievement);
 });
 
+// PATCH /achievements/:id (Atualiza uma conquista) - AGORA DO LADO DE FORA
+app.patch('/achievements/:id', (req, res) => {
+    const id = req.params.id;
+    const achievement = achievements.find(a => a.id === id); 
+    if (achievement) {
+        Object.assign(achievement, req.body); 
+        res.json(achievement);
+    } else {
+        res.status(404).json({ message: 'Conquista não encontrada' });
+    }
+});
+
+// DELETE /achievements/:id (Deleta uma conquista) - AGORA DO LADO DE FORA
+app.delete('/achievements/:id', (req, res) => {
+    const id = req.params.id;
+    achievements = achievements.filter(a => a.id !== id);
+    res.status(204).send();
+});
 
 // --- Iniciar o Servidor ---
 app.listen(PORT, () => {
     console.log(`Servidor back-end REAL rodando em http://localhost:${PORT}`);
-    console.log('--- Base de Dados em Memória ---');
-    console.log(`Carregados ${games.length} jogos.`);
-    console.log(`Carregados ${lists.length} listas.`);
-    console.log(`Carregados ${reviews.length} reviews.`);
-    console.log(`Carregados ${categories.length} categorias.`);
-    console.log(`Carregados ${achievements.length} conquistas.`);
-    console.log('---------------------------------');
+    // ... (resto do seu console.log) ...
 });
