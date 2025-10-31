@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchGameById, addNewGame } from '../redux/gamesSlice';
+import { unwrapResult } from '@reduxjs/toolkit'; // NOVO: Para tratar erros
+import { 
+    fetchGameById, 
+    addNewGame, 
+    updateGame,  // NOVO: Importamos a ação de atualizar
+    deleteGame   // NOVO: Importamos a ação de deletar
+} from '../redux/gamesSlice';
 import {
     Container, Box, Typography, TextField, Button, Paper, Grid, CircularProgress
 } from '@mui/material';
 
 const AdminGamePage = () => {
-    const { gameId } = useParams(); // Pega o ID da URL, se existir
+    const { gameId } = useParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    // Determina se estamos em modo de edição ou adição
     const isEditMode = Boolean(gameId);
 
-    // Estado local para controlar os campos do formulário
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -22,61 +26,95 @@ const AdminGamePage = () => {
         rating: '',
         price: '',
         genre: '',
-        tags: '', // Usaremos uma string para o input, e converteremos para array ao enviar
+        tags: '', 
     });
 
-    // Busca os dados do Redux
-    const gameToEdit = useSelector((state) => state.games.selectedGame);
-    const status = useSelector((state) => state.games.selectedGameStatus);
+    // NOVO: Estado para feedback de "carregando"
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Se estiver em modo de edição, busca os dados do jogo quando o componente carrega
+    const gameToEdit = useSelector((state) => state.games.selectedGame);
+    // NOVO: Pegamos o status geral, não apenas o 'selectedGameStatus'
+    const status = useSelector((state) => state.games.status);
+    const selectedGameStatus = useSelector((state) => state.games.selectedGameStatus);
+
     useEffect(() => {
         if (isEditMode) {
             dispatch(fetchGameById(gameId));
         }
     }, [gameId, dispatch, isEditMode]);
 
-    // Preenche o formulário com os dados do jogo quando eles são carregados
     useEffect(() => {
-        if (isEditMode && gameToEdit) {
+        // Preenche o formulário se o jogo for carregado no modo de edição
+        if (isEditMode && gameToEdit && gameToEdit.id === gameId) {
             setFormData({
-                title: gameToEdit.title,
-                description: gameToEdit.description,
-                image: gameToEdit.image,
-                rating: gameToEdit.rating,
-                price: gameToEdit.price,
-                genre: gameToEdit.genre,
-                tags: gameToEdit.tags.join(', '), // Converte o array de tags em string
+                title: gameToEdit.title || '',
+                description: gameToEdit.description || '',
+                image: gameToEdit.image || '',
+                rating: gameToEdit.rating || '',
+                price: gameToEdit.price || '',
+                genre: gameToEdit.genre || '',
+                tags: (gameToEdit.tags || []).join(', '), // Converte o array em string
             });
         }
-    }, [isEditMode, gameToEdit]);
+    }, [isEditMode, gameToEdit, gameId]); // Adicionado gameId para re-preencher se o ID mudar
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    // --- NOVO: Lógica do handleSubmit atualizada ---
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
         
         const gameData = {
             ...formData,
-            tags: formData.tags.split(',').map(tag => tag.trim()), // Converte a string de tags em array
+            // Converte a string de tags em array, filtrando itens vazios
+            tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag), 
         };
 
-        if (isEditMode) {
-            // Lógica de ATUALIZAÇÃO viria aqui (futuramente)
-            alert(`Jogo "${gameData.title}" atualizado! (funcionalidade a ser implementada)`);
-        } else {
-            // Lógica de ADIÇÃO
-            dispatch(addNewGame(gameData)).then(() => {
-                alert(`Jogo "${gameData.title}" adicionado com sucesso!`);
-                navigate('/jogos'); // Redireciona para a página de jogos
-            });
+        try {
+            if (isEditMode) {
+                // Lógica de ATUALIZAÇÃO
+                await dispatch(updateGame({ id: gameId, ...gameData })).unwrap();
+                alert(`Jogo "${gameData.title}" atualizado!`);
+                navigate(`/detalhes_jogo/${gameId}`); // Volta para a página de detalhes do jogo
+            } else {
+                // Lógica de ADIÇÃO
+                const resultAction = await dispatch(addNewGame(gameData)).unwrap();
+                alert(`Jogo "${resultAction.title}" adicionado com sucesso!`);
+                navigate('/'); // Volta para a Home
+            }
+        } catch (err) {
+            console.error('Falha ao salvar o jogo:', err);
+            alert(`Erro ao salvar: ${err.message || err}`);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
-    if (isEditMode && status === 'loading') {
+    // --- NOVO: Lógica para o botão de Deletar ---
+    const handleDelete = async () => {
+        // Pede confirmação
+        if (!window.confirm(`Tem certeza que deseja remover o jogo "${formData.title}"? Esta ação não pode ser desfeita.`)) {
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            await dispatch(deleteGame(gameId)).unwrap();
+            alert('Jogo removido com sucesso!');
+            navigate('/'); // Volta para a Home após deletar
+        } catch (err) {
+            console.error('Falha ao remover o jogo:', err);
+            alert(`Erro ao remover: ${err.message || err}`);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    if (isEditMode && selectedGameStatus === 'loading') {
         return <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress /></Box>;
     }
 
@@ -98,10 +136,28 @@ const AdminGamePage = () => {
                         <Grid item xs={12}><TextField name="tags" label="Categorias (separadas por vírgula)" value={formData.tags} onChange={handleChange} fullWidth /></Grid>
                     </Grid>
                     <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-                        <Button type="submit" variant="contained" color="primary">
-                            {isEditMode ? 'Salvar Alterações' : 'Adicionar Jogo'}
+                        
+                        {/* NOVO: Botão de Salvar/Adicionar atualizado */}
+                        <Button 
+                            type="submit" 
+                            variant="contained" 
+                            color="primary"
+                            disabled={isSubmitting || status === 'loading'} // Desabilita se estiver salvando
+                        >
+                            {isSubmitting ? 'Salvando...' : (isEditMode ? 'Salvar Alterações' : 'Adicionar Jogo')}
                         </Button>
-                        {isEditMode && <Button variant="outlined" color="error">Remover Jogo</Button>}
+                        
+                        {/* NOVO: Botão de Remover atualizado */}
+                        {isEditMode && (
+                            <Button 
+                                variant="outlined" 
+                                color="error" 
+                                onClick={handleDelete} // Conecta a função de deletar
+                                disabled={isSubmitting || status === 'loading'} // Desabilita se estiver salvando
+                            >
+                                Remover Jogo
+                            </Button>
+                        )}
                     </Box>
                 </Box>
             </Paper>
