@@ -16,7 +16,7 @@ import {
 
 // Simulação de endpoint para buscar jogos por categoria
 // O endpoint real dependerá da sua API (ex: http://localhost:3001/games?genre=Aventura)
-const API_URL = 'http://localhost:3001/games';
+const API_URL = 'http://localhost:8000/games';
 
 function CategoryGamesPage() {
     // 1. Obtém o parâmetro 'categoryName' da URL

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 // URL do seu JSON Server ou endpoint de API
 // (Ajuste a porta/caminho conforme sua configuração)
-const API_URL = 'http://localhost:3001/categories'; 
+const API_URL = 'http://localhost:8000/categories'; 
 
 function CategoriesPage() {
   // 1. Estado para armazenar os dados das categorias

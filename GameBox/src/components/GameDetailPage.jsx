@@ -80,7 +80,7 @@ function GameDetailPage() {
                     </Box>
                     <Box my={2}>
                         <Typography variant="h6" gutterBottom>Categorias</Typography>
-                        {game.tags.map(tag => <Chip key={tag} label={tag} sx={{ mr: 1, mb: 1 }} />)}
+                        {game.tags?.map(tag => <Chip key={tag} label={tag} sx={{ mr: 1, mb: 1 }} />)}
                     </Box>
                     <Box my={2}>
                         <Typography variant="h5" gutterBottom>Descrição</Typography>

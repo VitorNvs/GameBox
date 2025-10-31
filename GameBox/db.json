@@ -42,25 +42,31 @@
       "description": "Cinco anos depois de sua perigosa jornada pelos Estados Unidos...",
       "image": "https://image.api.playstation.com/vulcan/ap/rnd/202311/1717/3a33a4b0a02b54074d4989a4118a4b594815d945b44a82cf.png"
     },
-  {
-    "id": 28,
+    {
+      "id": "28",
       "listType": "popular",
       "title": "Silent Hill F (2025)",
       "rating": "9.6",
       "price": "R$ 349,90",
       "genre": "Terror",
-      "tags": ["Terror-Psicológico", "Furtividade"],
+      "tags": [
+        "Terror-Psicológico",
+        "Furtividade"
+      ],
       "description": "Silent Hill f é um jogo de terror psicológico de survival horror ambientado no Japão dos anos 1960, com foco na história de Hinako Shimizu, uma estudante que vive na pacata cidade montanhosa de Ebisugaoka.",
       "image": "https://assets.nuuvem.com/image/upload/t_boxshot_big/v1/products/67f9674ff0174f89298f3cf4/boxshots/yalk2lbqm7sesvmfbs25.jpg"
     },
-     {
-      "id": 70,
+    {
+      "id": "70",
       "listType": "friend-update",
       "title": "Spider-Man Remastered",
       "rating": "9.5",
       "price": "R$289,90",
       "genre": "Ação",
-      "tags": ["Mundo Aberto", "Super-Heróis"],
+      "tags": [
+        "Mundo Aberto",
+        "Super-Heróis"
+      ],
       "description": "CMarvel's Spider-Man Remastered é um jogo de ação e aventura onde o jogador controla um Peter Parker mais experiente que luta contra criminosos icônicos na Nova York da Marvel.",
       "image": "https://image.api.playstation.com/vulcan/ap/rnd/202009/3021/BtsjAgHT9pqHRXtN9FCk7xc8.png"
     },
@@ -134,59 +140,154 @@
       "image": "https://upload.wikimedia.org/wikipedia/pt/thumb/a/a5/God_of_War_Ragnar%C3%B6k_capa.jpg/330px-God_of_War_Ragnar%C3%B6k_capa.jpg"
     },
     {
-      "id": 11,
+      "id": "11",
       "title": "Resident Evil 6",
       "rating": "7.6",
       "price": "R$ 89,00",
       "genre": "Ação-Aventura",
-      "tags": ["Zumbi", "Ação"],
+      "tags": [
+        "Zumbi",
+        "Ação"
+      ],
       "description": "Resident Evil 6 é um jogo de ação e horror que mistura elementos de sobrevivência, ação intensa e uma história com quatro tramas distintas, porém entrelaçadas, que acompanham personagens icônicos como Leon S. Kennedy e Chris Redfield, além de novos protagonistas como Jake Muller e Ada Wong.",
       "image": "https://upload.wikimedia.org/wikipedia/pt/7/73/Resident_evil_6.jpg"
     },
     {
-      "id": 12,
+      "id": "12",
       "listType": "friend-update",
       "title": "Tomb Raider (2013)",
       "rating": "9.4",
       "price": "R$ 99,90",
       "genre": "Ação-Aventura",
-      "tags": ["Aventura", "Sobrevivência"],
+      "tags": [
+        "Aventura",
+        "Sobrevivência"
+      ],
       "description": " Após um naufrágio, Lara e sua tripulação ficam presos em uma ilha misteriosa e hostil, onde ela precisa lutar pela sobrevivência, enfrentar perigos e desvendar segredos. ",
       "image": "https://laracroft.com.br/assets/uploads/2020/04/tr_2013_packshot-725x1024.jpg"
     },
     {
-      "id": 14,
+      "id": "14",
       "listType": "friend-update",
       "title": "The Last of Us Part I",
       "rating": "9.8",
       "price": "R$ 250.00",
       "genre": "Ação-Aventura",
-      "tags": ["Pós-apocalíptico", "Boa trama"],
+      "tags": [
+        "Pós-apocalíptico",
+        "Boa trama"
+      ],
       "description": "The Last of Us Part I é o remake de alta fidelidade do aclamado jogo original de 2013, recriado do zero para o PlayStation 5 e PC.",
       "image": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0720/aZKLRcjaZ8HL03ODxYMZDfaH.png"
     }
   ],
   "reviews": [
-    { "id": 1, "gameId": 1, "username": "Alice", "ratingIcon": "heart", "text": "Que jogo incrível!...", "date": "14 de setembro de 2025" }
-  ],
-
-"achievements": [
     {
-      "id": 1,
+      "id": "1",
+      "gameId": 1,
+      "username": "Alice",
+      "ratingIcon": "heart",
+      "text": "Que jogo incrível!...",
+      "date": "14 de setembro de 2025"
+    },
+    {
+      "id": "dcc0",
+      "gameId": "3",
+      "rating": "love",
+      "text": "ooi",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T22:49:36.554Z"
+    },
+    {
+      "id": "33ab",
+      "gameId": "2",
+      "rating": "love",
+      "text": "ooi",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T22:55:35.194Z"
+    },
+    {
+      "id": "30bd",
+      "gameId": "2",
+      "rating": "love",
+      "text": "ooi",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T22:56:22.338Z"
+    },
+    {
+      "id": "c828",
+      "gameId": "3",
+      "rating": "love",
+      "text": "ooi",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T23:03:46.066Z"
+    },
+    {
+      "id": "f754",
+      "gameId": "3",
+      "rating": "love",
+      "text": "ooi",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T23:04:29.322Z"
+    },
+    {
+      "id": "252b",
+      "gameId": "2",
+      "rating": "love",
+      "text": "oii",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T23:37:16.026Z"
+    },
+    {
+      "id": "5954",
+      "gameId": "2",
+      "rating": "love",
+      "text": "oii",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T23:40:23.802Z"
+    },
+    {
+      "id": "81df",
+      "gameId": "3",
+      "rating": "love",
+      "text": "oii",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-30T23:44:34.194Z"
+    },
+    {
+      "id": "0208",
+      "gameId": "2",
+      "rating": "love",
+      "text": "oii",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-31T01:02:10.401Z"
+    },
+    {
+      "id": "29d7",
+      "gameId": "2",
+      "rating": "love",
+      "text": "oiii",
+      "userId": "ID_DO_USUARIO_LOGADO",
+      "createdAt": "2025-10-31T01:12:43.953Z"
+    }
+  ],
+  "achievements": [
+    {
+      "id": "1",
       "icon": "https://img.icons8.com/emoji/48/trophy-emoji.png",
       "title": "Pioneiro",
       "description": "Fazer a sua primeira análise de um jogo.",
       "rule": "reviews_count >= 1"
     },
     {
-      "id": 2,
+      "id": "2",
       "icon": "https://img.icons8.com/emoji/48/writing-hand-emoji.png",
       "title": "Crítico Ativo",
       "description": "Escrever 10 análises de jogos.",
       "rule": "reviews_count >= 10"
     },
     {
-      "id": 3,
+      "id": "3",
       "icon": "https://img.icons8.com/emoji/48/star-emoji.png",
       "title": "Formador de Opinião",
       "description": "Sua análise recebeu 20 curtidas.",
@@ -195,36 +296,86 @@
   ],
   "categories": [
     {
-        "title": "Survival Horror",
-        "description": "",
-        "image": "https://cdn.mos.cms.futurecdn.net/QU5FRX6V7PWaV7BKk9dBkS-970-80.jpg",
-        "alt": "Ícone de Survival Horror",
-        "color": ""
+      "title": "Survival Horror",
+      "description": "",
+      "image": "https://cdn.mos.cms.futurecdn.net/QU5FRX6V7PWaV7BKk9dBkS-970-80.jpg",
+      "alt": "Ícone de Survival Horror",
+      "color": "",
+      "id": "a68a"
     },
     {
-        "title": "Ação",
-        "description": "Pura adrenalina, combate frenético e missões emocionantes esperam por você.",
-        "image": "https://uploads.jovemnerd.com.br/wp-content/uploads/Uncharted-4-Release.jpg",
-        "alt": "Ícone de Ação",
-        "color": ""
+      "title": "Ação",
+      "description": "Pura adrenalina, combate frenético e missões emocionantes esperam por você.",
+      "image": "https://uploads.jovemnerd.com.br/wp-content/uploads/Uncharted-4-Release.jpg",
+      "alt": "Ícone de Ação",
+      "color": "",
+      "id": "9b8e"
     },
     {
-        "title": "MOBA",
-        "description": "Estratégia em equipe para destruir a base inimiga.",
-        "image": "https://s2-techtudo.glbimg.com/gHl4rMr7ai07ba6THrrXvN3SJBg=/0x0:1200x630/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/9/F/JJADWjRrGJBNSfX1sESw/dota-heroes-1.png",
-        "alt": "Icone de MOBA"
+      "title": "MOBA",
+      "description": "Estratégia em equipe para destruir a base inimiga.",
+      "image": "https://s2-techtudo.glbimg.com/gHl4rMr7ai07ba6THrrXvN3SJBg=/0x0:1200x630/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/9/F/JJADWjRrGJBNSfX1sESw/dota-heroes-1.png",
+      "alt": "Icone de MOBA",
+      "id": "ceb1"
     },
     {
-        "title": "RPG",
-        "description": "Crie seu herói, explore mundos vastos e viva uma história épica.",
-        "image": "https://conteudo.imguol.com.br/c/entretenimento/ef/2020/03/23/final-fantasy-vii-remake-1584986560767_v2_1x1.jpg",
-        "alt": "Ícone de RPG"
+      "title": "RPG",
+      "description": "Crie seu herói, explore mundos vastos e viva uma história épica.",
+      "image": "https://conteudo.imguol.com.br/c/entretenimento/ef/2020/03/23/final-fantasy-vii-remake-1584986560767_v2_1x1.jpg",
+      "alt": "Ícone de RPG",
+      "id": "4b34"
     },
     {
-        "title": "Visual Novel",
-        "description": "Viva uma história interativa através de texto, imagens e música.",
-        "image": "https://www.godisageek.com/wp-content/uploads/steins-gate-0-switch-main.jpg",
-        "alt": "Ícone de Visual Novel"
+      "title": "Visual Novel",
+      "description": "Viva uma história interativa através de texto, imagens e música.",
+      "image": "https://www.godisageek.com/wp-content/uploads/steins-gate-0-switch-main.jpg",
+      "alt": "Ícone de Visual Novel",
+      "id": "e3ea"
+    }
+  ],
+  "lists": [
+    {
+      "id": "1927",
+      "title": "thyerri reizinho",
+      "description": "oldy bbs",
+      "gamesCount": 4,
+      "games": [
+        {
+          "id": "3",
+          "title": "The Last of Us Part II",
+          "image": "https://image.api.playstation.com/vulcan/ap/rnd/202311/1717/3a33a4b0a02b54074d4989a4118a4b594815d945b44a82cf.png",
+          "genre": "Ação-Aventura",
+          "rating": "9.5"
+        },
+        {
+          "id": "14",
+          "title": "The Last of Us Part I",
+          "image": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0720/aZKLRcjaZ8HL03ODxYMZDfaH.png",
+          "genre": "Ação-Aventura",
+          "rating": "9.8"
+        },
+        {
+          "id": "2",
+          "title": "Resident Evil 4 Remake",
+          "image": "https://preview.redd.it/the-original-re4-had-so-many-iconic-cover-art-variants-to-v0-dp321hnyq85a1.png?width=600&format=png&auto=webp&s=3ce81d2a230d804660b616b8379be59b1dbdf853",
+          "genre": "Survival Horror",
+          "rating": "9.8"
+        },
+        {
+          "id": "12",
+          "title": "Tomb Raider (2013)",
+          "image": "https://laracroft.com.br/assets/uploads/2020/04/tr_2013_packshot-725x1024.jpg",
+          "genre": "Ação-Aventura",
+          "rating": "9.4"
+        }
+      ]
+    },
+    {
+      "id": "b4d1",
+      "title": "felipe cachorra",
+      "description": "te amo vida",
+      "gamesCount": 0,
+      "games": []
     }
   ]
 }
