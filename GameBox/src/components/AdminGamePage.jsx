@@ -1,144 +1,113 @@
-// src/components/AdminAchievementsPage.jsx
+// src/components/AdminGamePage.jsx
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-// Garanta que o nome do arquivo aqui está em minúsculo: 'achievementsSlice'
-import { fetchAchievements, addNewAchievement, deleteAchievement, updateAchievement } from '../redux/achievementsSlice';
+import { fetchGameById, updateGame } from '../redux/gamesSlice'; // Importa do gamesSlice!
 import { 
     Container, Box, Typography, TextField, Button, Paper,
-    Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    CircularProgress, ButtonGroup
+    CircularProgress 
 } from '@mui/material';
 
-function AdminAchievementsPage() {
+function AdminGamePage() {
+    const { gameId } = useParams();
+    const navigate = useNavigate();
     const dispatch = useDispatch();
-    const achievements = useSelector((state) => state.achievements.items);
-    const status = useSelector((state) => state.achievements.status);
-    
-    const [isEditing, setIsEditing] = useState(false);
-    const [editingId, setEditingId] = useState(null);
+
+    // Busca o jogo selecionado e o status do Redux
+    const game = useSelector((state) => state.games.selectedGame);
+    const status = useSelector((state) => state.games.selectedGameStatus);
+
+    // Estado local para o formulário
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        rule: '',
-        icon: ''
+        price: '',
+        genre: '',
+        image: '',
+        tags: [] // Tags como um array
     });
 
+    // 1. Busca os dados do jogo quando a página carrega
     useEffect(() => {
-        if (status === 'idle') {
-            dispatch(fetchAchievements());
+        if (gameId) {
+            dispatch(fetchGameById(gameId));
         }
-    }, [status, dispatch]);
+    }, [gameId, dispatch]);
 
+    // 2. Preenche o formulário quando os dados do jogo chegam do Redux
+    useEffect(() => {
+        if (game) {
+            setFormData({
+                title: game.title || '',
+                description: game.description || '',
+                price: game.price || '',
+                genre: game.genre || '',
+                image: game.image || '',
+                tags: game.tags || [] // Garante que 'tags' seja um array
+            });
+        }
+    }, [game]); // Depende do 'game' do Redux
+
+    // Função para atualizar o estado do formulário
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData(prevData => ({ ...prevData, [name]: value }));
     };
 
-    const resetForm = () => {
-        setFormData({ title: '', description: '', rule: '', icon: '' });
-        setIsEditing(false);
-        setEditingId(null);
+    // Função para lidar com 'tags' (que é um array)
+    const handleTagsChange = (event) => {
+        // Converte a string "tag1, tag2" em um array ["tag1", "tag2"]
+        const tagsArray = event.target.value.split(',').map(tag => tag.trim());
+        setFormData(prevData => ({ ...prevData, tags: tagsArray }));
     };
 
+    // 3. Função de Salvar (Atualizar)
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (isEditing) {
-            dispatch(updateAchievement({ id: editingId, ...formData }));
-        } else {
-            dispatch(addNewAchievement(formData));
-        }
-        resetForm();
+        // Envia os dados atualizados para o Redux (que manda pro server.js)
+        dispatch(updateGame({ id: gameId, ...formData }));
+        alert('Jogo atualizado com sucesso!');
+        navigate(`/jogos/${gameId}`); // Volta para a página de detalhes
     };
 
-    const handleEditClick = (achievement) => {
-        setIsEditing(true);
-        setEditingId(achievement.id);
-        setFormData({
-            title: achievement.title,
-            description: achievement.description,
-            rule: achievement.rule,
-            icon: achievement.icon
-        });
-        window.scrollTo(0, 0); 
-    };
-
-    // --- AQUI ESTÁ A FUNÇÃO CORRIGIDA E COMPLETA ---
-    const handleDelete = (id) => {
-        // 1. Mostra o pop-up de confirmação
-        if (window.confirm('Tem certeza que quer remover esta conquista?')) {
-            // 2. Se o usuário clicar "OK", dispara a ação de deletar
-            dispatch(deleteAchievement(id));
-        }
-    };
-    // --- FIM DA CORREÇÃO ---
+    if (status === 'loading' || !game) {
+        return <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress /></Box>;
+    }
 
     return (
-        <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
+        <Container component="main" maxWidth="md" sx={{ py: 4 }}>
             <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700, textAlign: 'center', mb: 4 }}>
-                Gerenciamento de Conquistas
+                Editar Jogo
             </Typography>
 
-            {/* Formulário (agora dinâmico) */}
             <Paper sx={{ p: 3, mb: 4 }}>
                 <Typography variant="h5" component="h3" gutterBottom>
-                    {isEditing ? `Editando: ${formData.title}` : 'Adicionar Nova Conquista'}
+                    {formData.title}
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit}>
-                    <TextField fullWidth margin="normal" required id="ach-title" name="title" label="Título da Conquista" value={formData.title} onChange={handleChange} />
-                    <TextField fullWidth margin="normal" required id="ach-description" name="description" label="Descrição" multiline rows={3} value={formData.description} onChange={handleChange} />
-                    <TextField fullWidth margin="normal" id="ach-rule" name="rule" label="Regra da Conquista (para o sistema)" value={formData.rule} onChange={handleChange} />
-                    <TextField fullWidth margin="normal" id="ach-icon" name="icon" label="URL do Ícone" value={formData.icon} onChange={handleChange} />
+                    <TextField fullWidth margin="normal" required id="game-title" name="title" label="Título do Jogo" value={formData.title} onChange={handleChange} />
+                    <TextField fullWidth margin="normal" required id="game-desc" name="description" label="Descrição" multiline rows={4} value={formData.description} onChange={handleChange} />
+                    <TextField fullWidth margin="normal" id="game-price" name="price" label="Preço" placeholder="R$ 199,90" value={formData.price} onChange={handleChange} />
+                    <TextField fullWidth margin="normal" id="game-genre" name="genre" label="Gênero" placeholder="Ação-Aventura" value={formData.genre} onChange={handleChange} />
+                    <TextField fullWidth margin="normal" id="game-image" name="image" label="URL da Imagem da Capa" value={formData.image} onChange={handleChange} />
+                    <TextField 
+                        fullWidth 
+                        margin="normal" 
+                        id="game-tags" 
+                        name="tags" 
+                        label="Tags (separadas por vírgula)" 
+                        placeholder="Ação, Terror, Furtividade"
+                        value={formData.tags.join(', ')} // Converte o array em string para exibir
+                        onChange={handleTagsChange} 
+                    />
                     
-                    <ButtonGroup sx={{ mt: 2 }} fullWidth>
-                        <Button type="submit" variant="contained" disabled={status === 'loading'}>
-                            {status === 'loading' ? 'Salvando...' : (isEditing ? 'Atualizar Conquista' : 'Salvar Conquista')}
-                        </Button>
-                        {isEditing && (
-                            <Button variant="outlined" color="secondary" onClick={resetForm}>
-                                Cancelar Edição
-                            </Button>
-                        )}
-                    </ButtonGroup>
+                    <Button type="submit" variant="contained" sx={{ mt: 2 }} fullWidth>
+                        Salvar Alterações
+                    </Button>
                 </Box>
-            </Paper>
-
-            {/* Tabela de Conquistas Existentes */}
-            <Paper sx={{ p: 3 }}>
-                <Typography variant="h5" component="h3" gutterBottom>
-                    Conquistas Existentes
-                </Typography>
-                <TableContainer>
-                    {status === 'loading' && <CircularProgress sx={{ m: 'auto' }} />}
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Ícone</TableCell>
-                                <TableCell>Título</TableCell>
-                                <TableCell>Descrição</TableCell>
-                                <TableCell>Regra</TableCell>
-                                <TableCell align="right">Ações</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {achievements.map((ach) => (
-                                <TableRow key={ach.id}>
-                                    <TableCell><Box component="img" src={ach.icon} alt="ícone" sx={{ width: 40, height: 40 }} /></TableCell>
-                                    <TableCell>{ach.title}</TableCell>
-                                    <TableCell>{ach.description}</TableCell>
-                                    <TableCell><code>{ach.rule}</code></TableCell>
-                                    <TableCell align="right">
-                                        <Button size="small" variant="outlined" sx={{ mr: 1 }} onClick={() => handleEditClick(ach)}>Editar</Button>
-                                        {/* Este botão agora chama a função handleDelete correta */}
-                                        <Button size="small" variant="outlined" color="error" onClick={() => handleDelete(ach.id)}>Remover</Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
             </Paper>
         </Container>
     );
 }
 
-export default AdminAchievementsPage;
+export default AdminGamePage;
