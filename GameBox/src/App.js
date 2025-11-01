@@ -12,6 +12,7 @@ import HomePage from './pages/HomePage'; // Você precisa ter um componente para
 import ReviewDetailPage from './pages/ReviewDetailPage'; // A página que mostra os comentários
 import CreateReviewPage from './pages/CreateReviewPage';
 import GameDetailPage from './components/GameDetailPage.jsx'; 
+import AdminGamePage from './components/AdminGamePage.jsx';
 import EditListPage from './components/EditListPage.jsx'; 
 import MinhasListasPage from './components/MinhasListasPage.jsx';
 
@@ -46,6 +47,7 @@ function App() {
           <Route path="/review/:reviewId" element={<ReviewDetailPage />} />
           <Route path="/minhas-listas" element={<MinhasListasPage />} />
           <Route path="/minhas-listas/editar/:listId" element={<EditListPage />} />
+          <Route path="/admin/jogo/:gameId" element={<AdminGamePage />} />
 
           {/* Adicione suas outras rotas aqui (login, perfil, etc.) */}
         </Routes>
