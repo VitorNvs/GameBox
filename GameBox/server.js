@@ -1,9 +1,13 @@
 // server.js
 import express from 'express';
 import cors from 'cors';
+import bcrypt from 'bcryptjs'; 
+import jwt from 'jsonwebtoken';
 
 const app = express();
 const PORT = 8000;
+
+const JWT_SECRET = 'seu-segredo-super-secreto-123';
 
 // --- Configuração do Servidor ---
 app.use(cors()); 
@@ -203,85 +207,21 @@ let reviews = [
       "date": "14 de setembro de 2025"
     },
     {
-      "id": "dcc0",
-      "gameId": "3",
-      "rating": "love",
-      "text": "ooi",
-      "userId": "ID_DO_USUARIO_LOGADO",
-      "createdAt": "2025-10-30T22:49:36.554Z"
-    },
-    {
-      "id": "33ab",
-      "gameId": "2",
-      "rating": "love",
-      "text": "ooi",
-      "userId": "ID_DO_USUARIO_LOGADO",
-      "createdAt": "2025-10-30T22:55:35.194Z"
-    },
-    {
-      "id": "30bd",
-      "gameId": "2",
-      "rating": "love",
-      "text": "ooi",
-      "userId": "ID_DO_USUARIO_LOGADO",
-      "createdAt": "2025-10-30T22:56:22.338Z"
-    },
-    {
-      "id": "c828",
-      "gameId": "3",
-      "rating": "love",
-      "text": "ooi",
-      "userId": "ID_DO_USUARIO_LOGADO",
-      "createdAt": "2025-10-30T23:03:46.066Z"
-    },
-    {
-      "id": "f754",
-      "gameId": "3",
-      "rating": "love",
-      "text": "ooi",
-      "userId": "ID_DO_USUARIO_LOGADO",
-      "createdAt": "2025-10-30T23:04:29.322Z"
-    },
-    {
-      "id": "252b",
-      "gameId": "2",
-      "rating": "love",
-      "text": "oii",
-      "userId": "ID_DO_USUARIO_LOGADO",
-      "createdAt": "2025-10-30T23:37:16.026Z"
-    },
-    {
-      "id": "5954",
-      "gameId": "2",
-      "rating": "love",
-      "text": "oii",
-      "userId": "ID_DO_USUARIO_LOGADO",
-      "createdAt": "2025-10-30T23:40:23.802Z"
-    },
-    {
-      "id": "81df",
-      "gameId": "3",
-      "rating": "love",
-      "text": "oii",
-      "userId": "ID_DO_USUARIO_LOGADO",
-      "createdAt": "2025-10-30T23:44:34.194Z"
-    },
-    {
-      "id": "0208",
-      "gameId": "2",
-      "rating": "love",
-      "text": "oii",
-      "userId": "ID_DO_USUARIO_LOGADO",
-      "createdAt": "2025-10-31T01:02:10.401Z"
-    },
-    {
-      "id": "29d7",
-      "gameId": "2",
-      "rating": "love",
-      "text": "oiii",
-      "userId": "ID_DO_USUARIO_LOGADO",
-      "createdAt": "2025-10-31T01:12:43.953Z"
-    }
+    "id": "33ab",
+    "gameId": 2, 
+    "username": "Bruno",
+    "ratingIcon": "thumb-up", // <-- "thumb-up" (o código entende)
+    "text": "O jogo é muito bom, com uma história principal excelente. No entanto, encontrei alguns bugs...",
+    "date": "12 de setembro de 2025"
+  },
+  {
+    "id": "c828",
+    "gameId": 3, // Para The Last of Us Part II
+    "username": "Carla",
+    "rating": "heart", // <-- "heart" (o código entende)
+    "text": "Visualmente deslumbrante e com uma trama que te prende do início ao fim. O melhor remake já feito!",
+    "date": "10 de setembro de 2025"
+  }
 ];
 let achievements = [
   {
@@ -389,6 +329,16 @@ let lists = [
       "gamesCount": 0,
       "games": []
     }
+];
+
+  let users = [
+  {
+    "id": "admin001",
+    "username": "henrysz",
+    "email": "thyerri_macedo@hotmail.com",
+    // A senha abaixo é "26338690", já criptografada.
+    "password": "$2a$10$v0k.G.A9q.Y.8.u.J.O.W.e1t1B/kLgC.n.Z.o.X.I.E.F.U.W.b.C"
+  }
 ];
 
 
@@ -560,6 +510,45 @@ app.delete('/achievements/:id', (req, res) => {
     } else {
         res.status(404).json({ message: 'Conquista não encontrada' });
     }
+});
+
+// POST /auth/register (Cria um novo usuário)
+app.post('/auth/register', async (req, res) => {
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: 'Por favor, preencha todos os campos.' });
+    }
+    if (users.find(u => u.username === username)) {
+        return res.status(400).json({ message: 'Nome de usuário já existe.' });
+    }
+    if (users.find(u => u.email === email)) {
+        return res.status(400).json({ message: 'E-mail já cadastrado.' });
+    }
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const newUser = { id: generateId(), username, email, password: hashedPassword };
+    users.push(newUser);
+    console.log('Novo usuário registrado:', newUser.username);
+    res.status(201).json({ message: 'Usuário registrado com sucesso!' });
+});
+
+// POST /auth/login (Loga o usuário)
+app.post('/auth/login', async (req, res) => {
+    const { username, password } = req.body;
+    const user = users.find(u => u.username === username);
+    if (!user) {
+        return res.status(400).json({ message: 'Usuário ou senha inválidos.' });
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+        return res.status(400).json({ message: 'Usuário ou senha inválidos.' });
+    }
+    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+    console.log('Usuário logado:', user.username);
+    res.json({
+        token,
+        user: { id: user.id, username: user.username, email: user.email }
+    });
 });
 
 // --- Iniciar o Servidor ---
