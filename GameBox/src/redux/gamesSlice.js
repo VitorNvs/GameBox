@@ -3,11 +3,11 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // URL base do seu NOVO servidor
-const GAMES_URL = 'http://localhost:8000/games'; // Porta 8000
+const GAMES_URL = 'http://localhost:8000/jogos'; // Porta 8000
 
 // --- AÇÕES ASSÍNCRONAS ---
 
-export const fetchGames = createAsyncThunk('games/fetchGames', async (_, { rejectWithValue }) => {
+export const fetchGames = createAsyncThunk('jogos/fetchGames', async (_, { rejectWithValue }) => {
     try {
         const response = await axios.get(GAMES_URL);
         return response.data;
@@ -16,7 +16,7 @@ export const fetchGames = createAsyncThunk('games/fetchGames', async (_, { rejec
     }
 });
 
-export const fetchGameById = createAsyncThunk('games/fetchGameById', async (gameId, { rejectWithValue }) => {
+export const fetchGameById = createAsyncThunk('jogos/fetchGameById', async (gameId, { rejectWithValue }) => {
     try {
         const response = await axios.get(`${GAMES_URL}/${gameId}?_embed=reviews`);
         return response.data;
@@ -25,7 +25,7 @@ export const fetchGameById = createAsyncThunk('games/fetchGameById', async (game
     }
 });
 
-export const addNewGame = createAsyncThunk('games/addNewGame', async (newGameData, { rejectWithValue }) => {
+export const addNewGame = createAsyncThunk('jogos/addNewGame', async (newGameData, { rejectWithValue }) => {
     try {
         const response = await axios.post(GAMES_URL, newGameData);
         return response.data;
@@ -35,7 +35,7 @@ export const addNewGame = createAsyncThunk('games/addNewGame', async (newGameDat
 });
 
 // --- NOVA AÇÃO DE ATUALIZAR ---
-export const updateGame = createAsyncThunk('games/updateGame', async ({ id, ...gameData }, { rejectWithValue }) => {
+export const updateGame = createAsyncThunk('jogos/updateGame', async ({ id, ...gameData }, { rejectWithValue }) => {
     try {
         const response = await axios.patch(`${GAMES_URL}/${id}`, gameData);
         return response.data;
@@ -45,7 +45,7 @@ export const updateGame = createAsyncThunk('games/updateGame', async ({ id, ...g
 });
 
 // --- NOVA AÇÃO DE DELETAR ---
-export const deleteGame = createAsyncThunk('games/deleteGame', async (gameId, { rejectWithValue }) => {
+export const deleteGame = createAsyncThunk('jogos/deleteGame', async (gameId, { rejectWithValue }) => {
     try {
         await axios.delete(`${GAMES_URL}/${gameId}`);
         return gameId; // Retorna o ID do jogo deletado
@@ -67,7 +67,7 @@ const initialState = {
 
 // --- SLICE ---
 const gamesSlice = createSlice({
-    name: 'games',
+    name: 'jogos',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
