@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchGameById, updateGame } from '../redux/gamesSlice'; // Importa do gamesSlice!
+// 1. Importa do gamesSlice!
+import { fetchGameById, updateGame } from '../redux/gamesSlice'; 
 import { 
     Container, Box, Typography, TextField, Button, Paper,
     CircularProgress 
@@ -13,11 +14,11 @@ function AdminGamePage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    // Busca o jogo selecionado e o status do Redux
+    // 2. Busca o jogo selecionado e o status do Redux
     const game = useSelector((state) => state.games.selectedGame);
     const status = useSelector((state) => state.games.selectedGameStatus);
 
-    // Estado local para o formulário
+    // 3. Estado local para o formulário
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -27,14 +28,14 @@ function AdminGamePage() {
         tags: [] // Tags como um array
     });
 
-    // 1. Busca os dados do jogo quando a página carrega
+    // 4. Busca os dados do jogo quando a página carrega
     useEffect(() => {
         if (gameId) {
             dispatch(fetchGameById(gameId));
         }
     }, [gameId, dispatch]);
 
-    // 2. Preenche o formulário quando os dados do jogo chegam do Redux
+    // 5. Preenche o formulário quando os dados do jogo chegam do Redux
     useEffect(() => {
         if (game) {
             setFormData({
@@ -48,20 +49,19 @@ function AdminGamePage() {
         }
     }, [game]); // Depende do 'game' do Redux
 
-    // Função para atualizar o estado do formulário
+    // 6. Funções para atualizar o estado do formulário
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData(prevData => ({ ...prevData, [name]: value }));
     };
 
-    // Função para lidar com 'tags' (que é um array)
     const handleTagsChange = (event) => {
         // Converte a string "tag1, tag2" em um array ["tag1", "tag2"]
         const tagsArray = event.target.value.split(',').map(tag => tag.trim());
         setFormData(prevData => ({ ...prevData, tags: tagsArray }));
     };
 
-    // 3. Função de Salvar (Atualizar)
+    // 7. Função de Salvar (Atualizar)
     const handleSubmit = (event) => {
         event.preventDefault();
         // Envia os dados atualizados para o Redux (que manda pro server.js)
@@ -110,4 +110,4 @@ function AdminGamePage() {
     );
 }
 
-export default AdminGamePage;
+export default AdminGamePage; // <-- O export está correto!

@@ -3,556 +3,188 @@ import express from 'express';
 import cors from 'cors';
 import bcrypt from 'bcryptjs'; 
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose'; // <-- IMPORTA O MONGOOSE
 
 const app = express();
 const PORT = 8000;
-
 const JWT_SECRET = 'seu-segredo-super-secreto-123';
 
-// --- Configuração do Servidor ---
 app.use(cors()); 
 app.use(express.json()); 
 
-// --- "Banco de Dados" em Memória RAM (COM SEUS DADOS) ---
+// --- CONEXÃO COM O MONGODB ATLAS ---
+// Lembre-se de colocar sua SENHA e o NOME DO BANCO (gamebase-db) corretos!
+const MONGO_URI = 'mongodb+srv://henryissues:thyerri123@cluster0.o0mpfp8.mongodb.net/gamebase-db?retryWrites=true&w=majority';
 
-let games = [
-  {
-      "id": "1",
-      "listType": "popular",
-      "title": "The Witcher 3: Wild Hunt",
-      "rating": "9.3",
-      "price": "R$ 79,99",
-      "genre": "RPG de Ação",
-      "tags": [
-        "Mundo Aberto",
-        "Medieval"
-      ],
-      "description": "Você é Geralt de Rívia, um mercenário matador de monstros...",
-      "image": "https://upload.wikimedia.org/wikipedia/pt/0/06/TW3_Wild_Hunt.png"
-    },
-    {
-      "id": "2",
-      "listType": "popular",
-      "title": "Resident Evil 4 Remake",
-      "rating": "9.8",
-      "price": "R$ 249,00",
-      "genre": "Survival Horror",
-      "tags": [
-        "Ação",
-        "Terror"
-      ],
-      "description": "Seis anos se passaram desde o desastre biológico em Raccoon City...",
-      "image": "https://preview.redd.it/the-original-re4-had-so-many-iconic-cover-art-variants-to-v0-dp321hnyq85a1.png?width=600&format=png&auto=webp&s=3ce81d2a230d804660b616b8379be59b1dbdf853"
-    },
-    {
-      "id": "3",
-      "listType": "popular",
-      "title": "The Last of Us Part II",
-      "rating": "9.5",
-      "price": "R$ 199,50",
-      "genre": "Ação-Aventura",
-      "tags": [
-        "Pós-apocalíptico",
-        "Furtividade"
-      ],
-      "description": "Cinco anos depois de sua perigosa jornada pelos Estados Unidos...",
-      "image": "https://image.api.playstation.com/vulcan/ap/rnd/202311/1717/3a33a4b0a02b54074d4989a4118a4b594815d945b44a82cf.png"
-    },
-    {
-      "id": "28",
-      "listType": "popular",
-      "title": "Silent Hill F (2025)",
-      "rating": "9.6",
-      "price": "R$ 349,90",
-      "genre": "Terror",
-      "tags": [
-        "Terror-Psicológico",
-        "Furtividade"
-      ],
-      "description": "Silent Hill f é um jogo de terror psicológico de survival horror ambientado no Japão dos anos 1960, com foco na história de Hinako Shimizu, uma estudante que vive na pacata cidade montanhosa de Ebisugaoka.",
-      "image": "https://assets.nuuvem.com/image/upload/t_boxshot_big/v1/products/67f9674ff0174f89298f3cf4/boxshots/yalk2lbqm7sesvmfbs25.jpg"
-    },
-    {
-      "id": "70",
-      "listType": "friend-update",
-      "title": "Spider-Man Remastered",
-      "rating": "9.5",
-      "price": "R$289,90",
-      "genre": "Ação",
-      "tags": [
-        "Mundo Aberto",
-        "Super-Heróis"
-      ],
-      "description": "CMarvel's Spider-Man Remastered é um jogo de ação e aventura onde o jogador controla um Peter Parker mais experiente que luta contra criminosos icônicos na Nova York da Marvel.",
-      "image": "https://image.api.playstation.com/vulcan/ap/rnd/202009/3021/BtsjAgHT9pqHRXtN9FCk7xc8.png"
-    },
-    {
-      "id": "4",
-      "listType": "friend-update",
-      "title": "Hollow Knight: Silksong",
-      "rating": "9.9",
-      "price": "R$ 99,00",
-      "genre": "Metroidvania",
-      "tags": [
-        "Indie",
-        "Plataforma"
-      ],
-      "description": "Explore um vasto reino assombrado em Hollow Knight: Silksong!",
-      "image": "https://upload.wikimedia.org/wikipedia/pt/8/86/Hollow_Knight_Silksong_cover.jpeg"
-    },
-    {
-      "id": "5",
-      "listType": "friend-update",
-      "title": "Grand Theft Auto V",
-      "rating": "9.0",
-      "price": "R$ 109,90",
-      "genre": "Ação-Aventura",
-      "tags": [
-        "Mundo Aberto",
-        "Moderno"
-      ],
-      "description": "Quando um malandro de rua, um ladrão de bancos aposentado e um psicopata se veem encrencados...",
-      "image": "https://upload.wikimedia.org/wikipedia/pt/8/80/Grand_Theft_Auto_V_capa.png"
-    },
-    {
-      "id": "6",
-      "listType": "friend-update",
-      "title": "Resident Evil Village",
-      "rating": "9.1",
-      "price": "R$ 189,90",
-      "genre": "Survival Horror",
-      "tags": [
-        "Ação",
-        "Terror",
-        "Primeira Pessoa"
-      ],
-      "description": "A história se passa alguns anos após os eventos de Resident Evil 7. Ethan Winters vive com sua esposa Mia e sua filha recém-nascida, Rosemary.",
-      "image": "https://i.redd.it/tqrl4tf4rt671.png"
-    },
-    {
-      "id": "8",
-      "title": "Elden Ring",
-      "rating": "9.7",
-      "price": "R$ 299,90",
-      "genre": "RPG de Ação",
-      "tags": [
-        "Mundo Aberto",
-        "Souls-like"
-      ],
-      "description": "Levante-se, Maculado, e seja guiado pela graça para brandir o poder do Anel Prístino e se tornar um Lorde Prístino nas Terras Intermédias.",
-      "image": "https://upload.wikimedia.org/wikipedia/pt/thumb/0/0d/Elden_Ring_capa.jpg/330px-Elden_Ring_capa.jpg"
-    },
-    {
-      "id": "10",
-      "title": "God of War Ragnarök",
-      "rating": "9.4",
-      "price": "R$ 349,90",
-      "genre": "Ação-Aventura",
-      "tags": [
-        "Mitologia",
-        "História Profunda"
-      ],
-      "description": "Junte-se a Kratos e Atreus em uma jornada mítica à procura de respostas e aliados antes que o Ragnarök comece.",
-      "image": "https://upload.wikimedia.org/wikipedia/pt/thumb/a/a5/God_of_War_Ragnar%C3%B6k_capa.jpg/330px-God_of_War_Ragnar%C3%B6k_capa.jpg"
-    },
-    {
-      "id": "11",
-      "title": "Resident Evil 6",
-      "rating": "7.6",
-      "price": "R$ 89,00",
-      "genre": "Ação-Aventura",
-      "tags": [
-        "Zumbi",
-        "Ação"
-      ],
-      "description": "Resident Evil 6 é um jogo de ação e horror que mistura elementos de sobrevivência, ação intensa e uma história com quatro tramas distintas, porém entrelaçadas, que acompanham personagens icônicos como Leon S. Kennedy e Chris Redfield, além de novos protagonistas como Jake Muller e Ada Wong.",
-      "image": "https://upload.wikimedia.org/wikipedia/pt/7/73/Resident_evil_6.jpg"
-    },
-    {
-      "id": "12",
-      "listType": "friend-update",
-      "title": "Tomb Raider (2013)",
-      "rating": "9.4",
-      "price": "R$ 99,90",
-      "genre": "Ação-Aventura",
-      "tags": [
-        "Aventura",
-        "Sobrevivência"
-      ],
-      "description": " Após um naufrágio, Lara e sua tripulação ficam presos em uma ilha misteriosa e hostil, onde ela precisa lutar pela sobrevivência, enfrentar perigos e desvendar segredos. ",
-      "image": "https://laracroft.com.br/assets/uploads/2020/04/tr_2013_packshot-725x1024.jpg"
-    },
-    {
-      "id": "14",
-      "listType": "friend-update",
-      "title": "The Last of Us Part I",
-      "rating": "9.8",
-      "price": "R$ 250.00",
-      "genre": "Ação-Aventura",
-      "tags": [
-        "Pós-apocalíptico",
-        "Boa trama"
-      ],
-      "description": "The Last of Us Part I é o remake de alta fidelidade do aclamado jogo original de 2013, recriado do zero para o PlayStation 5 e PC.",
-      "image": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0720/aZKLRcjaZ8HL03ODxYMZDfaH.png"
-    }
-];
-let reviews = [
-  {
-      "id": "1",
-      "gameId": 1,
-      "username": "Alice",
-      "ratingIcon": "heart",
-      "text": "Que jogo incrível!...",
-      "date": "14 de setembro de 2025"
-    },
-    {
-    "id": "33ab",
-    "gameId": 2, 
-    "username": "Bruno",
-    "ratingIcon": "thumb-up", // <-- "thumb-up" (o código entende)
-    "text": "O jogo é muito bom, com uma história principal excelente. No entanto, encontrei alguns bugs...",
-    "date": "12 de setembro de 2025"
-  },
-  {
-    "id": "c828",
-    "gameId": 3, // Para The Last of Us Part II
-    "username": "Carla",
-    "rating": "heart", // <-- "heart" (o código entende)
-    "text": "Visualmente deslumbrante e com uma trama que te prende do início ao fim. O melhor remake já feito!",
-    "date": "10 de setembro de 2025"
-  }
-];
-let achievements = [
-  {
-      "id": "1",
-      "icon": "https://img.icons8.com/emoji/48/trophy-emoji.png",
-      "title": "Pioneiro",
-      "description": "Fazer a sua primeira análise de um jogo.",
-      "rule": "reviews_count >= 1"
-    },
-    {
-      "id": "2",
-      "icon": "https://img.icons8.com/emoji/48/writing-hand-emoji.png",
-      "title": "Crítico Ativo",
-      "description": "Escrever 10 análises de jogos.",
-      "rule": "reviews_count >= 10"
-    },
-    {
-      "id": "3",
-      "icon": "https://img.icons8.com/emoji/48/star-emoji.png",
-      "title": "Formador de Opinião",
-      "description": "Sua análise recebeu 20 curtidas.",
-      "rule": "review_likes_count >= 20"
-    }
-];
-let categories = [
-  {
-      "title": "Survival Horror",
-      "description": "",
-      "image": "https://cdn.mos.cms.futurecdn.net/QU5FRX6V7PWaV7BKk9dBkS-970-80.jpg",
-      "alt": "Ícone de Survival Horror",
-      "color": "",
-      "id": "a68a"
-    },
-    {
-      "title": "Ação",
-      "description": "Pura adrenalina, combate frenético e missões emocionantes esperam por você.",
-      "image": "https://uploads.jovemnerd.com.br/wp-content/uploads/Uncharted-4-Release.jpg",
-      "alt": "Ícone de Ação",
-      "color": "",
-      "id": "9b8e"
-    },
-    {
-      "title": "MOBA",
-      "description": "Estratégia em equipe para destruir a base inimiga.",
-      "image": "https://s2-techtudo.glbimg.com/gHl4rMr7ai07ba6THrrXvN3SJBg=/0x0:1200x630/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/9/F/JJADWjRrGJBNSfX1sESw/dota-heroes-1.png",
-      "alt": "Icone de MOBA",
-      "id": "ceb1"
-    },
-    {
-      "title": "RPG",
-      "description": "Crie seu herói, explore mundos vastos e viva uma história épica.",
-      "image": "https://conteudo.imguol.com.br/c/entretenimento/ef/2020/03/23/final-fantasy-vii-remake-1584986560767_v2_1x1.jpg",
-      "alt": "Ícone de RPG",
-      "id": "4b34"
-    },
-    {
-      "title": "Visual Novel",
-      "description": "Viva uma história interativa através de texto, imagens e música.",
-      "image": "https://www.godisageek.com/wp-content/uploads/steins-gate-0-switch-main.jpg",
-      "alt": "Ícone de Visual Novel",
-      "id": "e3ea"
-    }
-];
-let lists = [
-  {
-      "id": "1927",
-      "title": "thyerri reizinho",
-      "description": "oldy bbs",
-      "gamesCount": 4,
-      "games": [
-        {
-          "id": "3",
-          "title": "The Last of Us Part II",
-          "image": "https://image.api.playstation.com/vulcan/ap/rnd/202311/1717/3a33a4b0a02b54074d4989a4118a4b594815d945b44a82cf.png",
-          "genre": "Ação-Aventura",
-          "rating": "9.5"
-        },
-        {
-          "id": "14",
-          "title": "The Last of Us Part I",
-          "image": "https://image.api.playstation.com/vulcan/ap/rnd/202206/0720/aZKLRcjaZ8HL03ODxYMZDfaH.png",
-          "genre": "Ação-Aventura",
-          "rating": "9.8"
-        },
-        {
-          "id": "2",
-          "title": "Resident Evil 4 Remake",
-          "image": "https://preview.redd.it/the-original-re4-had-so-many-iconic-cover-art-variants-to-v0-dp321hnyq85a1.png?width=600&format=png&auto=webp&s=3ce81d2a230d804660b616b8379be59b1dbdf853",
-          "genre": "Survival Horror",
-          "rating": "9.8"
-        },
-        {
-          "id": "12",
-          "title": "Tomb Raider (2013)",
-          "image": "https://laracroft.com.br/assets/uploads/2020/04/tr_2013_packshot-725x1024.jpg",
-          "genre": "Ação-Aventura",
-          "rating": "9.4"
+mongoose.connect(MONGO_URI)
+    .then(() => console.log('Conectado ao MongoDB Atlas com sucesso!'))
+    .catch((err) => console.error('Erro ao conectar ao MongoDB:', err));
+
+// --- DEFINIÇÃO DOS "MODELOS" (Schemas) ---
+
+const UserSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+});
+const User = mongoose.model('User', UserSchema);
+
+// --- MUDANÇA AQUI: O SCHEMA CORRETO PARA OS SEUS DADOS ---
+const GameSchema = new mongoose.Schema({
+    id: { type: String }, // O ID do seu JSON
+    listType: { type: String },
+    title: { type: String, required: true },
+    rating: { type: String },
+    price: { type: String },
+    genre: { type: String },
+    tags: [String], // <-- Um array de Strings
+    description: { type: String },
+    image: { type: String }
+});
+// O Mongoose vai procurar pela coleção "games" (plural de "Game")
+const Game = mongoose.model('jogos', GameSchema);
+// --- FIM DA MUDANÇA ---
+
+
+// (Você precisará criar os Schemas para Lists, Reviews, etc., também)
+
+
+// --- REESCREVENDO OS ENDPOINTS (O "Cardápio") ---
+
+// --- Endpoints de GAMES (AGORA USANDO MONGODB) ---
+
+// --- Endpoints de JOGOS (usando MongoDB) ---
+
+// GET /jogos (listar todos ou por gênero)
+app.get('/jogos', async (req, res) => {
+    try {
+        const categoryGenre = req.query.genre; // o front-end ainda pode mandar ?genre=Ação
+        let jogos;
+        if (categoryGenre) {
+            jogos = await Game.find({
+                $or: [
+                    { genre: { $regex: categoryGenre, $options: 'i' } },
+                    { tags: { $regex: categoryGenre, $options: 'i' } }
+                ]
+            });
+            console.log('Filtro ativo: ${jogos.length} jogos encontrados');
+        } else {
+            jogos = await Game.find();
+            console.log('200 OK: Enviando ${jogos.length} jogos do MongoDB');
         }
-      ]
-    },
-    {
-      "id": "b4d1",
-      "title": "felipe cachorra",
-      "description": "te amo vida",
-      "gamesCount": 0,
-      "games": []
-    }
-];
-
-  let users = [
-  {
-    "id": "admin001",
-    "username": "henrysz",
-    "email": "thyerri_macedo@hotmail.com",
-    // A senha abaixo é "26338690", já criptografada.
-    "password": "$2a$10$v0k.G.A9q.Y.8.u.J.O.W.e1t1B/kLgC.n.Z.o.X.I.E.F.U.W.b.C"
-  }
-];
-
-
-// --- Lógica para simular IDs únicos ---
-let nextGameId = games.length ? Math.max(...games.map(g => parseInt(g.id))) + 1 : 1;
-const generateId = () => Math.random().toString(16).slice(2, 6);
-
-// --- Endpoints de GAMES (CORRIGIDOS) ---
-
-// GET /games
-app.get('/games', (req, res) => {
-    const categoryGenre = req.query.genre;
-    if (categoryGenre) {
-        // ... (sua lógica de filtro) ...
-        const filteredGames = games.filter(game => {
-            const gameGenre = game.genre || '';
-            const gameTags = game.tags || [];
-            const genreMatch = gameGenre.toLowerCase().includes(categoryGenre.toLowerCase());
-            const tagMatch = gameTags.some(tag => tag.toLowerCase() === categoryGenre.toLowerCase());
-            return genreMatch || tagMatch;
-        });
-        res.json(filteredGames);
-    } else {
-        console.log("200 OK: Enviando todos os jogos (sem filtro)");
-        res.json(games);
-    }
-}); // <-- GET /games TERMINA AQUI
-
-// PATCH /games/:id (Atualiza um jogo) - AGORA DO LADO DE FORA
-app.patch('/games/:id', (req, res) => {
-    const id = req.params.id;
-    const game = games.find(g => g.id.toString() === id.toString());
-    if (game) {
-        Object.assign(game, req.body); 
-        console.log("200 OK: Jogo atualizado com ID:", id);
-        res.json(game);
-    } else {
-        res.status(404).json({ message: 'Jogo não encontrado' });
+        res.json(jogos);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
 
-// DELETE /games/:id (Deleta um jogo) - AGORA DO LADO DE FORA
-app.delete('/games/:id', (req, res) => {
-    const id = req.params.id;
-    const gameIndex = games.findIndex(g => g.id.toString() === id.toString());
-    if (gameIndex > -1) {
-        games.splice(gameIndex, 1);
-        console.log("204 No Content: Jogo deletado com ID:", id);
-        res.status(204).send();
-    } else {
-        res.status(404).json({ message: 'Jogo não encontrado' });
+// GET /jogos/:id (buscar jogo específico)
+app.get('/jogos/:id', async (req, res) => {
+    try {
+        const jogo = await Game.findOne({ id: req.params.id });
+        if (!jogo) return res.status(404).json({ message: 'Jogo não encontrado' });
+        res.json(jogo);
+    } catch (err) {
+        res.status(404).json({ message: 'Jogo não encontrado (ID inválido)' });
     }
 });
 
-// GET /games/:id
-app.get('/games/:id', (req, res) => {
-    const id = req.params.id;
-    const game = games.find(g => g.id == id); 
-    if (!game) { /* ... */ }
-    if (req.query._embed === 'reviews') {
-        const gameReviews = reviews.filter(r => r.gameId == id);
-        res.json({ ...game, reviews: gameReviews });
-    } else {
-        res.json(game);
+// POST /jogos (criar novo jogo)
+app.post('/jogos', async (req, res) => {
+    const jogo = new Game({ ...req.body });
+    try {
+        const savedJogo = await jogo.save();
+        console.log('201, Created: Novo jogo salvo → ${savedJogo.title}');
+        res.status(201).json(savedJogo);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
 });
 
-// POST /games
-app.post('/games', (req, res) => {
-    const newGame = { ...req.body, id: (nextGameId++).toString() };
-    games.push(newGame);
-    console.log("201 Created: Novo jogo salvo:", newGame.title);
-    res.status(201).json(newGame);
-});
-
-// --- Endpoints de REVIEWS ---
-app.post('/reviews', (req, res) => {
-    const newReview = { ...req.body, id: generateId(), createdAt: new Date().toISOString() };
-    reviews.push(newReview);
-    console.log("201 Created: Nova review salva para o jogo:", newReview.gameId);
-    res.status(201).json(newReview);
-});
-
-// --- Endpoints de LISTS (AGORA PREENCHIDOS!) ---
-app.get('/lists', (req, res) => { res.json(lists); });
-
-// POST /lists
-app.post('/lists', (req, res) => {
-    const newList = { 
-        ...req.body, 
-        id: generateId(), 
-        gamesCount: 0, 
-        games: [] 
-    }; 
-    lists.push(newList); // Salva na variável 'lists'
-    console.log("201 Created: Nova lista salva:", newList.title);
-    res.status(201).json(newList);
-});
-
-// DELETE /lists/:id
-app.delete('/lists/:id', (req, res) => {
-    const id = req.params.id;
-    const listIndex = lists.findIndex(l => l.id === id);
-    if (listIndex > -1) {
-        lists.splice(listIndex, 1); // Remove da variável
-        console.log("204 No Content: Lista deletada com ID:", id);
-        res.status(204).send();
-    } else {
-        console.log("404 Error: Lista não encontrada com ID:", id);
-        res.status(404).json({ message: 'Lista não encontrada' });
+// PATCH /jogos/:id (atualizar jogo existente)
+app.patch('/jogos/:id', async (req, res) => {
+    try {
+        const updatedJogo = await Game.findOneAndUpdate(
+            { id: req.params.id },
+            { $set: req.body },
+            { new: true }
+        );
+        if (!updatedJogo) {
+            return res.status(404).json({ message: 'Jogo não encontrado' });
+        }
+        console.log('200 OK: Jogo atualizado → ${updatedJogo.title}');
+        res.json(updatedJogo);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
     }
 });
 
-// PATCH /lists/:id
-app.patch('/lists/:id', (req, res) => {
-    const id = req.params.id;
-    const list = lists.find(l => l.id === id);
-    if (list) {
-        Object.assign(list, req.body); // Atualiza a variável
-        console.log("200 OK: Lista atualizada com ID:", id);
-        res.json(list);
-    } else {
-        console.log("404 Error: Lista não encontrada com ID:", id);
-        res.status(404).json({ message: 'Lista não encontrada' });
+// DELETE /jogos/:id (remover jogo)
+app.delete('/jogos/:id', async (req, res) => {
+    try {
+        const deletedJogo = await Game.findOneAndDelete({ id: req.params.id });
+        if (!deletedJogo) {
+            return res.status(404).json({ message: 'Jogo não encontrado' });
+        }
+        console.log("200 OK: Jogo removido → ${deletedJogo.title}");
+        res.json({ message: 'Jogo deletado com sucesso!' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
 
-// --- Endpoints de CATEGORIES ---
-app.get('/categories', (req, res) => {
-    console.log("200 OK: Enviando todas as categorias");
-    res.json(categories);
-});
+// (Você precisará reescrever PATCH /games/:id e DELETE /games/:id usando Mongoose)
 
-// --- Endpoints de ACHIEVEMENTS (AGORA CORRIGIDOS!) ---
 
-// GET /achievements
-app.get('/achievements', (req, res) => {
-    console.log("200 OK: Enviando todas as conquistas");
-    res.json(achievements);
-}); // <-- GET TERMINA AQUI
+// --- Endpoints de AUTENTICAÇÃO (AGORA USANDO MONGODB) ---
 
-// POST /achievements
-app.post('/achievements', (req, res) => {
-    const newAchievement = { ...req.body, id: generateId() }; 
-    achievements.push(newAchievement); // Salva na variável 'achievements'
-    console.log("201 Created: Nova conquista salva:", newAchievement.title);
-    res.status(201).json(newAchievement);
-});
-
-// PATCH /achievements/:id
-app.patch('/achievements/:id', (req, res) => {
-    const id = req.params.id;
-    const achievement = achievements.find(a => a.id === id); 
-    if (achievement) {
-        Object.assign(achievement, req.body); 
-        res.json(achievement);
-    } else {
-        res.status(404).json({ message: 'Conquista não encontrada' });
-    }
-});
-
-// DELETE /achievements/:id
-app.delete('/achievements/:id', (req, res) => {
-    const id = req.params.id;
-    const achievementIndex = achievements.findIndex(a => a.id === id);
-    if (achievementIndex > -1) {
-        achievements.splice(achievementIndex, 1); // Remove da variável
-        res.status(204).send();
-    } else {
-        res.status(404).json({ message: 'Conquista não encontrada' });
-    }
-});
-
-// POST /auth/register (Cria um novo usuário)
+// POST /auth/register
 app.post('/auth/register', async (req, res) => {
-    const { username, email, password } = req.body;
-    if (!username || !email || !password) {
-        return res.status(400).json({ message: 'Por favor, preencha todos os campos.' });
-    }
-    if (users.find(u => u.username === username)) {
-        return res.status(400).json({ message: 'Nome de usuário já existe.' });
-    }
-    if (users.find(u => u.email === email)) {
-        return res.status(400).json({ message: 'E-mail já cadastrado.' });
-    }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    const newUser = { id: generateId(), username, email, password: hashedPassword };
-    users.push(newUser);
-    console.log('Novo usuário registrado:', newUser.username);
-    res.status(201).json({ message: 'Usuário registrado com sucesso!' });
+    const { username, email, password } = req.body;
+    try {
+        if (!username || !email || !password) return res.status(400).json({ message: 'Por favor, preencha todos os campos.' });
+        
+        if (await User.findOne({ username })) return res.status(400).json({ message: 'Nome de usuário já existe.' });
+        if (await User.findOne({ email })) return res.status(400).json({ message: 'E-mail já cadastrado.' });
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        
+        const newUser = new User({ username, email, password: hashedPassword });
+        await newUser.save(); // Salva o novo usuário no MongoDB
+        
+        console.log('Novo usuário registrado no MongoDB:', newUser.username);
+        res.status(201).json({ message: 'Usuário registrado com sucesso!' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
-// POST /auth/login (Loga o usuário)
+// POST /auth/login
 app.post('/auth/login', async (req, res) => {
-    const { username, password } = req.body;
-    const user = users.find(u => u.username === username);
-    if (!user) {
-        return res.status(400).json({ message: 'Usuário ou senha inválidos.' });
-    }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-        return res.status(400).json({ message: 'Usuário ou senha inválidos.' });
-    }
-    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
-    console.log('Usuário logado:', user.username);
-    res.json({
-        token,
-        user: { id: user.id, username: user.username, email: user.email }
-    });
+    const { username, password } = req.body;
+    try {
+        const user = await User.findOne({ username }); // Acha o usuário NO BANCO
+        if (!user) return res.status(400).json({ message: 'Usuário ou senha inválidos.' });
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ message: 'Usuário ou senha inválidos.' });
+
+        const token = jwt.sign({ id: user._id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+        
+        console.log('Usuário logado:', user.username);
+        res.json({
+            token,
+            user: { id: user._id, username: user.username, email: user.email }
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
+
+// (Você precisará reescrever os endpoints de Lists, Reviews, Achievements da mesma forma)
 
 // --- Iniciar o Servidor ---
 app.listen(PORT, () => {
-    console.log(`Servidor back-end REAL rodando em http://localhost:${PORT}`);
-    // ... (resto do seu console.log) ...
+    console.log(`Servidor back-end REAL (com MongoDB) rodando em http://localhost:${PORT}`);
 });
