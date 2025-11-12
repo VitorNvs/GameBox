@@ -97,8 +97,8 @@ const gamesSlice = createSlice({
             // Casos para addNewGame
             .addCase(addNewGame.pending, (state) => { state.status = 'loading'; })
             .addCase(addNewGame.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                state.items.push(action.payload);
+                state.items.push(action.payload); // Adiciona o jogo
+                state.status = 'idle'; // Volta para 'idle' para forçar o refetch
             })
             .addCase(addNewGame.rejected, (state, action) => {
                 state.status = 'failed';

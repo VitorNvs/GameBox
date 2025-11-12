@@ -7,7 +7,7 @@ import authReducer from './authSlice';
 
 export const store = configureStore({
   reducer: {
-    games: gamesReducer,
+    jogos: gamesReducer,
     reviews: reviewsReducer,
     lists: listsReducer,
     achievements: achievementsReducer,

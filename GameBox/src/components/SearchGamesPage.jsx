@@ -34,8 +34,8 @@ function SearchGamesPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('Todos');
 
-    const games = useSelector((state) => state.games.items);
-    const gameStatus = useSelector((state) => state.games.status);
+    const games = useSelector((state) => state.jogos.items);
+    const gameStatus = useSelector((state) => state.jogos.status);
 
     useEffect(() => {
         if (gameStatus === 'idle') {
@@ -126,9 +126,9 @@ function SearchGamesPage() {
                         {gameStatus === 'succeeded' && (
                             <Grid container spacing={4}>
                                 {filteredGames.length > 0 ? filteredGames.map((game) => (
-                                    game && game.id ? (
-                                        <Grid item key={game.id} xs={12} sm={6} md={4}>
-                                            <Card component={Link} to={`/jogos/${game.id}`} sx={{ height: '100%', display: 'flex', flexDirection: 'column', textDecoration: 'none', transition: 'transform 0.3s ease-in-out', '&:hover': { transform: 'scale(1.05)' }}}>
+                                    game && game._id ? (
+                                        <Grid item key={game._id} xs={12} sm={6} md={4}>
+                                            <Card component={Link} to={`/jogos/${game._id}`} sx={{ height: '100%', display: 'flex', flexDirection: 'column', textDecoration: 'none', transition: 'transform 0.3s ease-in-out', '&:hover': { transform: 'scale(1.05)' }}}>
                                                 <CardMedia component="img" sx={{ height: 200, objectFit: 'cover' }} image={game.image} alt={`Capa de ${game.title || 'Jogo sem título'}`} />
                                                 <CardContent sx={{ flexGrow: 1 }}>
                                                     <Typography gutterBottom variant="h6" component="h4" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{game.title || 'Jogo sem título'}</Typography>

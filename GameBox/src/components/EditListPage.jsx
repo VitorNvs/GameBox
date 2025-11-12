@@ -33,8 +33,8 @@ function EditListPage() {
     );
     const listStatus = useSelector(state => state.lists.status);
     
-    const allGames = useSelector(state => state.games.items);
-    const gamesStatus = useSelector(state => state.games.status);
+    const allGames = useSelector(state => state.jogos.items);
+    const gamesStatus = useSelector(state => state.jogos.status);
     
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -66,12 +66,12 @@ function EditListPage() {
 
     const handleRemoveGame = (gameIdToRemove) => {
         if (!list) return;
-        const updatedGames = list.games.filter(game => game.id !== gameIdToRemove);
+        const updatedGames = list.jogos.filter(game => game.id !== gameIdToRemove);
         dispatch(updateListGames({ listId, updatedGames }));
     };
 
     const handleAddGame = (gameToAdd) => {
-        if (!list || (list.games && list.games.some(g => g.id === gameToAdd.id))) return;
+        if (!list || (list.jogos && list.jogos.some(g => g.id === gameToAdd.id))) return;
 
         const gameInfo = {
             id: gameToAdd.id,
@@ -81,7 +81,7 @@ function EditListPage() {
             rating: gameToAdd.rating
         };
 
-        const currentGames = list.games || [];
+        const currentGames = list.jogos || [];
         const updatedGames = [...currentGames, gameInfo];
         dispatch(updateListGames({ listId, updatedGames }));
     };
@@ -89,8 +89,8 @@ function EditListPage() {
     // --- LÓGICA DE RENDERIZAÇÃO ---
 
     const availableGames = allGames.filter(game => {
-        if (!list || !list.games) return true;
-        return !list.games.some(listGame => listGame.id === game.id);
+        if (!list || !list.jogos) return true;
+        return !list.jogos.some(listGame => listGame.id === game.id);
     });
 
     if (listStatus === 'loading' || gamesStatus === 'loading') {
@@ -162,11 +162,11 @@ function EditListPage() {
                     {/* Bloco 1: Jogos Atuais */}
                     <Box mb={5}>
                         <Typography variant="h5" fontWeight="bold" gutterBottom>
-                            Jogos Atuais ({list.games?.length || 0})
+                            Jogos Atuais ({list.jogos?.length || 0})
                         </Typography>
                         <Grid container spacing={3}>
                             {/* Ajustei o grid interno para telas xl (muito grandes) para ter 4 colunas */}
-                            {list.games?.map((game) => (
+                            {list.jogos?.map((game) => (
                                 <Grid item key={game.id} xs={12} sm={6} md={4} lg={3}> 
                                     <Card sx={{ 
                                         display: 'flex', 

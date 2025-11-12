@@ -25,8 +25,12 @@ function HomePage() {
     const dispatch = useDispatch();
 
     // Seletores dos Jogos (já existia)
-    const games = useSelector((state) => state.games.items);
-    const gameStatus = useSelector((state) => state.games.status);
+    const games = useSelector((state) => state.jogos.items);
+    const gameStatus = useSelector((state) => state.jogos.status);
+    
+    // NOVO: Seletores das Listas (igual à MinhasListasPage)
+    const lists = useSelector((state) => state.lists.items);
+    const listStatus = useSelector((state) => state.lists.status);
     
     // NOVO: Seletores das Listas (igual à MinhasListasPage)
     const lists = useSelector((state) => state.lists.items);
@@ -66,9 +70,9 @@ function HomePage() {
                 {gameStatus === 'succeeded' && (
                     <Grid container spacing={4}>
                         {popularGames.map((game) => (
-                            <Grid item key={game.id} xs={12} sm={6} md={10}>
+                            <Grid item key={game._id} xs={12} sm={6} md={10}>
                                 {/* CORREÇÃO: O link deve ir para /detalhes_jogo/ e não /jogos/ */}
-                                <Card component={Link} to={`jogos/${game.id}`} sx={{ textDecoration: 'none', height: '100%', display: 'flex', flexDirection: 'column', transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out', '&:hover': { transform: 'scale(1.05)', boxShadow: 6, zIndex: 1 }}}>
+                                <Card component={Link} to={`jogos/${game._id}`} sx={{ textDecoration: 'none', height: '100%', display: 'flex', flexDirection: 'column', transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out', '&:hover': { transform: 'scale(1.05)', boxShadow: 6, zIndex: 1 }}}>
                                     <CardMedia component="img" height="200" image={game.image} alt={`Capa de ${game.title}`} />
                                     <CardContent sx={{ flexGrow: 1 }}>
                                         <Typography gutterBottom variant="h6" component="h4" sx={{ fontSize: '1.25rem' }}>{game.title}</Typography>
@@ -92,11 +96,11 @@ function HomePage() {
                     </Typography>
                     <Grid container spacing={3}>
                         {friendUpdates.map((game) => (
-                            <Grid item key={game.id} xs={6} sm={4} md={2}>
+                            <Grid item key={game._id} xs={6} sm={4} md={2}>
                                 <Card
                                     component={Link}
                                     // CORREÇÃO: O link deve ir para /detalhes_jogo/ e não /jogos/
-                                    to={`jogos/${game.id}`}
+                                    to={`jogos/${game._id}`}
                                     sx={{
                                         textDecoration: 'none',
                                         height: '100%',
@@ -113,7 +117,7 @@ function HomePage() {
                                     <CardMedia component="img" height="140" image={game.image} alt={`Capa de ${game.title}`} />
                                     <CardContent sx={{ p: 1.5, flexGrow: 1 }}>
                                         <Typography variant="body2" component="h4" noWrap>{game.title}</Typography>
-                                        <Box sx={{ color: 'primary.main', mt: 1 }}>{getFeedbackIcon(game.id)}</Box>
+                                        <Box sx={{ color: 'primary.main', mt: 1 }}>{getFeedbackIcon(game._id)}</Box>
                                     </CardContent>
                                 </Card>
                             </Grid>

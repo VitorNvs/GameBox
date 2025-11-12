@@ -27,9 +27,9 @@ function GameDetailPage() {
     const { gameId } = useParams();
     const dispatch = useDispatch();
 
-    const game = useSelector((state) => state.games.selectedGame);
-    const status = useSelector((state) => state.games.selectedGameStatus);
-    const error = useSelector((state) => state.games.error);
+    const game = useSelector((state) => state.jogos.selectedGame);
+    const status = useSelector((state) => state.jogos.selectedGameStatus);
+    const error = useSelector((state) => state.jogos.error);
 
     useEffect(() => {
         if (gameId) {
