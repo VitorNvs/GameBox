@@ -1,33 +1,31 @@
+// src/components/Header.jsx
 import React, { useState } from 'react';
-import { 
-    AppBar, 
-    Toolbar, 
-    Typography, 
-    Button, 
-    Box, 
-    IconButton, 
-    Drawer, 
-    List, 
-    ListItem, 
-    ListItemButton, 
-    ListItemText 
-} from '@mui/material';
+// --- MUDANÇAS ---
+import { useSelector } from 'react-redux'; // Não precisamos mais do useDispatch ou logout aqui
 import { Link } from 'react-router-dom';
-import MenuIcon from '@mui/icons-material/Menu'; // Ícone de Hambúrguer
+// --- FIM DAS MUDANÇAS ---
+import { 
+    AppBar, Toolbar, Typography, Button, Box, IconButton, 
+    Drawer, List, ListItem, ListItemButton, ListItemText 
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const navItems = [
   { label: 'Início', path: '/' },
   { label: 'Jogos', path: '/jogos' },
-  { label: 'Categorias', path: '/categorias' },
+  { label: 'Categorias', path: '/categories' },
   { label: 'Conquistas', path: '/conquistas' },
   { label: 'Minhas Listas', path: '/minhas-listas' },
 ];
 
 function Header() {
-  // Estado para controlar a abertura e fechamento do menu mobile (gaveta)
   const [mobileOpen, setMobileOpen] = useState(false);
+  
+  // --- MUDANÇA ---
+  // Busca apenas o estado de autenticação
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  // --- FIM DA MUDANÇA ---
 
-  // Função para abrir/fechar o menu
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
@@ -46,14 +44,23 @@ function Header() {
             </ListItemButton>
           </ListItem>
         ))}
-        {/* Botão de Login dentro da gaveta */}
+        {/* --- MUDANÇA: Lógica de Login/Perfil no Drawer --- */}
         <ListItem disablePadding>
+          {isAuthenticated ? (
+            <ListItemButton component={Link} to="/perfil" sx={{ justifyContent: 'center' }}>
+                <Button variant="contained" color="primary" fullWidth>
+                    Meu Perfil
+                </Button>
+            </ListItemButton>
+          ) : (
             <ListItemButton component={Link} to="/login" sx={{ justifyContent: 'center' }}>
                 <Button variant="contained" color="primary" fullWidth>
                     Login
                 </Button>
             </ListItemButton>
+          )}
         </ListItem>
+        {/* --- FIM DA MUDANÇA --- */}
       </List>
     </Box>
   );
@@ -62,7 +69,6 @@ function Header() {
     <>
       <AppBar position="static">
         <Toolbar>
-          {/* TÍTULO */}
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             GameBox
           </Typography>
@@ -70,24 +76,24 @@ function Header() {
           {/* MENU PARA DESKTOP */}
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {navItems.map((item) => (
-              <Button
-                key={item.label}
-                sx={{ color: 'text.primary' }}
-                component={Link}
-                to={item.path}
-              >
+              <Button key={item.label} sx={{ color: 'text.primary' }} component={Link} to={item.path}>
                 {item.label}
               </Button>
             ))}
-            <Button
-              variant="outlined"
-              color="primary"
-              component={Link}
-              to="/login"
-              sx={{ ml: 2 }}
-            >
-              Login
-            </Button>
+            
+            {/* --- MUDANÇA: Lógica de Login/Perfil no Desktop --- */}
+            {isAuthenticated ? (
+              // Se estiver logado, mostra o botão "Perfil"
+              <Button variant="outlined" color="primary" component={Link} to="/perfil" sx={{ ml: 2 }}>
+                Perfil
+              </Button>
+            ) : (
+              // Se não, mostra o botão "Login"
+              <Button variant="outlined" color="primary" component={Link} to="/login" sx={{ ml: 2 }}>
+                Login
+              </Button>
+            )}
+            {/* --- FIM DA MUDANÇA --- */}
           </Box>
 
           {/* ÍCONE DE HAMBÚRGUER PARA MOBILE */}
@@ -100,7 +106,6 @@ function Header() {
           >
             <MenuIcon />
           </IconButton>
-
         </Toolbar>
       </AppBar>
 
@@ -110,10 +115,8 @@ function Header() {
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Melhora a performance de abertura em mobile
-          }}
-          anchor="right" // Abre do lado direito
+          ModalProps={{ keepMounted: true }}
+          anchor="right" 
           sx={{
             display: { xs: 'block', sm: 'none' },
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 250 },

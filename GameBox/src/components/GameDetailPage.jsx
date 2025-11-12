@@ -27,9 +27,9 @@ function GameDetailPage() {
     const { gameId } = useParams();
     const dispatch = useDispatch();
 
-    const game = useSelector((state) => state.games.selectedGame);
-    const status = useSelector((state) => state.games.selectedGameStatus);
-    const error = useSelector((state) => state.games.error);
+    const game = useSelector((state) => state.jogos.selectedGame);
+    const status = useSelector((state) => state.jogos.selectedGameStatus);
+    const error = useSelector((state) => state.jogos.error);
 
     useEffect(() => {
         if (gameId) {
@@ -80,7 +80,7 @@ function GameDetailPage() {
                     </Box>
                     <Box my={2}>
                         <Typography variant="h6" gutterBottom>Categorias</Typography>
-                        {game.tags.map(tag => <Chip key={tag} label={tag} sx={{ mr: 1, mb: 1 }} />)}
+                        {game.tags?.map(tag => <Chip key={tag} label={tag} sx={{ mr: 1, mb: 1 }} />)}
                     </Box>
                     <Box my={2}>
                         <Typography variant="h5" gutterBottom>Descrição</Typography>
@@ -110,7 +110,48 @@ function GameDetailPage() {
             {/* Seção de Avaliações */}
             <Box mt={6}>
                 <Typography variant="h4" component="h2" fontWeight="700" gutterBottom>Avaliações de Usuários</Typography>
-                {/* O código das reviews continua aqui... */}
+                
+                {/* --- CÓDIGO DAS AVALIAÇÕES ADICIONADO AQUI --- */}
+                
+                {/* Verifica se game.reviews existe E tem itens antes de mapear */}
+                {game.reviews && game.reviews.length > 0 ? game.reviews.map(review => (
+                    
+                    // Renderiza cada review dentro de um Card bonitinho
+                    <Card key={review.id} sx={{ mb: 2, bgcolor: 'background.paper' }}> 
+                        <CardContent>
+                            <Box display="flex" alignItems="center" mb={2}>
+                                <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
+                                    {/* Usa a primeira letra do nome ou 'A' se não tiver nome */}
+                                    {review.username ? review.username.charAt(0) : (review.userId ? review.userId.charAt(0) : 'A')}
+                                </Avatar>
+                                <Box sx={{ flexGrow: 1 }}>
+                                    <Typography variant="h6">
+                                        {/* Mostra o nome de usuário ou um padrão */}
+                                        {review.username || 'Usuário Anônimo'}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                        {/* Tenta formatar a data, se existir */}
+                                        {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : (review.date || '')}
+                                    </Typography>
+                                </Box>
+                                
+                                {/* Chama a função renderRatingIcon que já existe no seu arquivo */}
+                                {renderRatingIcon(review.ratingIcon || review.rating)} 
+                            </Box>
+                            
+                            <Typography paragraph color="text.secondary">
+                                {review.text}
+                            </Typography>
+                        </CardContent>
+                    </Card>
+
+                )) : (
+                    // Mensagem padrão se não houver reviews
+                    <Typography sx={{ ml: 1, color: 'text.secondary', fontStyle: 'italic' }}>
+                        Ainda não há avaliações para este jogo.
+                    </Typography>
+                )}
+                {/* --- FIM DO CÓDIGO DAS AVALIAÇÕES --- */}
             </Box>
         </Container>
     );
