@@ -122,4 +122,4 @@ function AdminGamePage() {
     );
 }
 
-export default AdminGamePage;
+export default AdminGamePage; // <-- O export está correto!

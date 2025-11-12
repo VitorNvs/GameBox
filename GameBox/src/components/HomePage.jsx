@@ -32,6 +32,10 @@ function HomePage() {
     const lists = useSelector((state) => state.lists.items);
     const listStatus = useSelector((state) => state.lists.status);
     
+    // NOVO: Seletores das Listas (igual à MinhasListasPage)
+    const lists = useSelector((state) => state.lists.items);
+    const listStatus = useSelector((state) => state.lists.status);
+    
     useEffect(() => {
         if (gameStatus === 'idle') {
             dispatch(fetchGames());
