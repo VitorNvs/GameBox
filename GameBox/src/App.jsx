@@ -19,7 +19,7 @@ import AdminGamePage from './components/AdminGamePage.jsx';
 import CategoryGamesPage from './components/CategoryGamesPage.jsx';
 import EditListPage from './components/EditListPage.jsx';
 import ProfilePage from './components/ProfilePage.jsx';
-import AdminAddGamePage from './components/AdminAddGamePage,jsx';
+import AdminAddGamePage from './components/AdminAdGamePage.jsx';
 
 function App() {
   return (
