@@ -145,6 +145,56 @@ app.delete('/jogos/:id', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
+// --- Endpoints de REVIEWS (CRUD COMPLETO) ---
+app.get('/reviews', async (req, res) => {
+  try {
+    const reviews = await Review.find().populate('gameId', 'title image');
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET /reviews/:id (busca uma review específica)
+app.get('/reviews/:id', async (req, res) => {
+  try {
+    const review = await Review.findById(req.params.id).populate('gameId', 'title image');
+    if (!review) return res.status(404).json({ message: 'Review não encontrada' });
+    res.json(review);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// POST /reviews (criar uma nova review)
+app.post('/reviews', async (req, res) => {
+  try {
+    const { gameId, username, rating, text } = req.body;
+
+    if (!gameId || !text) {
+      return res.status(400).json({ message: 'gameId e texto são obrigatórios.' });
+    }
+
+    const newReview = new Review({ gameId, username, rating, text });
+    const savedReview = await newReview.save();
+    console.log(`201 Created: Nova review salva para o jogo ${gameId}`);
+    res.status(201).json(savedReview);
+  } catch (err) {
+    console.error('Erro ao criar review:', err);
+    res.status(500).json({ message: 'Erro ao salvar a review.' });
+  }
+});
+
+// DELETE /reviews/:id
+app.delete('/reviews/:id', async (req, res) => {
+  try {
+    const deleted = await Review.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: 'Review não encontrada.' });
+    res.json({ message: 'Review deletada com sucesso!' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 app.post('/auth/register', async (req, res) => {
     const { username, email, password } = req.body;
     try {
