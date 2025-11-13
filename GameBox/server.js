@@ -20,7 +20,31 @@ mongoose.connect(MONGO_URI)
     .catch((err) => console.error('Erro ao conectar ao MongoDB:', err));
 
 // --- 2. SCHEMAS (CORRIGIDOS) ---
-const UserSchema = new mongoose.Schema({ /* ... (seu schema de User) ... */ });
+
+// ISSO AQUI ESTAVA FALTANDO:
+const UserSchema = new mongoose.Schema({
+    username: {
+        type: String,
+        required: [true, 'O nome de usuário é obrigatório.'],
+        unique: true,
+        trim: true // Remove espaços em branco no início e fim
+    },
+    email: {
+        type: String,
+        required: [true, 'O e-mail é obrigatório.'],
+        unique: true,
+        trim: true,
+        lowercase: true // Salva sempre em minúsculas
+    },
+    password: {
+        type: String,
+        required: [true, 'A senha é obrigatória.']
+    }
+}, {
+    // Adiciona os campos 'createdAt' e 'updatedAt' automaticamente
+    timestamps: true 
+});
+
 const User = mongoose.model('User', UserSchema);
 
 // Removi o campo "id" para usarmos o "_id" automático do MongoDB
