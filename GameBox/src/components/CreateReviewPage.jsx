@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchGameById } from '../redux/gamesSlice';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { createReview } from '../redux/reviewsSlice'; 
+import api from '../api';
 
 import {
   Container,
@@ -46,30 +47,29 @@ const CreateReviewPage = () => {
 
   // --- FUNÇÃO handleSubmit CORRIGIDA ---
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    const reviewData = {
-      gameId,
-      rating: feedback,
-      text: reviewText,
-      userId: 'ID_DO_USUARIO_LOGADO' // depois substitui pelo user real
-    };
+  const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
 
-    setIsSubmitting(true);
-    try {
-      const resultAction = await dispatch(createReview(reviewData));
-      unwrapResult(resultAction);
-
-      // se salvar com sucesso → volta pra página do jogo
-      navigate(`/jogos/${gameId}`, { replace: true });
-
-    } catch (err) {
-      console.error('Falha ao salvar a análise:', err);
-      alert(`Erro ao salvar: ${err.message || err}`);
-    } finally {
-      setIsSubmitting(false);
-    }
+  const reviewData = {
+    gameId,
+    rating: feedback,
+    text: reviewText,
   };
+
+  try {
+    // agora usamos o api.post pra mandar o token automaticamente
+    await api.post('/reviews', reviewData);
+    navigate(`/jogos/${gameId}`, { replace: true });
+  } catch (err) {
+    console.error('Erro ao salvar review:', err);
+    alert(`Erro ao salvar: ${err.response?.data?.message || err.message}`);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+    
 
   if (status === 'loading' || !game) {
     return (

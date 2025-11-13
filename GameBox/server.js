@@ -4,48 +4,46 @@ import cors from 'cors';
 import bcrypt from 'bcryptjs'; 
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose'; 
+import passport from "passport";
+import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import "./passportConfig.js";
+import User from './models/User.js';
+
+const JWT_SECRET = 'seu-segredo-super-secreto-123';
+
+const opts = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: JWT_SECRET,
+};
+
+passport.use(
+  new JwtStrategy(opts, async (jwt_payload, done) => {
+    try {
+      const user = await User.findById(jwt_payload.id).select('-password');
+      if (!user) return done(null, false);
+      return done(null, user); // agora req.user é o objeto real do Mongo
+    } catch (err) {
+      return done(err, false);
+    }
+  })
+);
+
 
 const app = express();
 const PORT = 8000;
-const JWT_SECRET = 'seu-segredo-super-secreto-123';
 
 app.use(cors()); 
 app.use(express.json()); 
+app.use(passport.initialize());
 
-// --- 1. CONEXÃO (Já está certa!) ---
+
 const MONGO_URI = 'mongodb+srv://henryissues:thyerri123@cluster0.o0mpfp8.mongodb.net/gamebase-db?retryWrites=true&w=majority';
 
 mongoose.connect(MONGO_URI)
     .then(() => console.log('Conectado ao MongoDB Atlas com sucesso!'))
     .catch((err) => console.error('Erro ao conectar ao MongoDB:', err));
 
-// --- 2. SCHEMAS (CORRIGIDOS) ---
 
-// ISSO AQUI ESTAVA FALTANDO:
-const UserSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: [true, 'O nome de usuário é obrigatório.'],
-        unique: true,
-        trim: true // Remove espaços em branco no início e fim
-    },
-    email: {
-        type: String,
-        required: [true, 'O e-mail é obrigatório.'],
-        unique: true,
-        trim: true,
-        lowercase: true // Salva sempre em minúsculas
-    },
-    password: {
-        type: String,
-        required: [true, 'A senha é obrigatória.']
-    }
-}, {
-    // Adiciona os campos 'createdAt' e 'updatedAt' automaticamente
-    timestamps: true 
-});
-
-const User = mongoose.model('User', UserSchema);
 
 // Removi o campo "id" para usarmos o "_id" automático do MongoDB
 const GameSchema = new mongoose.Schema({
@@ -63,6 +61,7 @@ const Game = mongoose.model('jogos', GameSchema);
 
 const ReviewSchema = new mongoose.Schema({
     gameId: { type: mongoose.Schema.Types.ObjectId, ref: 'jogos' }, // Referencia o _id do Jogo
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     username: { type: String },
     rating: { type: String }, 
     text: { type: String, required: true },
@@ -191,23 +190,37 @@ app.get('/reviews/:id', async (req, res) => {
 });
 
 // POST /reviews (criar uma nova review)
-app.post('/reviews', async (req, res) => {
-  try {
-    const { gameId, username, rating, text } = req.body;
+app.post('/reviews', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+      const { gameId, rating, text } = req.body;
+      const username = req.user.username; // vem do token JWT
 
-    if (!gameId || !text) {
-      return res.status(400).json({ message: 'gameId e texto são obrigatórios.' });
+      const review = new Review({ gameId, rating, text, username });
+      const savedReview = await review.save();
+
+      res.status(201).json(savedReview);
+    } catch (err) {
+      console.error('Erro ao criar review:', err);
+      res.status(500).json({ message: 'Erro ao criar review.' });
     }
-
-    const newReview = new Review({ gameId, username, rating, text });
-    const savedReview = await newReview.save();
-    console.log(`201 Created: Nova review salva para o jogo ${gameId}`);
-    res.status(201).json(savedReview);
-  } catch (err) {
-    console.error('Erro ao criar review:', err);
-    res.status(500).json({ message: 'Erro ao salvar a review.' });
   }
+);
+
+app.get('/reviews/me', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        // 'req.user.id' é mágico! O Passport nos dá o ID do usuário
+        // que está logado (através do token)
+        const reviews = await Review.find({ userId: req.user.id })
+                                    .sort({ createdAt: -1 }); // Mais recentes primeiro
+        
+        console.log(`200 OK: Enviando ${reviews.length} reviews para o usuário ${req.user.username}`);
+        res.json(reviews);
+    } catch (err) {
+        console.error("Erro em GET /reviews/me:", err.message);
+        res.status(500).json({ message: 'Erro ao buscar reviews.' });
+    }
 });
+
 
 // DELETE /reviews/:id
 app.delete('/reviews/:id', async (req, res) => {
@@ -235,20 +248,34 @@ app.post('/auth/register', async (req, res) => {
 });
 
 app.post('/auth/login', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-        const user = await User.findOne({ username });
-        if (!user) return res.status(400).json({ message: 'Usuário ou senha inválidos.' });
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ message: 'Usuário ou senha inválidos.' });
-        const token = jwt.sign({ id: user._id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
-        console.log('Usuário logado:', user.username);
-        res.json({
-            token,
-            user: { id: user._id, username: user.username, email: user.email }
-        });
-    } catch (err) { res.status(500).json({ message: err.message }); }
+  const { username, password } = req.body;
+  try {
+    const user = await User.findOne({ username });
+    if (!user) return res.status(400).json({ message: 'Usuário ou senha inválidos.' });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ message: 'Usuário ou senha inválidos.' });
+
+    const token = jwt.sign(
+      { id: user._id, username: user.username },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email
+      }
+    });
+  } catch (err) {
+    console.error('Erro ao logar:', err);
+    res.status(500).json({ message: err.message });
+  }
 });
+
 
 // --- Endpoints de LISTS (CRUD COMPLETO) ---
 app.get('/lists', async (req, res) => {

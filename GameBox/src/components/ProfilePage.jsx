@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../redux/authSlice'; // Importa a ação de logout
 import { 
-    Container, 
+    Container,
     Box, 
     Typography, 
     Button, 
@@ -15,7 +15,9 @@ import {
     CardContent,
     CardMedia
 } from '@mui/material';
-import { FaHeart, FaThumbsUp } from 'react-icons/fa'; // Ícones de exemplo
+import { FaHeart, FaThumbsUp } from 'react-icons/fa';
+import { useState } from 'react';
+import api from '../api';
 
 function ProfilePage() {
     const dispatch = useDispatch();
@@ -23,13 +25,28 @@ function ProfilePage() {
     
     // Busca o usuário e o status de autenticação do Redux
     const { user, isAuthenticated } = useSelector((state) => state.auth);
+    const [reviews, setReviews] = useState([]);
+
+    useEffect(() => {
+  if (isAuthenticated) {
+    api.get('/reviews/me')
+      .then((res) => setReviews(res.data))
+      .catch((err) => console.error('Erro ao carregar reviews:', err));
+  }
+}, [isAuthenticated]);
 
     // Efeito de "Rota Protegida": Se não estiver logado, chuta para a página de login
     useEffect(() => {
-        if (!isAuthenticated) {
-            navigate('/login');
-        }
-    }, [isAuthenticated, navigate]);
+  if (isAuthenticated) {
+    api.get('/reviews/me')
+      .then((res) => {
+        console.log('reviews recebidas:', res.data);
+        setReviews(res.data);
+      })
+      .catch((err) => console.error('Erro ao carregar reviews:', err));
+  }
+}, [isAuthenticated]);
+
 
     // Função de Logout
     const handleLogout = () => {
@@ -99,15 +116,33 @@ function ProfilePage() {
                                 </Card>
                             </Grid>
                              {/* Card de Jogo Mockado 2 */}
-                             <Grid item xs={6} sm={4}>
-                                <Card>
-                                    <CardMedia component="img" height="190" image="https://via.placeholder.com/150x200?text=Capa+Jogo+B" alt="Jogo B" />
-                                    <CardContent>
-                                        <Typography variant="h6">Nome do Jogo B</Typography>
-                                        <Typography color="primary.main"><FaHeart /> Amei</Typography>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
+                             {reviews.length > 0 ? (
+                                reviews.map((review) => (
+                                    <Grid item xs={6} sm={4} key={review._id}>
+                                    <Card>
+                                        <CardMedia
+                                        component="img"
+                                        height="190"
+                                        image={review.gameId?.image || 'https://via.placeholder.com/150x200?text=Sem+Imagem'}
+                                        alt={review.gameId?.title || 'Jogo'}
+                                        />
+                                        <CardContent>
+                                        <Typography variant="h6">
+                                            {review.gameId?.title || 'Jogo Desconhecido'}
+                                        </Typography>
+                                        <Typography color="primary.main">
+                                            {review.rating === 'love' && <FaHeart />}{" "}
+                                            {review.rating === 'like' && <FaThumbsUp />}{" "}
+                                            {review.rating === 'dislike' && '👎'}{" "}
+                                            {review.rating || 'sem nota'}
+                                        </Typography>
+                                        </CardContent>
+                                    </Card>
+                                    </Grid>
+                                ))
+                                ) : (
+                                <Typography sx={{ ml: 2 }}>você ainda não fez nenhuma análise.</Typography>
+                                )}
                         </Grid>
                     </Grid>
 
