@@ -2,26 +2,49 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Estou assumindo que seu servidor db.json roda em http://localhost:5000/reviews
-// Se for outra porta (ex: 3001) ou endpoint, mude aqui.
-const API_URL = 'http://localhost:8000/reviews'; 
+// O BACKEND REAL (Node + MongoDB)
+const API_URL = 'http://localhost:8000/reviews';
 
-// Esta é a Ação Assíncrona que o formulário chama
+// Criar review COM JWT
 export const createReview = createAsyncThunk(
     'reviews/createReview',
     async (reviewData, { rejectWithValue }) => {
         try {
-            // Adicionamos a data atual à review
-            const newReview = {
-                ...reviewData,
-                createdAt: new Date().toISOString(),
-            };
-            // Fazemos a requisição POST para salvar no servidor
-            const response = await axios.post(API_URL, newReview);
-            return response.data; // Retorna a review salva
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                return rejectWithValue('Usuário não autenticado.');
+            }
+
+            const response = await axios.post(API_URL, reviewData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            return response.data;
         } catch (err) {
-            // Em caso de erro, rejeita a promise com a mensagem de erro
-            return rejectWithValue(err.message);
+            return rejectWithValue(err.response?.data?.message || err.message);
+        }
+    }
+);
+
+// Buscar reviews do usuário logado
+export const fetchMyReviews = createAsyncThunk(
+    'reviews/fetchMyReviews',
+    async (_, { rejectWithValue }) => {
+        try {
+            const token = localStorage.getItem('token');
+
+            const response = await axios.get(`${API_URL}/me`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            return response.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.message || err.message);
         }
     }
 );
@@ -30,26 +53,18 @@ const reviewsSlice = createSlice({
     name: 'reviews',
     initialState: {
         items: [],
-        status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+        myReviews: [],
+        status: 'idle',
         error: null,
     },
     reducers: {},
     extraReducers: (builder) => {
         builder
-            // Quando a ação 'createReview' está pendente (carregando)
-            .addCase(createReview.pending, (state) => {
-                state.status = 'loading';
-            })
-            // Quando a ação 'createReview' foi bem-sucedida
             .addCase(createReview.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                // Adiciona a nova review à lista de 'items'
                 state.items.push(action.payload);
             })
-            // Quando a ação 'createReview' falhou
-            .addCase(createReview.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload;
+            .addCase(fetchMyReviews.fulfilled, (state, action) => {
+                state.myReviews = action.payload;
             });
     },
 });
