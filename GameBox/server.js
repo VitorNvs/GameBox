@@ -8,6 +8,9 @@ import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import './passportConfig.js';
 import User from './models/User.js';
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
 const JWT_SECRET = 'seu-segredo-super-secreto-123';
 
@@ -138,13 +141,15 @@ app.get('/jogos/:id', async (req, res) => {
         const jogo = await Game.findById(req.params.id);
         if (!jogo) return res.status(404).json({ message: 'Jogo não encontrado' });
 
-        const gameReviews = await Review.find({ gameId: req.params.id });
+        const gameReviews = await Review.find({ gameId: req.params.id })
+            .populate("userId", "username avatar");
 
         res.json({ ...jogo.toObject(), reviews: gameReviews });
     } catch (err) {
         res.status(404).json({ message: 'Jogo não encontrado (ID inválido)' });
     }
 });
+
 
 app.post('/jogos', async (req, res) => {
     const jogo = new Game({ ...req.body });
@@ -400,6 +405,64 @@ app.get('/perfil', passport.authenticate('jwt', { session: false }), async (req,
         res.status(500).json({ message: 'Erro ao carregar dados do perfil.' });
     }
 });
+
+if (!fs.existsSync("uploads")) fs.mkdirSync("uploads");
+
+// configuração do multer
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/");
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        cb(null, `${req.user.id}_${Date.now()}${ext}`);
+    }
+});
+
+const upload = multer({ storage });
+
+// rota para upload do avatar
+app.post(
+    "/upload/avatar",
+    passport.authenticate('jwt', { session: false }),
+    upload.single("avatar"),
+    async (req, res) => {
+        try {
+            const imageUrl = `http://localhost:${PORT}/uploads/${req.file.filename}`;
+
+            await User.findByIdAndUpdate(req.user.id, {
+                avatar: imageUrl
+            });
+
+            res.json({ avatarUrl: imageUrl });
+        } catch (err) {
+            res.status(500).json({ message: "Erro ao fazer upload do avatar." });
+        }
+    }
+);
+
+// rota para upload do header
+app.post(
+    "/upload/header",
+    passport.authenticate('jwt', { session: false }),
+    upload.single("header"),
+    async (req, res) => {
+        try {
+            const imageUrl = `http://localhost:${PORT}/uploads/${req.file.filename}`;
+
+            await User.findByIdAndUpdate(req.user.id, {
+                headerImg: imageUrl
+            });
+
+            res.json({ headerUrl: imageUrl });
+        } catch (err) {
+            res.status(500).json({ message: "Erro ao fazer upload da imagem de capa." });
+        }
+    }
+);
+
+// tornar uploads acessível publicamente
+app.use("/uploads", express.static("uploads"));
 
 // -------------------- SERVIDOR --------------------
 

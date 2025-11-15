@@ -1,175 +1,595 @@
-// src/components/ProfilePage.jsx
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { logout } from '../redux/authSlice'; 
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../redux/authSlice";
 import {
-    Container,
-    Box,
-    Typography,
-    Button,
-    Avatar,
-    Paper,
-    Grid,
-    Card,
-    CardContent,
-    CardMedia
-} from '@mui/material';
-import { FaHeart, FaThumbsUp } from 'react-icons/fa';
-import api from '../api';
+  Container,
+  Box,
+  Typography,
+  Button,
+  Avatar,
+  Paper,
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  Modal,
+  Slider,
+  IconButton,
+} from "@mui/material";
+import { FaHeart, FaThumbsUp, FaTimes } from "react-icons/fa";
+import Cropper from "react-easy-crop";
+import api from "../api";
 
-function ProfilePage() {
+/**
+ * helpers
+ * getCroppedImg: cria um blob a partir da imagem + pixelCrop usando canvas (100% js)
+ */
+const createImage = (url) =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.setAttribute("crossOrigin", "anonymous"); // evita problemas CORS para canvas
+    img.onload = () => resolve(img);
+    img.onerror = (e) => reject(e);
+    img.src = url;
+  });
 
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    
-    const { user, isAuthenticated } = useSelector((state) => state.auth);
-    const [reviews, setReviews] = useState([]);
+async function getCroppedImg(imageSrc, pixelCrop) {
+  const image = await createImage(imageSrc);
+  const canvas = document.createElement("canvas");
+  canvas.width = pixelCrop.width;
+  canvas.height = pixelCrop.height;
+  const ctx = canvas.getContext("2d");
 
-    // Redireciona se não estiver autenticado
-    useEffect(() => {
-        if (!isAuthenticated) {
-            navigate('/login');
-        }
-    }, [isAuthenticated, navigate]);
+  ctx.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    pixelCrop.width,
+    pixelCrop.height
+  );
 
-    // Busca as reviews do usuário
-   useEffect(() => {
-    if (isAuthenticated) {
-        api.get('/perfil')
-            .then((res) => {
-                setReviews(res.data.reviews);
-            })
-            .catch((err) => console.error('Erro ao carregar perfil:', err));
-    }
-}, [isAuthenticated]);
-
-
-    // Logout
-    const handleLogout = () => {
-        dispatch(logout());
-        navigate('/');
-    };
-
-    if (!user) {
-        return <Typography>Carregando...</Typography>;
-    }
-
-    return (
-        <Box>
-            {/* Imagem de capa */}
-            <Box sx={{ height: '300px', mb: -10 }}>
-                <img
-                    src="https://via.placeholder.com/1200x300?text=Capa+do+Perfil"
-                    alt="Capa do perfil"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-            </Box>
-
-            <Container maxWidth="lg">
-
-                {/* Header do perfil */}
-                <Paper
-                    sx={{
-                        p: 3,
-                        display: 'flex',
-                        flexDirection: { xs: 'column', sm: 'row' },
-                        alignItems: 'center',
-                    }}
-                >
-                    <Avatar
-                        src="https://via.placeholder.com/150x150?text=Avatar"
-                        alt="Foto de perfil"
-                        sx={{ width: 150, height: 150, border: '4px solid #121829' }}
-                    />
-                    <Box sx={{ flexGrow: 1, ml: { sm: 3 }, textAlign: { xs: 'center', sm: 'left' } }}>
-                        <Typography variant="h3" fontWeight={700}>
-                            {user.username}
-                        </Typography>
-                        <Typography color="text.secondary">
-                            @{user.username.toLowerCase()}
-                        </Typography>
-                    </Box>
-
-                    <Box sx={{ display: 'flex', gap: 2, mt: { xs: 2, sm: 0 } }}>
-                        <Box textAlign="center">
-                            <Typography variant="h5">{reviews.length}</Typography>
-                            <Typography>Avaliações</Typography>
-                        </Box>
-                        <Box textAlign="center">
-                            <Typography variant="h5">0</Typography>
-                            <Typography>Seguidores</Typography>
-                        </Box>
-                        <Box textAlign="center">
-                            <Typography variant="h5">0</Typography>
-                            <Typography>Seguindo</Typography>
-                        </Box>
-                    </Box>
-                </Paper>
-
-                {/* Área inferior */}
-                <Grid container spacing={4} sx={{ mt: 2 }}>
-
-                    {/* Lista de jogos avaliados */}
-                    <Grid item xs={12} md={8}>
-                        <Typography variant="h4" gutterBottom>Jogos Avaliados</Typography>
-
-                        <Grid container spacing={2}>
-                            
-                            {/* Mapeamento das reviews */}
-                            {reviews.length > 0 ? (
-                                reviews.map((review) => (
-                                    <Grid item xs={6} sm={4} key={review._id}>
-                                        <Card>
-                                            <CardMedia
-                                                component="img"
-                                                height="190"
-                                                image={review.gameId?.image || 'https://via.placeholder.com/150x200?text=Sem+Imagem'}
-                                                alt={review.gameId?.title || 'Jogo'}
-                                            />
-
-                                            <CardContent>
-                                                <Typography variant="h6">
-                                                    {review.gameId?.title || 'Jogo Desconhecido'}
-                                                </Typography>
-
-                                                <Typography color="primary.main">
-                                                    {review.rating === 'love' && <FaHeart />}
-                                                    {review.rating === 'like' && <FaThumbsUp />}
-                                                    {review.rating === 'dislike' && '👎'}{" "}
-                                                    {review.rating || 'sem nota'}
-                                                </Typography>
-                                            </CardContent>
-                                        </Card>
-                                    </Grid>
-                                ))
-                            ) : (
-                                <Typography sx={{ ml: 2 }}>
-                                    Você ainda não fez nenhuma análise.
-                                </Typography>
-                            )}
-
-                        </Grid>
-                    </Grid>
-
-                    {/* Botão de logout */}
-                    <Grid item xs={12} md={4}>
-                        <Paper sx={{ p: 2 }}>
-                            <Button
-                                variant="contained"
-                                color="error"
-                                fullWidth
-                                onClick={handleLogout}
-                            >
-                                Sair da Conta
-                            </Button>
-                        </Paper>
-                    </Grid>
-
-                </Grid>
-            </Container>
-        </Box>
-    );
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => {
+      resolve(blob);
+    }, "image/jpeg", 0.92);
+  });
 }
 
-export default ProfilePage;
+/**
+ * componente principal
+ */
+export default function ProfilePage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const [reviews, setReviews] = useState([]);
+
+  // imagens atuais (da api/user)
+  const [avatar, setAvatar] = useState(null);
+  const [headerImg, setHeaderImg] = useState(null);
+
+  // modais básicos
+  const [avatarModalOpen, setAvatarModalOpen] = useState(false);
+  const [headerModalOpen, setHeaderModalOpen] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  // stats modal
+  const [statsModalOpen, setStatsModalOpen] = useState(false);
+  const [statsType, setStatsType] = useState(null);
+
+  // cropper
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [cropFor, setCropFor] = useState(null); // "avatar" | "header"
+  const [tempImageSrc, setTempImageSrc] = useState(null); // url do arquivo carregado
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+  const avatarInputRef = useRef(null);
+  const headerInputRef = useRef(null);
+
+  // autorização / carregar perfil
+  useEffect(() => {
+    if (!isAuthenticated) navigate("/login");
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      api
+        .get("/perfil")
+        .then((res) => {
+          setReviews(res.data.reviews || []);
+          setAvatar(res.data.user?.avatar || null);
+          setHeaderImg(res.data.user?.headerImg || null);
+        })
+        .catch((err) => console.error("Erro ao carregar perfil:", err));
+    }
+  }, [isAuthenticated]);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
+  };
+
+  const openStatsModal = (type) => {
+    setStatsType(type);
+    setStatsModalOpen(true);
+  };
+  const closeStatsModal = () => setStatsModalOpen(false);
+
+  // ao selecionar arquivo (mas não envia imediatamente) - abrimos crop modal
+  const onFileSelectedForCrop = async (file, target) => {
+    if (!file) return;
+    // cria url temporária
+    const url = URL.createObjectURL(file);
+    setTempImageSrc(url);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCropFor(target); // 'avatar' ou 'header'
+    setCropModalOpen(true);
+  };
+
+  // handlers quando usuário escolhe "alterar foto" nos modais
+  const onClickChangeAvatar = () => {
+    // abre o seletor de arquivos -> quando o usuário escolher, trataremos
+    avatarInputRef.current?.click();
+    setAvatarModalOpen(false);
+  };
+
+  const onClickChangeHeader = () => {
+    headerInputRef.current?.click();
+    setHeaderModalOpen(false);
+  };
+
+  // input change -> prepara crop
+  const handleAvatarFileChange = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    await onFileSelectedForCrop(file, "avatar");
+    e.target.value = null;
+  };
+
+  const handleHeaderFileChange = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    await onFileSelectedForCrop(file, "header");
+    e.target.value = null;
+  };
+
+  // cropper callback
+  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  // confirmar crop -> gera blob, envia para backend e aplica
+  const handleConfirmCrop = async () => {
+    try {
+      const blob = await getCroppedImg(tempImageSrc, {
+        x: Math.round(croppedAreaPixels.x),
+        y: Math.round(croppedAreaPixels.y),
+        width: Math.round(croppedAreaPixels.width),
+        height: Math.round(croppedAreaPixels.height),
+      });
+
+      // cria um file para enviar
+      const fileName = `${cropFor}_${Date.now()}.jpg`;
+      const file = new File([blob], fileName, { type: "image/jpeg" });
+
+      const formData = new FormData();
+      if (cropFor === "avatar") formData.append("avatar", file);
+      else formData.append("header", file);
+
+      const endpoint = cropFor === "avatar" ? "/upload/avatar" : "/upload/header";
+
+      const res = await api.post(endpoint, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (cropFor === "avatar") {
+        setAvatar(res.data.avatarUrl);
+      } else {
+        setHeaderImg(res.data.headerUrl);
+      }
+    } catch (err) {
+      console.error("erro ao processar crop:", err);
+    } finally {
+      // limpa estados
+      setCropModalOpen(false);
+      setTempImageSrc(null);
+      setCropFor(null);
+      setCroppedAreaPixels(null);
+      setZoom(1);
+      setCrop({ x: 0, y: 0 });
+    }
+  };
+
+  // ver imagem (full view)
+  const handleViewImage = (src) => {
+    setSelectedImage(src);
+    setShowImageModal(true);
+  };
+
+  if (!user) return <Typography>carregando…</Typography>;
+
+  return (
+    <Box>
+      {/* HEADER AREA (click abre modal com opções) */}
+      <Box
+        sx={{
+          height: 300,
+          cursor: "pointer",
+          backgroundColor: "#0f1720",
+          position: "relative",
+        }}
+        onClick={() => setHeaderModalOpen(true)}
+      >
+        <img
+          src={headerImg || "https://via.placeholder.com/1200x300?text=Capa+do+Perfil"}
+          alt="capa"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover", // será substituído pelo crop final. o crop controla a imagem real.
+          }}
+        />
+      </Box>
+
+      <Container maxWidth="lg">
+        <Paper
+          sx={{
+            p: 3,
+            display: "flex",
+            alignItems: "center",
+            mt: -8,
+            gap: 3,
+            background: "#171a22",
+          }}
+        >
+          {/* AVATAR */}
+          <Box sx={{ position: "relative" }}>
+            <Avatar
+              src={avatar || "https://via.placeholder.com/150"}
+              sx={{
+                width: 150,
+                height: 150,
+                border: "4px solid #0f1720",
+                cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.6)",
+              }}
+              onClick={() => setAvatarModalOpen(true)}
+            />
+          </Box>
+
+          <Box>
+            <Typography variant="h3" fontWeight="700" color="white">
+              {user.username}
+            </Typography>
+            <Typography color="gray">@{user.username.toLowerCase()}</Typography>
+          </Box>
+
+          <Box sx={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+            <Box
+              sx={{ textAlign: "center", cursor: "pointer" }}
+              onClick={() => openStatsModal("reviews")}
+            >
+              <Typography variant="h5" color="white">
+                {reviews.length}
+              </Typography>
+              <Typography color="gray">Avaliações</Typography>
+            </Box>
+
+            <Box
+              sx={{ textAlign: "center", cursor: "pointer" }}
+              onClick={() => openStatsModal("followers")}
+            >
+              <Typography variant="h5" color="white">
+                0
+              </Typography>
+              <Typography color="gray">Seguidores</Typography>
+            </Box>
+
+            <Box
+              sx={{ textAlign: "center", cursor: "pointer" }}
+              onClick={() => openStatsModal("following")}
+            >
+              <Typography variant="h5" color="white">
+                0
+              </Typography>
+              <Typography color="gray">Seguindo</Typography>
+            </Box>
+          </Box>
+        </Paper>
+
+        {/* JOGOS AVALIADOS */}
+        <Grid container spacing={4} sx={{ mt: 2 }}>
+          <Grid item xs={12} md={8}>
+            <Typography variant="h4" gutterBottom>
+              Jogos Avaliados
+            </Typography>
+
+            <Grid container spacing={2}>
+              {reviews.length > 0 ? (
+                reviews.map((review) => (
+                  <Grid item xs={6} sm={4} key={review._id}>
+                    <Card>
+                      <CardMedia
+                        component="img"
+                        height="190"
+                        image={review.gameId?.image || ""}
+                        alt={review.gameId?.title || ""}
+                      />
+                      <CardContent>
+                        <Typography variant="h6">{review.gameId?.title}</Typography>
+                        <Typography color="primary.main">
+                          {review.rating === "love" && <FaHeart />}
+                          {review.rating === "like" && <FaThumbsUp />}
+                          {review.rating === "dislike" && "👎"} {review.rating}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))
+              ) : (
+                <Typography sx={{ ml: 2 }}>Você ainda não fez nenhuma análise.</Typography>
+              )}
+            </Grid>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Paper sx={{ p: 2 }}>
+              <Button variant="contained" color="error" fullWidth onClick={handleLogout}>
+                Sair da Conta
+              </Button>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Container>
+
+      {/* modal para ver imagem em grande */}
+      <Modal open={showImageModal} onClose={() => setShowImageModal(false)}>
+        <Box
+          sx={{
+            background: "rgba(0,0,0,0.95)",
+            p: 2,
+            mx: "auto",
+            mt: "6%",
+            width: "80%",
+            maxHeight: "85vh",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <img
+            src={selectedImage}
+            alt="visualizar"
+            style={{ maxWidth: "100%", maxHeight: "80vh", objectFit: "contain" }}
+          />
+        </Box>
+      </Modal>
+
+      {/* modal avatar (ver/alterar) */}
+      <Modal open={avatarModalOpen} onClose={() => setAvatarModalOpen(false)}>
+        <Box
+          sx={{
+            background: "#1c1f2b",
+            width: 360,
+            p: 3,
+            borderRadius: 2,
+            mx: "auto",
+            mt: "14%",
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Foto de Perfil
+          </Typography>
+
+          <Button
+            variant="contained"
+            fullWidth
+            sx={{ mb: 1 }}
+            onClick={() => {
+              handleViewImage(avatar || "https://via.placeholder.com/150");
+              setAvatarModalOpen(false);
+            }}
+          >
+            Ver foto
+          </Button>
+
+          <Button variant="contained" color="primary" fullWidth onClick={onClickChangeAvatar}>
+            Alterar foto
+          </Button>
+
+          <Button fullWidth sx={{ mt: 1 }} onClick={() => setAvatarModalOpen(false)}>
+            Cancelar
+          </Button>
+        </Box>
+      </Modal>
+
+      {/* modal header (ver/alterar) */}
+      <Modal open={headerModalOpen} onClose={() => setHeaderModalOpen(false)}>
+        <Box
+          sx={{
+            background: "#1c1f2b",
+            width: 360,
+            p: 3,
+            borderRadius: 2,
+            mx: "auto",
+            mt: "14%",
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Imagem de Capa
+          </Typography>
+
+          <Button
+            variant="contained"
+            fullWidth
+            sx={{ mb: 1 }}
+            onClick={() => {
+              handleViewImage(headerImg || "https://via.placeholder.com/1200x300");
+              setHeaderModalOpen(false);
+            }}
+          >
+            Ver imagem
+          </Button>
+
+          <Button variant="contained" color="primary" fullWidth onClick={onClickChangeHeader}>
+            Alterar imagem
+          </Button>
+
+          <Button fullWidth sx={{ mt: 1 }} onClick={() => setHeaderModalOpen(false)}>
+            Cancelar
+          </Button>
+        </Box>
+      </Modal>
+
+      {/* modal stats (reviews / followers / following) */}
+      <Modal open={statsModalOpen} onClose={closeStatsModal}>
+        <Box
+          sx={{
+            background: "#111316",
+            width: 420,
+            borderRadius: 2,
+            p: 3,
+            mx: "auto",
+            mt: "12%",
+            color: "white",
+          }}
+        >
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Typography variant="h6">
+              {statsType === "reviews" && "Minhas Avaliações"}
+              {statsType === "followers" && "Seguidores"}
+              {statsType === "following" && "Seguindo"}
+            </Typography>
+            <IconButton onClick={closeStatsModal} sx={{ color: "white" }}>
+              <FaTimes />
+            </IconButton>
+          </Box>
+
+          <Box sx={{ mt: 2 }}>
+            {statsType === "reviews" && (
+              <>
+                {reviews.length > 0 ? (
+                  reviews.map((r) => (
+                    <Box key={r._id} sx={{ mb: 1 }}>
+                      <Typography>• {r.gameId?.title}</Typography>
+                    </Box>
+                  ))
+                ) : (
+                  <Typography>Nenhuma avaliação.</Typography>
+                )}
+              </>
+            )}
+
+            {(statsType === "followers" || statsType === "following") && (
+              <Typography>Nada aqui ainda…</Typography>
+            )}
+          </Box>
+        </Box>
+      </Modal>
+
+      {/* crop modal */}
+      <Modal open={cropModalOpen} onClose={() => setCropModalOpen(false)}>
+        <Box
+          sx={{
+            width: "90%",
+            maxWidth: 900,
+            height: "80vh",
+            mx: "auto",
+            mt: "4vh",
+            bgcolor: "#0b0c0f",
+            borderRadius: 2,
+            p: 2,
+            color: "white",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Typography variant="h6">
+              {cropFor === "avatar" ? "Ajustar Avatar (corte redondo)" : "Ajustar Capa (3:1)"}
+            </Typography>
+            <IconButton onClick={() => setCropModalOpen(false)} sx={{ color: "white" }}>
+              <FaTimes />
+            </IconButton>
+          </Box>
+
+          <Box
+            sx={{
+                position: "relative",
+                width: "100%",
+                maxWidth: 500,
+                height: 500,
+                mx: "auto",
+                mt: 2,
+                background: "#111315",
+                borderRadius: 1
+            }}
+            >
+
+            {tempImageSrc && (
+              <Cropper
+                image={tempImageSrc}
+                crop={crop}
+                zoom={zoom}
+                aspect={cropFor === "header" ? 3 / 1 : 1 / 1}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+                objectFit="horizontal-cover"
+              />
+            )}
+          </Box>
+
+          <Box sx={{ mt: 2, display: "flex", gap: 2, alignItems: "center" }}>
+            <Typography>Zoom</Typography>
+            <Slider
+              value={zoom}
+              min={1}
+              max={3}
+              step={0.01}
+              onChange={(e, v) => setZoom(v)}
+              sx={{ flex: 1 }}
+            />
+            <Button variant="contained" color="primary" onClick={handleConfirmCrop}>
+              Confirmar
+            </Button>
+            <Button variant="outlined" onClick={() => setCropModalOpen(false)}>
+              Cancelar
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+
+      {/* inputs invisíveis */}
+      <input
+        ref={avatarInputRef}
+        id="avatar-file-input"
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={handleAvatarFileChange}
+      />
+      <input
+        ref={headerInputRef}
+        id="header-file-input"
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={handleHeaderFileChange}
+      />
+    </Box>
+  );
+}

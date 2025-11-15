@@ -125,12 +125,15 @@ function GameDetailPage() {
                     <Card key={review.id} sx={{ mb: 2, bgcolor: 'background.paper' }}> 
                         <CardContent>
                             <Box display="flex" alignItems="center" mb={2}>
-                                <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-                                    {review.username ? review.username.charAt(0) : (review.userId ? review.userId.charAt(0) : 'A')}
+                                <Avatar
+                                    src={review.userId?.avatar}
+                                    sx={{ mr: 2, width: 48, height: 48 }}
+                                >
+                                    {(!review.userId?.avatar && review.userId?.username?.charAt(0))}
                                 </Avatar>
                                 <Box sx={{ flexGrow: 1 }}>
                                     <Typography variant="h6">
-                                        {review.username || 'Usuário Anônimo'}
+                                        {review.userId?.username || "Usuário"}
                                     </Typography>
                                     <Typography variant="caption" color="text.secondary">
                                         {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : (review.date || '')}
