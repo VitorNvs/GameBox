@@ -31,9 +31,19 @@ passport.use(
 const app = express();
 const PORT = 8000;
 
-app.use(cors());
+// 1. Configurar o CORS primeiro para todas as rotas
+app.use(cors({
+    origin: 'http://localhost:5173', // A porta do seu front-end (Vite)
+    credentials: true
+}));
+
+// 2. Configurar os parsers do body (ESSENCIAL para req.body funcionar)
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// 3. Inicializar o Passport
 app.use(passport.initialize());
+
 
 const MONGO_URI =
     'mongodb+srv://henryissues:thyerri123@cluster0.o0mpfp8.mongodb.net/gamebase-db?retryWrites=true&w=majority';
@@ -78,7 +88,25 @@ const ListSchema = new mongoose.Schema({
 
 const List = mongoose.model('List', ListSchema);
 
-const AchievementSchema = new mongoose.Schema({});
+// server.js (Substitua a linha 123)
+
+const AchievementSchema = new mongoose.Schema({
+    title: { 
+        type: String, 
+        required: true 
+    },
+    description: { 
+        type: String, 
+        required: true 
+    },
+    rule: { 
+        type: String 
+    },
+    icon: { 
+        type: String 
+    }
+});
+
 const Achievement = mongoose.model('Achievement', AchievementSchema);
 
 // -------------------- JOGOS --------------------
@@ -339,8 +367,21 @@ app.patch('/achievements/:id', async (req, res) => {
 });
 
 app.delete('/achievements/:id', async (req, res) => {
-    await Achievement.findByIdAndDelete(req.params.id);
-    res.status(204).send();
+    try {
+        const deletedAchievement = await Achievement.findByIdAndDelete(req.params.id);
+        
+        if (!deletedAchievement) {
+            // Se não encontrou o item, retorne um 404
+            return res.status(404).json({ message: "Conquista não encontrada." });
+        }
+        
+        // Sucesso, item deletado
+        res.status(204).send();
+
+    } catch (err) {
+        // Erro de ID mal formatado ou outro erro de servidor
+        res.status(500).json({ message: err.message });
+    }
 });
 app.get('/perfil', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
