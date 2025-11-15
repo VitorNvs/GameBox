@@ -9,10 +9,13 @@ import {
 } from '@mui/material';
 
 function MyListsPage() {
+    const [newListTitle, setNewListTitle] = useState('');
+    const [newListDescription, setNewListDescription] = useState('');
     const dispatch = useDispatch();
     const lists = useSelector((state) => state.lists.items);
-    const status = useSelector((state) => state.lists.status);
-    
+    const status = useSelector(state => state.lists.status);
+    const listsError = useSelector(state => state.lists.error);
+
     useEffect(() => {
         if (status === 'idle') {
             dispatch(fetchLists());
@@ -38,10 +41,17 @@ function MyListsPage() {
         resetForm();
     };
 
-    const handleDelete = (id) => {
-        if (window.confirm('Tem certeza que quer excluir esta lista?')) {
-            dispatch(deleteList(id));
-        }
+    const handleDeleteList = async (listId) => {
+            if (window.confirm('Tem certeza que deseja excluir esta lista? Esta ação é irreversível.')) {
+                try {
+                    // Chama o thunk de exclusão
+                    await dispatch(deleteList(listId)).unwrap(); 
+                    alert('Lista excluída com sucesso!');
+                } catch (error) {
+                    console.error("Erro ao deletar a lista:", error);
+                    alert(`Falha ao excluir a lista. Erro: ${error}`);
+                }
+            }
     };
 
     return (
@@ -79,7 +89,8 @@ function MyListsPage() {
                                             >
                                                 Editar
                                             </Button>
-                                            <Button variant="outlined" size="small" color="error" onClick={() => handleDelete(list.id)}>Excluir</Button>
+                                            {/* corrigido: chama handleDeleteList */}
+                                            <Button variant="outlined" size="small" color="error" onClick={() => handleDeleteList(list.id)}>Excluir</Button>
                                         </Box>
                                     </CardContent>
                                 </Card>
