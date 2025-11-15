@@ -2,7 +2,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/achievements'; // Porta 8000
+// O URL está CORRETO (porta 8000, sem /api)
+const API_URL = 'http://localhost:8000/achievements'; 
 
 // THUNK: Buscar Conquistas
 export const fetchAchievements = createAsyncThunk(
@@ -26,22 +27,20 @@ export const addNewAchievement = createAsyncThunk(
     }
 );
 
-// --- NOVO THUNK: ATUALIZAR CONQUISTA ---
+// THUNK: ATUALIZAR CONQUISTA (CORRIGIDO)
 export const updateAchievement = createAsyncThunk(
     'achievements/updateAchievement',
     async (achievementData, { rejectWithValue }) => {
         try {
-            const { id, ...data } = achievementData;
-            // Faz a requisição PATCH para o seu server.js
-            const response = await axios.patch(`${API_URL}/${id}`, data);
-            return response.data; // Retorna a conquista atualizada
-        } catch (err) {
-            return rejectWithValue(err.message);
-        }
+            // --- CORREÇÃO 4: Desestruturar '_id' em vez de 'id' ---
+            const { _id, ...data } = achievementData; 
+            const response = await axios.patch(`${API_URL}/${_id}`, data);
+            return response.data;
+        } catch (err) { return rejectWithValue(err.message); }
     }
 );
 
-// THUNK: Deletar Conquista
+// THUNK: Apagar Conquista
 export const deleteAchievement = createAsyncThunk(
     'achievements/deleteAchievement',
     async (id, { rejectWithValue }) => {
@@ -52,13 +51,15 @@ export const deleteAchievement = createAsyncThunk(
     }
 );
 
+const initialState = {
+  items: [],
+  status: 'idle',
+  error: null,
+};
+
 const achievementsSlice = createSlice({
     name: 'achievements',
-    initialState: {
-        items: [],
-        status: 'idle',
-        error: null,
-    },
+    initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder
@@ -76,18 +77,19 @@ const achievementsSlice = createSlice({
             .addCase(addNewAchievement.fulfilled, (state, action) => {
                 state.items.push(action.payload);
             })
-            // --- NOVO REDUCER: ATUALIZAR ---
+            // ATUALIZAR (CORRIGIDO)
             .addCase(updateAchievement.fulfilled, (state, action) => {
-                // Encontra a conquista na lista e a substitui pela versão atualizada
-                const index = state.items.findIndex(item => item.id === action.payload.id);
+                // --- CORREÇÃO 5: Usar '_id' para encontrar o índice ---
+                const index = state.items.findIndex(item => item._id === action.payload._id);
                 if (index !== -1) {
                     state.items[index] = action.payload;
                 }
             })
-            // Delete
+           // Delete (CORRIGIDO)
             .addCase(deleteAchievement.fulfilled, (state, action) => {
-                state.items = state.items.filter(item => item.id !== action.payload);
-            });
+                // --- CORREÇÃO 6: Usar '_id' para filtrar ---
+                state.items = state.items.filter(item => item._id !== action.payload);
+      });
     },
 });
 

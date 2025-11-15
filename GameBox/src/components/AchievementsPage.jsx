@@ -1,100 +1,79 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Container, Box, Typography, Grid, Card, CardContent, Button, CircularProgress } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { Container, Box, Typography, Button, Grid, Card, CardContent, CardMedia } from '@mui/material';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchAchievements } from '../redux/AchievementsSlice'; // Importa a ação do Redux
 
-// Dados das conquistas para renderização dinâmica
-const achievementsData = [
-    {
-        icon: '/imagens_conquistas/joinha.png',
-        title: 'Pioneiro',
-        description: 'Fazer a sua primeira análise de um jogo.',
-    },
-    {
-        icon: '/imagens_conquistas/medalha.png',
-        title: 'Crítico Ativo',
-        description: 'Escrever 10 análises de jogos.',
-    },
-    {
-        icon: '/imagens_conquistas/coracao.png',
-        title: 'Formador de Opinião',
-        description: 'Sua análise recebeu 20 curtidas.',
-    },
-    {
-        icon: '/imagens_conquistas/olhos.png',
-        title: 'Explorador de Gêneros',
-        description: 'Analisar jogos de 5 gêneros diferentes.',
-    },
-    {
-        icon: '/imagens_conquistas/lapis.png',
-        title: 'Imparável',
-        description: 'Publicar uma análise por dia durante 7 dias seguidos.',
-    },
-    {
-        icon: '/imagens_conquistas/lapis_papel.png',
-        title: 'Mestre das Análises',
-        description: 'Escrever 50 análises de jogos.',
-    },
-];
+// A lista estática de 'achievements' foi REMOVIDA
 
-function AchievementsPage() {
-  return (
-    <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
-        {/* Cabeçalho da Página de Conquistas */}
-        <Box 
-            sx={{ 
-                textAlign: 'center', 
-                mb: 6, 
-                py: 4, 
-                bgcolor: 'background.paper', 
-                borderRadius: 2 
-            }}
-        >
-            <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
-                Nossas Conquistas
-            </Typography>
-            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: '600px', mx: 'auto' }}>
-                Desbloqueie conquistas exclusivas ao participar da nossa comunidade, avaliar jogos e compartilhar suas opiniões!
-            </Typography>
-            <Button variant="contained" sx={{ mt: 3 }}
-            component={Link}
-            to="/admin/conquistas" >
-                Gerenciar Conquistas
-            </Button>
-        </Box>
+const AchievementsPage = () => {
+    const dispatch = useDispatch();
 
-        {/* Grade de Conquistas */}
-        <Grid container spacing={4}>
-            {achievementsData.map((achievement) => (
-                <Grid item key={achievement.title} xs={12} sm={6} md={4}>
-                    <Card sx={{ 
-                        textAlign: 'center', 
-                        height: '100%',
-                        p: 2
-                    }}>
-                        <CardMedia
-                            component="img"
-                            image={achievement.icon}
-                            alt={`Ícone de ${achievement.title}`}
-                            sx={{ 
-                                width: 80, 
-                                height: 80, 
-                                margin: '0 auto 1rem' 
-                            }}
-                        />
-                        <CardContent>
-                            <Typography gutterBottom variant="h5" component="h4" sx={{ fontWeight: 'bold' }}>
-                                {achievement.title}
-                            </Typography>
-                            <Typography variant="body1" color="text.secondary">
-                                {achievement.description}
-                            </Typography>
-                        </CardContent>
-                    </Card>
+    // Busca os dados dinâmicos e o status do estado do Redux
+    const achievements = useSelector((state) => state.achievements.items);
+    const status = useSelector((state) => state.achievements.status);
+
+    // Dispara a busca pelos dados quando o componente é montado
+    useEffect(() => {
+        if (status === 'idle') {
+            dispatch(fetchAchievements());
+        }
+    }, [status, dispatch]);
+
+    return (
+        <Container maxWidth="lg" sx={{ my: 4 }}>
+            <Box sx={{ textAlign: 'center', mb: 5 }}>
+                <Typography variant="h3" component="h1" gutterBottom fontWeight="700">
+                    Nossas Conquistas
+                </Typography>
+                <Typography variant="h6" color="text.secondary" sx={{ maxWidth: '600px', mx: 'auto' }}>
+                    Desbloqueie conquistas exclusivas ao participar da nossa comunidade, avaliar jogos e compartilhar suas opiniões!
+                </Typography>
+                <Button component={Link} to="/admin/conquistas" variant="contained" sx={{ mt: 3 }}>
+                    Gerenciar Conquistas
+                </Button>
+            </Box>
+
+            {/* Adiciona um indicador de carregamento */}
+            {status === 'loading' ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <CircularProgress />
+                </Box>
+            ) : (
+                <Grid container spacing={4}>
+                    {/* Mapeia os dados vindos do Redux (achievements) */}
+                    {achievements.map((ach) => (
+                        <Grid item xs={12} sm={6} md={4} key={ach.id}>
+                            <Card sx={{ textAlign: 'center', p: 3, height: '100%' }}>
+                                <Box
+                                    component="img"
+                                    src={ach.icon} // Usa o 'ach.icon' do banco de dados
+                                    alt={`Ícone de ${ach.title}`}
+                                    sx={{ 
+                                        width: 100, 
+                                        height: 100, 
+                                        mb: 2, 
+                                        borderRadius: '50%', 
+                                        border: '3px solid', 
+                                        borderColor: 'primary.main',
+                                        objectFit: 'cover' // Garante que a imagem se ajuste
+                                    }}
+                                />
+                                <CardContent>
+                                    <Typography variant="h5" component="h2" fontWeight="bold">
+                                        {ach.title} 
+                                    </Typography>
+                                    <Typography color="text.secondary">
+                                        {ach.description}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    ))}
                 </Grid>
-            ))}
-        </Grid>
-    </Container>
-  );
-}
+            )}
+        </Container>
+    );
+};
 
 export default AchievementsPage;

@@ -6,7 +6,7 @@ import { fetchAchievements, addNewAchievement, deleteAchievement, updateAchievem
 import { 
     Container, Box, Typography, TextField, Button, Paper,
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    CircularProgress, ButtonGroup // Adicionado ButtonGroup
+    CircularProgress, ButtonGroup, Grid
 } from '@mui/material';
 
 function AdminAchievementsPage() {
@@ -14,9 +14,8 @@ function AdminAchievementsPage() {
     const achievements = useSelector((state) => state.achievements.items);
     const status = useSelector((state) => state.achievements.status);
     
-    // --- NOVOS ESTADOS PARA O MODO DE EDIÇÃO ---
     const [isEditing, setIsEditing] = useState(false);
-    const [editingId, setEditingId] = useState(null);
+    const [editingId, setEditingId] = useState(null); // Vai guardar o _id
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -35,69 +34,74 @@ function AdminAchievementsPage() {
         setFormData(prevData => ({ ...prevData, [name]: value }));
     };
 
-    // --- LÓGICA PARA LIMPAR O FORMULÁRIO E SAIR DO MODO DE EDIÇÃO ---
-    const resetForm = () => {
-        setFormData({ title: '', description: '', rule: '', icon: '' });
-        setIsEditing(false);
-        setEditingId(null);
-    };
-
-    // --- LÓGICA DE SUBMISSÃO "INTELIGENTE" ---
     const handleSubmit = (event) => {
         event.preventDefault();
+        
         if (isEditing) {
-            // Se estiver editando, chama a ação de ATUALIZAR
-            dispatch(updateAchievement({ id: editingId, ...formData }));
+            // Envia o '_id' junto com os dados do formulário
+            dispatch(updateAchievement({ ...formData, _id: editingId }));
         } else {
-            // Se não, chama a ação de ADICIONAR
             dispatch(addNewAchievement(formData));
         }
-        resetForm(); // Limpa o formulário após a submissão
+        clearForm();
     };
 
-    // --- LÓGICA PARA O BOTÃO "EDITAR" ---
-    const handleEditClick = (achievement) => {
+    const handleDelete = (id) => {
+        // 'id' aqui é o '_id' que passamos do botão
+        dispatch(deleteAchievement(id));
+    };
+
+    const handleEditClick = (ach) => {
         setIsEditing(true);
-        setEditingId(achievement.id);
+        // --- CORREÇÃO 1: Guardar '_id' ---
+        setEditingId(ach._id); 
         setFormData({
-            title: achievement.title,
-            description: achievement.description,
-            rule: achievement.rule,
-            icon: achievement.icon
+            title: ach.title,
+            description: ach.description,
+            rule: ach.rule,
+            icon: ach.icon
         });
-        // Rola a página para o topo, onde está o formulário
-        window.scrollTo(0, 0); 
     };
 
-    const handleDelete = (id) => { /* ... (continua igual) ... */ };
+    const clearForm = () => {
+        setIsEditing(false);
+        setEditingId(null);
+        setFormData({ title: '', description: '', rule: '', icon: '' });
+    };
+
+    if (status === 'loading') {
+        return <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress /></Box>;
+    }
 
     return (
-        <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
-            <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700, textAlign: 'center', mb: 4 }}>
-                Gerenciamento de Conquistas
-            </Typography>
-
-            {/* Formulário (agora dinâmico) */}
-            <Paper sx={{ p: 3, mb: 4 }}>
-                <Typography variant="h5" component="h3" gutterBottom>
-                    {/* O título muda dinamicamente */}
-                    {isEditing ? `Editando: ${formData.title}` : 'Adicionar Nova Conquista'}
+        <Container component="main" maxWidth="md" sx={{ my: 4 }}>
+            <Paper sx={{ p: { xs: 2, md: 4 } }}>
+                <Typography variant="h4" component="h1" gutterBottom>
+                    {isEditing ? 'Editar Conquista' : 'Adicionar Nova Conquista'}
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit}>
-                    <TextField fullWidth margin="normal" required id="ach-title" name="title" label="Título da Conquista" value={formData.title} onChange={handleChange} />
-                    <TextField fullWidth margin="normal" required id="ach-description" name="description" label="Descrição" multiline rows={3} value={formData.description} onChange={handleChange} />
-                    <TextField fullWidth margin="normal" id="ach-rule" name="rule" label="Regra da Conquista (para o sistema)" value={formData.rule} onChange={handleChange} />
-                    <TextField fullWidth margin="normal" id="ach-icon" name="icon" label="URL do Ícone" value={formData.icon} onChange={handleChange} />
+                
+                <Box component="form" onSubmit={handleSubmit} noValidate>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField name="title" label="Título" value={formData.title} onChange={handleChange} required fullWidth />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField name="icon" label="URL do Ícone" value={formData.icon} onChange={handleChange} fullWidth />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField name="description" label="Descrição" value={formData.description} onChange={handleChange} required fullWidth />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField name="rule" label="Regra (ex: reviews_count >= 1)" value={formData.rule} onChange={handleChange} fullWidth />
+                        </Grid>
+                    </Grid>
                     
-                    {/* Botões de Ação do Formulário */}
-                    <ButtonGroup sx={{ mt: 2 }} fullWidth>
-                        <Button type="submit" variant="contained" disabled={status === 'loading'}>
-                            {/* O texto do botão muda dinamicamente */}
-                            {status === 'loading' ? 'Salvando...' : (isEditing ? 'Atualizar Conquista' : 'Salvar Conquista')}
+                    <ButtonGroup sx={{ mt: 3 }}>
+                        <Button type="submit" variant="contained">
+                            {isEditing ? 'Salvar Alterações' : 'Adicionar Conquista'}
                         </Button>
-                        {/* Botão de Cancelar que só aparece no modo de edição */}
                         {isEditing && (
-                            <Button variant="outlined" color="secondary" onClick={resetForm}>
+                            <Button variant="outlined" onClick={clearForm}>
                                 Cancelar Edição
                             </Button>
                         )}
@@ -105,13 +109,11 @@ function AdminAchievementsPage() {
                 </Box>
             </Paper>
 
-            {/* Tabela de Conquistas Existentes */}
-            <Paper sx={{ p: 3 }}>
-                <Typography variant="h5" component="h3" gutterBottom>
+            <Paper sx={{ p: { xs: 2, md: 4 }, mt: 4 }}>
+                <Typography variant="h5" component="h2" gutterBottom>
                     Conquistas Existentes
                 </Typography>
                 <TableContainer>
-                    {status === 'loading' && <CircularProgress sx={{ m: 'auto' }} />}
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -123,16 +125,18 @@ function AdminAchievementsPage() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {achievements.map((ach) => (
-                                <TableRow key={ach.id}>
-                                    <TableCell><Box component="img" src={ach.icon} alt="ícone" sx={{ width: 40, height: 40 }} /></TableCell>
+                            {/* Verifica se 'achievements' existe antes de mapear */}
+                            {achievements && achievements.map((ach) => (
+                                // --- CORREÇÃO 2: Usar '_id' para a key ---
+                                <TableRow key={ach._id}>
+                                    <TableCell><Box component="img" src={ach.icon} alt="ícone" sx={{ width: 40, height: 40, objectFit: 'cover' }} /></TableCell>
                                     <TableCell>{ach.title}</TableCell>
                                     <TableCell>{ach.description}</TableCell>
                                     <TableCell><code>{ach.rule}</code></TableCell>
                                     <TableCell align="right">
-                                        {/* Botão de Editar AGORA FUNCIONA! */}
                                         <Button size="small" variant="outlined" sx={{ mr: 1 }} onClick={() => handleEditClick(ach)}>Editar</Button>
-                                        <Button size="small" variant="outlined" color="error" onClick={() => handleDelete(ach.id)}>Remover</Button>
+                                        {/* --- CORREÇÃO 3: Usar '_id' para apagar --- */}
+                                        <Button size="small" variant="outlined" color="error" onClick={() => handleDelete(ach._id)}>Remover</Button>
                                     </TableCell>
                                 </TableRow>
                             ))}
