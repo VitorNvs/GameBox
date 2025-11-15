@@ -109,6 +109,31 @@ const AchievementSchema = new mongoose.Schema({
 
 const Achievement = mongoose.model('Achievement', AchievementSchema);
 
+const CategorieSchema = new mongoose.Schema({
+    title: { 
+        type: String, 
+        required: true 
+    },
+    description: { 
+        type: String    
+    },
+    imagem: {
+        type: String
+    },
+    alt: { 
+        type: String 
+    },
+    color: { 
+        type: String 
+    },
+    id: {
+        type: String
+    }
+});
+
+const Categorie = mongoose.model('Categorie', CategorieSchema);
+
+
 // -------------------- JOGOS --------------------
 
 app.get('/jogos', async (req, res) => {
@@ -398,6 +423,35 @@ app.get('/perfil', passport.authenticate('jwt', { session: false }), async (req,
 
     } catch (err) {
         res.status(500).json({ message: 'Erro ao carregar dados do perfil.' });
+    }
+});
+// -------------------- CATEGORIAS --------------------
+
+app.post('/categories', async (req, res) => {
+    try {
+        const categorie = new Categorie({ ...req.body });
+        const savedAchievement = await categorie.save();
+        res.status(201).json(savedAchievement);   
+    } catch (error) {
+        
+    } 
+});
+
+app.delete('/categories/:id', async (req, res) => {
+    try {
+        const deletedCategorie = await Categorie.findByIdAndDelete(req.params.id);
+        
+        if (!deletedCategorie) {
+            // Se não encontrou o item, retorne um 404
+            return res.status(404).json({ message: "Categoria não encontrada." });
+        }
+        
+        // Sucesso, item deletado
+        res.status(204).send();
+
+    } catch (err) {
+        // Erro de ID mal formatado ou outro erro de servidor
+        res.status(500).json({ message: err.message });
     }
 });
 
