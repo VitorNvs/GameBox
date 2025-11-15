@@ -7,12 +7,22 @@ const API_URL = 'http://localhost:8000/lists'; // Verifique se a porta está cor
 // THUNK: Buscar listas
 export const fetchLists = createAsyncThunk(
     'lists/fetchLists',
-    async (_, { rejectWithValue }) => {
+    async (_, { rejectWithValue, getState }) => {
         try {
-            const response = await axios.get(API_URL);
-            return response.data;
+            const token = getState().auth.token; // Pega o token
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}` // Cria o cabeçalho
+                }
+            };
+            const response = await axios.get(API_URL, config); // Envia o config
+            // ...
+            const data = Array.isArray(response.data)
+                ? response.data.map(item => ({ ...item, id: item.id || item._id }))
+                : { ...response.data, id: response.data.id || response.data._id };
+            return data;
         } catch (err) {
-            return rejectWithValue(err.message);
+            return rejectWithValue(err.response?.data?.message || err.message);
         }
     }
 );
@@ -20,64 +30,90 @@ export const fetchLists = createAsyncThunk(
 // THUNK: Criar lista
 export const createList = createAsyncThunk(
     'lists/createList',
-    async (newListData, { rejectWithValue }) => {
+    async (newListData, { rejectWithValue, getState }) => {
         try {
-            // CORREÇÃO: Novas listas agora são criadas com um array 'games' vazio
+            const token = getState().auth.token; // Pega o token
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}` // Cria o cabeçalho
+                }
+            };
             const listToCreate = { 
                 ...newListData, 
                 gamesCount: 0, 
-                games: [] // <-- MUITO IMPORTANTE
+                games: [] 
             };
-            const response = await axios.post(API_URL, listToCreate);
-            return response.data;
+            const response = await axios.post(API_URL, listToCreate, config); // Envia o config
+            // ...
+            const created = { ...response.data, id: response.data.id || response.data._id };
+            return created;
         } catch (err) {
-            return rejectWithValue(err.message);
+            return rejectWithValue(err.response?.data?.message || err.message);
         }
     }
 );
 
-// THUNK: Deletar lista
+// THUNK: Deletar lista (IMPLEMENTAÇÃO)
 export const deleteList = createAsyncThunk(
     'lists/deleteList',
-    async (listId, { rejectWithValue }) => {
+    async (listId, { rejectWithValue, getState }) => {
         try {
-            await axios.delete(`${API_URL}/${listId}`);
-            return listId;
+            // Assume que você tem um token JWT armazenado em algum lugar do Redux (ex: state.auth.token)
+            const token = getState().auth.token; 
+            
+            await axios.delete(`${API_URL}/${listId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}` // Envia o token para autenticação
+                }
+            });
+            return listId; // Retorna o ID para o reducer remover do estado
         } catch (err) {
-            return rejectWithValue(err.message);
+            return rejectWithValue(err.response?.data?.message || err.message);
         }
     }
 );
 
-// NOVO THUNK: Salvar (atualizar) os detalhes da lista (título, descrição)
+// THUNK: Atualizar detalhes da lista (título, descrição) (IMPLEMENTAÇÃO)
 export const updateListDetails = createAsyncThunk(
     'lists/updateListDetails',
-    async ({ id, title, description }, { rejectWithValue }) => {
+    async ({ id, title, description }, { rejectWithValue, getState }) => {
         try {
-            const response = await axios.patch(`${API_URL}/${id}`, { title, description });
-            return response.data; // Retorna a lista atualizada
+            const token = getState().auth.token; // Pega o token
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}` // Cria o cabeçalho
+                }
+            };
+            const response = await axios.patch(`${API_URL}/${id}`, { title, description }, config); // Envia o config
+            const updated = { ...response.data, id: response.data.id || response.data._id };
+            return updated;
         } catch (err) {
-            return rejectWithValue(err.message);
+            return rejectWithValue(err.response?.data?.message || err.message);
         }
     }
 );
-
 // NOVO THUNK: Atualizar os jogos (adicionar/remover)
 export const updateListGames = createAsyncThunk(
     'lists/updateListGames',
-    async ({ listId, updatedGames }, { rejectWithValue }) => {
+    async ({ listId, updatedGames }, { rejectWithValue, getState }) => {
         try {
-            // Atualiza o array 'games' e o 'gamesCount'
+            const token = getState().auth.token; // Pega o token
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}` // Cria o cabeçalho
+                }
+            };
             const response = await axios.patch(`${API_URL}/${listId}`, { 
                 games: updatedGames,
                 gamesCount: updatedGames.length
-            });
-            return response.data;
+            }, config); // Envia o config
+            const updated = { ...response.data, id: response.data.id || response.data._id };
+            return updated;
         } catch (err) {
-            return rejectWithValue(err.message);
+            return rejectWithValue(err.response?.data?.message || err.message);
         }
     }
-);
+); 
 
 const listsSlice = createSlice({
     name: 'lists',

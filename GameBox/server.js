@@ -16,6 +16,29 @@ const opts = {
     secretOrKey: JWT_SECRET,
 };
 
+const listSchema = new mongoose.Schema({
+    // Referência ao usuário logado, essencial para segurança
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    title: { type: String, required: true },
+    description: { type: String, default: '' },
+    // Armazena referências aos IDs dos jogos
+    games: [{ type: mongoose.Schema.Types.ObjectId, ref: 'jogos' }],
+    gamesCount: { type: Number, default: 0 }, // (Assumindo que você corrigiu o 'ref' para 'jogos')
+}, { timestamps: true });
+
+// ...existing code...
+// Transformação JSON para enviar "id" em vez de "_id" e remover __v
+listSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: (doc, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+    }
+});
+
+const List = mongoose.model('List', listSchema);
+
 passport.use(
     new JwtStrategy(opts, async (jwt_payload, done) => {
         try {
@@ -66,6 +89,15 @@ const GameSchema = new mongoose.Schema({
     image: { type: String },
 });
 
+GameSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: (doc, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+    }
+});
+
 const Game = mongoose.model('jogos', GameSchema);
 
 const ReviewSchema = new mongoose.Schema({
@@ -78,17 +110,6 @@ const ReviewSchema = new mongoose.Schema({
 });
 
 const Review = mongoose.model('Review', ReviewSchema);
-
-const ListSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    description: { type: String },
-    gamesCount: { type: Number, default: 0 },
-    games: [GameSchema],
-});
-
-const List = mongoose.model('List', ListSchema);
-
-// server.js (Substitua a linha 123)
 
 const AchievementSchema = new mongoose.Schema({
     title: { 
@@ -319,29 +340,95 @@ app.post('/auth/login', async (req, res) => {
 
 // -------------------- LISTAS --------------------
 
-app.get('/lists', async (req, res) => {
-    const lists = await List.find();
-    res.json(lists);
+app.get('/lists', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        const lists = await List.find({ userId: req.user._id}).populate('games');
+        res.json(lists);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
-app.post('/lists', async (req, res) => {
-    const list = new List({ ...req.body });
-    const savedList = await list.save();
-    res.status(201).json(savedList);
+app.post('/lists', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        const { title, description, games } = req.body;
+        // ...
+        const gamesList = Array.isArray(games) ? games : []; // Garante que é um array
+        
+        const list = new List({
+            userId: req.user._id,
+            title: title.trim(),
+            description: (description || '').trim(),
+            games: gamesList,
+            gamesCount: gamesList.length // --- ADICIONE ESTA LINHA ---
+        });
+
+        const saved = await list.save();
+        const populated = await List.findById(saved._id).populate('games');
+        res.status(201).json(populated);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
-app.patch('/lists/:id', async (req, res) => {
-    const updatedList = await List.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true }
-    );
-    res.json(updatedList);
-});
+app.patch('/lists/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({ message: "ID inválido." });
+        }
 
-app.delete('/lists/:id', async (req, res) => {
-    await List.findByIdAndDelete(req.params.id);
-    res.status(204).send();
+        const updateData = {};
+        if (req.body.title !== undefined) updateData.title = req.body.title.trim();
+        if (req.body.description !== undefined) updateData.description = req.body.description.trim();
+        if (req.body.games !== undefined) {
+            updateData.games = Array.isArray(req.body.games) ? req.body.games : [];
+            updateData.gamesCount = updateData.games.length;
+        }
+
+        // PASSO 1: Atualiza o documento (sem se preocupar em popular aqui)
+        const updatedList = await List.findOneAndUpdate(
+            { _id: req.params.id, userId: req.user._id },
+            updateData,
+            { new: true, runValidators: true } 
+        );
+
+        if (!updatedList) {
+            return res.status(404).json({ message: "Lista não encontrada ou sem permissão." });
+        }
+
+        // --- MUDANÇA PRINCIPAL AQUI ---
+        // Em vez de tentar popular a variável 'updatedList',
+        // vamos buscar o documento recém-atualizado diretamente do banco
+        // e populá-lo. Isso é 100% seguro.
+        
+        // PASSO 2: Busca o documento que acabamos de salvar pelo ID
+        // PASSO 3: Popula o campo 'games' desse documento
+        const populatedList = await List.findById(updatedList._id).populate('games');
+
+        // PASSO 4: Envia o documento recém-buscado e 100% populado
+        res.json(populatedList);
+        // --- FIM DA MUDANÇA ---
+
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+// Remover um jogo da lista
+app.delete('/lists/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        // Use req.params.id (sem o underscore)
+        if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({ message: "ID inválido." });
+        }
+
+        // Use req.params.id (sem o underscore)
+        const deleted = await List.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
+        if (!deleted) return res.status(404).json({ message: 'Lista não encontrada ou sem permissão.' });
+
+        res.status(204).send();
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
 // -------------------- ACHIEVEMENTS --------------------
