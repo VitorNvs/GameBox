@@ -20,6 +20,7 @@ import CategoryGamesPage from './components/CategoryGamesPage.jsx';
 import EditListPage from './components/EditListPage.jsx';
 import ProfilePage from './components/ProfilePage.jsx';
 import AdminAddGamePage from './components/AdminAdGamePage.jsx';
+import CategoryAdminPage from './components/CategoryAdminPage.jsx';
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
                 <Route path="/admin/jogo/adicionar" element={<AdminAddGamePage />} />
                 <Route path="/admin/jogo/:gameId" element={<AdminGamePage />} />
                 <Route path="/minhas-listas" element={<MinhasListasPage />} />
+                <Route path="/admin/categories/adicionar" element={<CategoryAdminPage />} />
                 {/* Adicione outras rotas aqui */}
               </Routes>
           </Box>

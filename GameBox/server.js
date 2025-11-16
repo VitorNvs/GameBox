@@ -109,7 +109,7 @@ const AchievementSchema = new mongoose.Schema({
 
 const Achievement = mongoose.model('Achievement', AchievementSchema);
 
-const CategorieSchema = new mongoose.Schema({
+const CategorySchema = new mongoose.Schema({
     title: { 
         type: String, 
         required: true 
@@ -131,7 +131,7 @@ const CategorieSchema = new mongoose.Schema({
     }
 });
 
-const Categorie = mongoose.model('Categorie', CategorieSchema);
+const Category = mongoose.model('Category', CategorySchema);
 
 
 // -------------------- JOGOS --------------------
@@ -429,19 +429,33 @@ app.get('/perfil', passport.authenticate('jwt', { session: false }), async (req,
 
 app.post('/categories', async (req, res) => {
     try {
-        const categorie = new Categorie({ ...req.body });
-        const savedAchievement = await categorie.save();
-        res.status(201).json(savedAchievement);   
+        const category = new Category({ ...req.body });
+        const savedCategory = await category.save();
+        res.status(201).json(savedCategory);   
     } catch (error) {
         
     } 
 });
 
+app.get('/categories', async (req, res) => {
+    const category = await Category.find();
+    res.json(category);
+});
+
+app.patch('/categories/:id', async (req, res) => {
+    const updatedCategory = await Category.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+    );
+    res.json(updatedCategory);
+});
+
 app.delete('/categories/:id', async (req, res) => {
     try {
-        const deletedCategorie = await Categorie.findByIdAndDelete(req.params.id);
+        const deletedCategory = await Category.findByIdAndDelete(req.params.id);
         
-        if (!deletedCategorie) {
+        if (!deletedCategory) {
             // Se não encontrou o item, retorne um 404
             return res.status(404).json({ message: "Categoria não encontrada." });
         }
