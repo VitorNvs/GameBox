@@ -34,10 +34,6 @@ const listSchema = new mongoose.Schema({
 listSchema.set('toJSON', {
     virtuals: true,
     versionKey: false,
-    transform: (doc, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-    }
 });
 
 const List = mongoose.model('List', listSchema);
@@ -95,11 +91,8 @@ const GameSchema = new mongoose.Schema({
 GameSchema.set('toJSON', {
     virtuals: true,
     versionKey: false,
-    transform: (doc, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-    }
 });
+
 
 const Game = mongoose.model('jogos', GameSchema);
 
@@ -163,7 +156,7 @@ app.get('/jogos/:id', async (req, res) => {
         if (!jogo) return res.status(404).json({ message: 'Jogo não encontrado' });
 
         const gameReviews = await Review.find({ gameId: req.params.id })
-            .populate("userId", "username avatar");
+            .populate("userId", "username avatar _id")
 
         res.json({ ...jogo.toObject(), reviews: gameReviews });
     } catch (err) {
@@ -401,10 +394,6 @@ app.patch('/lists/:id', passport.authenticate('jwt', { session: false }), async 
             return res.status(404).json({ message: "Lista não encontrada ou sem permissão." });
         }
 
-        // --- MUDANÇA PRINCIPAL AQUI ---
-        // Em vez de tentar popular a variável 'updatedList',
-        // vamos buscar o documento recém-atualizado diretamente do banco
-        // e populá-lo. Isso é 100% seguro.
         
         // PASSO 2: Busca o documento que acabamos de salvar pelo ID
         // PASSO 3: Popula o campo 'games' desse documento
@@ -547,6 +536,24 @@ app.post(
         }
     }
 );
+
+app.get("/user/:id", async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).select("username avatar headerImg bio");
+
+        if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
+
+        const reviewCount = await Review.countDocuments({ userId: req.params.id });
+
+        res.json({
+            ...user.toObject(),
+            reviewCount
+        });
+    } catch (err) {
+        res.status(500).json({ message: "Erro ao carregar mini perfil" });
+    }
+});
+
 
 // tornar uploads acessível publicamente
 app.use("/uploads", express.static("uploads"));
