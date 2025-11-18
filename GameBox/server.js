@@ -175,19 +175,30 @@ app.get('/jogos', async (req, res) => {
     }
 });
 
+// Jogo individual + reviews populadas
 app.get('/jogos/:id', async (req, res) => {
     try {
-        const jogo = await Game.findById(req.params.id);
-        if (!jogo) return res.status(404).json({ message: 'Jogo não encontrado' });
+        const game = await Game.findById(req.params.id);
 
-        const gameReviews = await Review.find({ gameId: req.params.id })
-            .populate("userId", "username avatar _id")
+        if (!game) {
+            return res.status(404).json({ message: "Jogo não encontrado" });
+        }
 
-        res.json({ ...jogo.toObject(), reviews: gameReviews });
+        // buscar reviews desse jogo
+        const reviews = await Review.find({ gameId: req.params.id })
+            .populate("userId", "username avatar headerImg followers following") // <- importante!
+            .sort({ createdAt: -1 });
+
+        res.json({
+            ...game.toObject(),
+            reviews
+        });
+
     } catch (err) {
-        res.status(404).json({ message: 'Jogo não encontrado (ID inválido)' });
+        res.status(500).json({ message: "Erro ao buscar jogo" });
     }
 });
+
 
 
 app.post('/jogos', async (req, res) => {
@@ -607,20 +618,25 @@ app.post(
 
 app.get("/user/:id", async (req, res) => {
     try {
-        const user = await User.findById(req.params.id).select("username avatar headerImg bio");
+        const user = await User.findById(req.params.id)
+            .select("username avatar headerImg followers following");
 
         if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
 
-        const reviewCount = await Review.countDocuments({ userId: req.params.id });
+        const reviewsCount = await Review.countDocuments({ userId: req.params.id });
 
         res.json({
             ...user.toObject(),
-            reviewCount
+            followersCount: user.followers.length,
+            followingCount: user.following.length,
+            reviewsCount
         });
+
     } catch (err) {
         res.status(500).json({ message: "Erro ao carregar mini perfil" });
     }
 });
+
 
 
 // tornar uploads acessível publicamente

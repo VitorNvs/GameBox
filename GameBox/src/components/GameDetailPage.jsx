@@ -49,15 +49,27 @@ function GameDetailPage() {
     let enterTimer;
     let leaveTimer;
 
-   const handleEnter = (event, user) => {
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const handleMouseMove = (e) => {
+    setMousePos({ x: e.clientX + 12, y: e.clientY - 240 });
+};
+
+const handleEnter = async (event, user) => {
     clearTimeout(leaveTimer);
 
-    enterTimer = setTimeout(() => {
-        setHoverUser(user);
+    enterTimer = setTimeout(async () => {
+        if (!user?._id) return;
+
+        // pega mini perfil completo do backend
+        const res = await fetch(`http://localhost:8000/user/${user._id}`);
+        const fullUser = await res.json();
+
+        setHoverUser(fullUser);
         setAnchorEl(event.currentTarget);
         setOpen(true);
     }, 120);
 };
+
         const handleLeave = () => {
             clearTimeout(enterTimer);
 
@@ -85,7 +97,8 @@ function GameDetailPage() {
     }
 
     return (
-        <Container maxWidth="lg" sx={{ my: 4 }}>
+        <Container maxWidth="lg" sx={{ my: 4 }} onMouseMove={handleMouseMove}>
+
 
             {/* INFO DO JOGO */}
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 4 }}>
@@ -206,9 +219,10 @@ function GameDetailPage() {
             {/* MINI PERFIL POPPER */}
             <Popper
     open={open}
-    anchorEl={anchorEl}
-    placement="top"
-    sx={{ zIndex: 9999 }}
+    anchorEl={null}
+    sx={{ zIndex: 9999, pointerEvents: "none" }}
+    style={{ position: "fixed", left: mousePos.x, top: mousePos.y }}
+
     modifiers={[
         {
             name: "offset",
@@ -226,7 +240,8 @@ function GameDetailPage() {
     ]}
 >
     <Box sx={{ pointerEvents: "none" }}>
-        <MiniProfile user={hoverUser} />
+        <MiniProfile user={hoverUser}
+         />
     </Box>
 </Popper>
 
