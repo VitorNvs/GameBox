@@ -110,11 +110,11 @@ function CategoryGamesPage() {
                 ) : (
                     <Grid container spacing={4}>
                         {games.map((game) => (
-                            <Grid item key={game.id} xs={12} sm={6} md={3}>
+                            <Grid item key={game._id} xs={12} sm={6} md={3}>
                                 {/* Card do Jogo com Link para GameDetailPage.jsx */}
                                 <Card 
                                     component={Link} // Transforma o Card em um link
-                                    to={`/jogos/${game.id}`} // Redireciona para o GameDetailPage
+                                    to={`/jogos/${game._id}`} // Redireciona para o GameDetailPage
                                     sx={{ 
                                         height: '100%',
                                         display: 'flex',

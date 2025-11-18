@@ -14,12 +14,22 @@ export const addNewCategory = createAsyncThunk('categories/addNewCategory', asyn
     const response = await axios.post(API_URL, newCategoryData);
     return response.data;
 });
-
+/*
 export const updateCategory = createAsyncThunk('categories/updateCategory', async (updatedCategoryData) => {
     const { _id, ...data } = updatedCategoryData;
     const response = await axios.put(`${API_URL}/${_id}`, data);
     return response.data;
 });
+*/
+export const updateCategory = createAsyncThunk('categories/updateCategory', async ({_id, ...categoryData }, { rejectWithValue }) => {
+    try {
+        const response = await axios.patch(`${API_URL}/${_id}`, categoryData);
+        return response.data;
+    } catch (err) {
+        return rejectWithValue(err.message);
+    }
+});
+
 
 export const deleteCategory = createAsyncThunk('categories/deleteCategory', async (categoryId) => {
     await axios.delete(`${API_URL}/${categoryId}`);

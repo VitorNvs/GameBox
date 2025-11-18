@@ -26,11 +26,8 @@ function AdminCategoriesPage() {
     // Ajuste os campos do formulário para Categoria
     const [formData, setFormData] = useState({
         title: '',
-        description: '', 
-        imagem: '',
-        alt: '',
-        color: '',
-        id: ''
+        description: '' 
+        
     });
 
     useEffect(() => {
@@ -65,15 +62,17 @@ function AdminCategoriesPage() {
         setEditingId(cat._id); 
         // Preenche o formulário com os dados da categoria selecionada
         setFormData({
-            nome: cat.nome,
-            descricao: cat.descricao,
+            title: cat.title,
+            description: cat.description
+            
         });
     };
 
     const clearForm = () => {
         setIsEditing(false);
         setEditingId(null);
-        setFormData({ nome: '', descricao: '' });
+        setFormData({ title: '',
+        description: ''});
     };
 
     if (status === 'loading') {
@@ -91,11 +90,11 @@ function AdminCategoriesPage() {
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             {/* Campo 'nome' (Título) */}
-                            <TextField name="nome" label="Nome da Categoria" value={formData.nome} onChange={handleChange} required fullWidth />
+                            <TextField name="title" label="Nome da Categoria" value={formData.title} onChange={handleChange} required fullWidth />
                         </Grid>
                         <Grid item xs={12}>
                             {/* Campo 'descricao' (Descrição) */}
-                            <TextField name="descricao" label="Descrição da Categoria" value={formData.descricao} onChange={handleChange} fullWidth multiline rows={3} />
+                            <TextField name="description" label="Descrição da Categoria" value={formData.description} onChange={handleChange} fullWidth multiline rows={3} />
                         </Grid>
                     </Grid>
                     
@@ -127,10 +126,10 @@ function AdminCategoriesPage() {
                         </TableHead>
                         <TableBody>
                             {/* Itera sobre a lista de categorias */}
-                            {categories && categories.map((cat) => (
+                            {categories && Array.isArray(categories) && categories.map((cat) => (
                                 <TableRow key={cat._id}>
-                                    <TableCell>{cat.nome}</TableCell>
-                                    <TableCell>{cat.descricao}</TableCell>
+                                    <TableCell>{cat.title}</TableCell>
+                                    <TableCell>{cat.description}</TableCell>
                                     <TableCell align="right">
                                         <Button size="small" variant="outlined" sx={{ mr: 1 }} onClick={() => handleEditClick(cat)}>Editar</Button>
                                         <Button size="small" variant="outlined" color="error" onClick={() => handleDelete(cat._id)}>Remover</Button>
