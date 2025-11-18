@@ -6,7 +6,10 @@ const UserSchema = new mongoose.Schema({
   email:    { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role:     { type: String, default: 'user' }, // opcional: 'user' | 'admin'
-  createdAt:{ type: Date, default: Date.now }
+  createdAt:{ type: Date, default: Date.now },
+
+  avatar: { type: String, default: "" },
+  headerImg: { type: String, default: "" }
 });
 
 // registra e exporta o model

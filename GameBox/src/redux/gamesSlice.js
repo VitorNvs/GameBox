@@ -18,7 +18,7 @@ export const fetchGames = createAsyncThunk('jogos/fetchGames', async (_, { rejec
 
 export const fetchGameById = createAsyncThunk('jogos/fetchGameById', async (gameId, { rejectWithValue }) => {
     try {
-        const response = await axios.get(`${GAMES_URL}/${gameId}?_embed=reviews`);
+        const response = await axios.get(`${GAMES_URL}/${gameId}`);
         return response.data;
     } catch (err) {
         return rejectWithValue(err.message);

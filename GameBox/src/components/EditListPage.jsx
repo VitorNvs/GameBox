@@ -57,41 +57,72 @@ function EditListPage() {
 
     // --- FUNÇÕES DE SALVAR REAIS ---
 
-    const handleSaveListDetails = () => {
-        dispatch(updateListDetails({ id: listId, title, description }))
-            .unwrap()
-            .then(() => alert('Detalhes salvos com sucesso!'))
-            .catch(err => alert(`Erro ao salvar: ${err.message}`));
+    const handleSaveDetails = async (e) => {
+        e.preventDefault();
+        try {
+            const listData = {
+                id: listId,
+                title,
+                description,
+            };
+            
+            // Chama o thunk de atualização
+            await dispatch(updateListDetails(listData)).unwrap();
+            alert('Detalhes da lista salvos com sucesso!');
+        } catch (error) {
+            console.error("Erro ao salvar detalhes da lista:", error);
+            alert(`Falha ao salvar a lista: ${error}`);
+        }
     };
 
-    const handleRemoveGame = (gameIdToRemove) => {
+        const handleRemoveGame = (gameIdToRemove) => {
         if (!list) return;
-        const updatedGames = list.jogos.filter(game => game.id !== gameIdToRemove);
-        dispatch(updateListGames({ listId, updatedGames }));
+
+        // LÓGICA ROBUSTA:
+        // 1. Mapeia a lista de jogos, pegando o ID de cada item
+        //    (seja 'game.id' de um objeto ou 'game' de uma string)
+        const currentGameIds = (list.jogos || []).map(game => 
+            (typeof game === 'string' ? game : game._id)
+        );
+        
+        // 2. Filtra o ID que queremos remover
+        const updatedGameIds = currentGameIds.filter(id => id !== gameIdToRemove);
+
+        dispatch(updateListGames({ listId, updatedGames: updatedGameIds }));
     };
 
-    const handleAddGame = (gameToAdd) => {
-        if (!list || (list.jogos && list.jogos.some(g => g.id === gameToAdd.id))) return;
+const handleAddGame = (gameToAdd) => {
+        if (!list) return;
 
-        const gameInfo = {
-            id: gameToAdd.id,
-            title: gameToAdd.title,
-            image: gameToAdd.image,
-            genre: gameToAdd.genre,
-            rating: gameToAdd.rating
-        };
+        // Pega os IDs atuais (de forma robusta)
+        const currentGameIds = (list.jogos || []).map(game => 
+            (typeof game === 'string' ? game : game._id)
+        );
 
-        const currentGames = list.jogos || [];
-        const updatedGames = [...currentGames, gameInfo];
-        dispatch(updateListGames({ listId, updatedGames }));
+        // Verifica se o jogo já existe (usando os IDs)
+        if (currentGameIds.includes(gameToAdd.id)) return;
+        
+        // Adiciona o ID do novo jogo
+        const updatedGameIds = [...currentGameIds, gameToAdd._id];
+
+        dispatch(updateListGames({ listId, updatedGames: updatedGameIds }));
     };
 
     // --- LÓGICA DE RENDERIZAÇÃO ---
 
     const availableGames = allGames.filter(game => {
         if (!list || !list.jogos) return true;
-        return !list.jogos.some(listGame => listGame.id === game.id);
+        return !list.jogos.some(listGame => listGame.id === game._id);
     });
+
+    // Cria uma lista populada manualmente para a UI.
+    // Isso garante que a UI funcione mesmo se 'list.jogos' for só um array de IDs.
+    const populatedListGames = (list.jogos || []).map(gameOrId => {
+        // Descobre o ID, seja de um objeto ou de uma string
+        const gameId = typeof gameOrId === 'string' ? gameOrId : gameOrId.id;
+        // Encontra o objeto completo no estado 'allGames'
+        return allGames.find(g => g.id === gameId);
+    }).filter(Boolean); // Remove qualquer 'undefined' se um jogo não for encontrado
 
     if (listStatus === 'loading' || gamesStatus === 'loading') {
         return <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress /></Box>;
@@ -121,7 +152,7 @@ function EditListPage() {
                 {/* Coluna 1 (Esquerda): Detalhes da Lista */}
                 {/* Mudei de md={3} para md={2} para ficar BEM estreito */}
                 <Grid item xs={12} md={2}>
-                    <Card sx={{ bgcolor: 'background.paper', p: 3, position: 'sticky', top: 20 }}>
+                    <Box component="form" onSubmit={handleSaveDetails}>
                         <Typography variant="h5" fontWeight="bold" gutterBottom>Detalhes da Lista</Typography>
                         <TextField
                             label="Título da Lista"
@@ -142,16 +173,16 @@ function EditListPage() {
                             margin="normal"
                         />
                         <Button 
+                            type="submit"
                             variant="contained" 
                             color="primary" 
                             startIcon={<SaveIcon />} 
-                            onClick={handleSaveListDetails}
                             fullWidth
                             sx={{ mt: 2 }}
                         >
                             Salvar Detalhes
                         </Button>
-                    </Card>
+                    </Box>
                 </Grid>
 
                 {/* --- MUDANÇA DRÁSTICA AQUI --- */}
@@ -162,12 +193,12 @@ function EditListPage() {
                     {/* Bloco 1: Jogos Atuais */}
                     <Box mb={5}>
                         <Typography variant="h5" fontWeight="bold" gutterBottom>
-                            Jogos Atuais ({list.jogos?.length || 0})
+                            Jogos Atuais ({populatedListGames.length})
                         </Typography>
                         <Grid container spacing={3}>
                             {/* Ajustei o grid interno para telas xl (muito grandes) para ter 4 colunas */}
-                            {list.jogos?.map((game) => (
-                                <Grid item key={game.id} xs={12} sm={6} md={4} lg={3}> 
+                            {populatedListGames.map((game) => (
+                                <Grid item key={game._id} xs={12} sm={6} md={4} lg={3}> 
                                     <Card sx={{ 
                                         display: 'flex', 
                                         alignItems: 'center', 
@@ -175,7 +206,7 @@ function EditListPage() {
                                     }}>
                                         <Button 
                                             component={RouterLink}
-                                            to={`jogos/${game.id}`} 
+                                            to={`jogos/${game._id}`} 
                                             sx={{ 
                                                 p: 0, 
                                                 textTransform: 'none', 
@@ -196,7 +227,7 @@ function EditListPage() {
                                                 <Typography component="div" variant="h6" noWrap>
                                                     <Link 
                                                         component={RouterLink} 
-                                                        to={`/detalhes_jogo/${game.id}`} 
+                                                        to={`/detalhes_jogo/${game._id}`} 
                                                         sx={{ textDecoration: 'none', color: 'inherit' }}
                                                     >
                                                         {game.title}
@@ -210,7 +241,7 @@ function EditListPage() {
                                         <Button 
                                             size="small" 
                                             color="error" 
-                                            onClick={() => handleRemoveGame(game.id)}
+                                            onClick={() => handleRemoveGame(game._id)}
                                             sx={{ height: 100, borderRadius: 0 }}
                                         >
                                             <DeleteIcon />
@@ -229,7 +260,7 @@ function EditListPage() {
                         
                         {availableGames.length > 0 ? (
                             availableGames.map(game => (
-                                <Box key={game.id} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1, p: 1, bgcolor: 'background.paper', borderRadius: 1 }}>
+                                <Box key={game._id} sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1, p: 1, bgcolor: 'background.paper', borderRadius: 1 }}>
                                     <Typography sx={{ flexGrow: 1 }}>{game.title}</Typography>
                                     <Button size="small" variant="outlined" onClick={() => handleAddGame(game)}>
                                         Adicionar
