@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Box, Typography, Grid, Card, CardContent, CardMedia, CircularProgress, Alert } from '@mui/material';
+import { Container, Box, Typography, Grid, Card, CardContent, CardMedia, CircularProgress, Alert, Button } from '@mui/material'; // Importação do Button
 import { Link } from 'react-router-dom';
+import SettingsIcon from '@mui/icons-material/Settings'; // Ícone para o botão
 
 // URL do seu JSON Server ou endpoint de API
 // (Ajuste a porta/caminho conforme sua configuração)
@@ -86,6 +87,19 @@ function CategoriesPage() {
           <Typography variant="h6" color="text.secondary">
             Encontre seus gêneros favoritos e descubra novos jogos para sua jornada.
           </Typography>
+
+          {/* NOVO: Botão para a Página de Admin */}
+          <Box sx={{ mt: 3 }}> 
+            <Button
+              component={Link}
+              to="/admin/categories/adicionar" // Ajuste o caminho conforme a rota de admin
+              variant="contained"
+              color="secondary" // Usando 'secondary' para destacar a função administrativa
+              startIcon={<SettingsIcon />}
+            >
+              Gerenciar Categorias
+            </Button>
+          </Box>
         </Container>
       </Box>
 
@@ -97,26 +111,24 @@ function CategoriesPage() {
                 <Link to={`/categories/${category.title}`} style={{ textDecoration: 'none' }}>
                 <Card 
                     sx={{ 
-                        position: 'relative', // Ponto de referência para o conteúdo absoluto
+                        position: 'relative', 
                         textAlign: 'center', 
                         height: 240,  
-                        width: 240,         // Altura fixa para o efeito banner
-                        overflow: 'hidden',   // Esconde qualquer coisa que extrapole a borda
+                        width: 240,         
+                        overflow: 'hidden',   
                         display: 'flex',
-                        alignItems: 'center', // Centraliza o texto verticalmente
-                        justifyContent: 'center', // Centraliza o texto horizontalmente
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
                         cursor: 'pointer',
                         borderRadius: '0% 10%' ,
                         transition: 'transform 0.3s ease-in-out',
                         '&:hover': {
-                            transform: 'scale(1.03)', // Efeito de zoom sutil no hover
+                            transform: 'scale(1.03)', 
                         }
                     }}
                 >
                     
-                    {/* CardMedia (A Imagem)
-                      3. Posicionamento absoluto para que a imagem preencha TODO o Card.
-                    */}
+                    {/* CardMedia (A Imagem) */}
                     <CardMedia
                         component="img"
                         image={category.image}
@@ -128,13 +140,11 @@ function CategoriesPage() {
                             width: '100%', 
                             height: '100%', 
                             objectFit: 'cover',
-                            zIndex: 1, // Garante que a imagem esteja sob o texto e o overlay
+                            zIndex: 1, 
                         }}
                     />
 
-                    {/* Overlay (Gradiente Escuro) para Legibilidade
-                      4. Posicionado absolutamente, com opacidade baixa e cor escura.
-                    */}
+                    {/* Overlay (Gradiente Escuro) para Legibilidade */}
                     <Box
                         sx={{
                             position: 'absolute',
@@ -142,32 +152,24 @@ function CategoriesPage() {
                             left: 0,
                             width: '100%',
                             height: '100%',
-                            // Gradiente que escurece do topo (ou todo) para garantir a leitura
                             background: 'linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.5) 100%)',
-                            zIndex: 2, // Fica entre a imagem e o texto
+                            zIndex: 2, 
                         }}
                     />
 
-                    {/* CardContent (O Texto)
-                      5. Fica por cima de tudo e centralizado.
-                    */}
+                    {/* CardContent (O Texto) */}
                     <CardContent 
                         sx={{
-                            position: 'relative', // Relativo dentro do Card para ser afetado pelo flexbox
-                            zIndex: 3,            // Fica por cima do overlay
-                            color: 'white',       // Cor do texto
-                            textShadow: '0 0 5px black', // Sombra para garantir a leitura
+                            position: 'relative', 
+                            zIndex: 3,            
+                            color: 'white',       
+                            textShadow: '0 0 5px black', 
                             padding: 3
                         }}
                     >
                         <Typography variant="h5" component="h3" sx={{ fontWeight: 'bold' }}>
                             {category.title}
                         </Typography>
-                        
-                        {/* Adicionando a descrição de volta aqui, se necessário.
-                          Se quiser que apenas o título apareça, remova as chaves <Typography> 
-                          que contém a descrição (se houver).
-                        */}
                     </CardContent>
                 </Card>
               </Link>

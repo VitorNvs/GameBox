@@ -4,6 +4,7 @@ import reviewsReducer from './reviewsSlice';
 import listsReducer from './listsSlice';
 import achievementsReducer from './AchievementsSlice';
 import authReducer from './authSlice';
+import categoriesReducer from './CategorySlice'
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     lists: listsReducer,
     achievements: achievementsReducer,
     auth: authReducer,
+    categories: categoriesReducer
   },
 });
