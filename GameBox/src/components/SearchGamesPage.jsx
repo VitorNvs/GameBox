@@ -143,7 +143,9 @@ function SearchGamesPage() {
                                                 sx={{
                                                 position: 'relative',
                                                 width: '100%',
-                                                paddingTop: '100%', 
+                                                maxWidth: 220,
+                                                marginX: 'auto',
+                                                height: 220,
                                                 overflow: 'hidden',
                                                 }}
                                             >
