@@ -1,6 +1,5 @@
 // src/components/AuthPage.jsx
 import React, { useState, useEffect } from 'react';
-// --- MUDANÇAS ---
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { register, login } from '../redux/authSlice';
@@ -8,30 +7,27 @@ import {
     Container, Box, Typography, TextField, Button, Grid, 
     Link as MuiLink, Alert, CircularProgress 
 } from '@mui/material';
-// --- FIM DAS MUDANÇAS ---
 
 function AuthPage() {
   const [isLoginView, setIsLoginView] = useState(true);
+
   const [formData, setFormData] = useState({
     username: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
-  
-  // --- MUDANÇAS ---
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { status, error, isAuthenticated } = useSelector((state) => state.auth);
   const [localError, setLocalError] = useState('');
 
-  // Se já estiver logado, vai para a Home
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/');
-    }
+    if (isAuthenticated) navigate('/');
   }, [isAuthenticated, navigate]);
-  // --- FIM DAS MUDANÇAS ---
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -40,59 +36,61 @@ function AuthPage() {
       [name]: value,
     }));
   };
-  
-  // --- MUDANÇA: toggleView agora limpa o formulário ---
+
   const toggleView = () => {
     setIsLoginView(!isLoginView);
     setLocalError('');
-    // Limpa os dados do formulário ao trocar de aba
     setFormData({
       username: '',
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
       confirmPassword: '',
     });
   };
-  // --- FIM DA MUDANÇA ---
 
-  // --- MUDANÇA: handleSubmit agora usa Redux e redireciona ---
   const handleSubmit = (event) => {
     event.preventDefault();
-    setLocalError(''); // Limpa erros locais
+    setLocalError('');
 
     if (isLoginView) {
-      // Lógica de Login
       dispatch(login({ username: formData.username, password: formData.password }));
-    } else {
-      // Lógica de Cadastro
-      if (formData.password !== formData.confirmPassword) {
-        setLocalError("As senhas não coincidem!");
-        return;
-      }
-      
-      // A MÁGICA ACONTECE AQUI!
-      dispatch(register({ username: formData.username, email: formData.email, password: formData.password }))
-        .unwrap() // Permite usar o .then() para saber se deu certo
-        .then(() => {
-          // Se o cadastro deu certo:
-          alert('Cadastro realizado com sucesso! Por favor, faça o login.');
-          toggleView(); // Muda para a tela de login
-        })
-        .catch((err) => {
-          // Se deu erro (ex: 'E-mail já cadastrado'), o 'authSlice' já cuida de mostrar o erro.
-        });
+      return;
     }
+
+    // cadastro
+    if (formData.password !== formData.confirmPassword) {
+      setLocalError("As senhas não coincidem!");
+      return;
+    }
+
+    // envia firstName e lastName para o backend!
+    dispatch(
+      register({
+        username: formData.username,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        alert("Cadastro realizado com sucesso! Faça login.");
+        toggleView();
+      })
+      .catch(() => {});
   };
-  // --- FIM DA MUDANÇA ---
 
   return (
     <Container component="main" maxWidth="xs">
       <Box
         sx={{
           marginTop: 8,
-          padding: 4, 
-          backgroundColor: 'background.paper', 
-          borderRadius: 2, 
+          padding: 4,
+          backgroundColor: 'background.paper',
+          borderRadius: 2,
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
           display: 'flex',
           flexDirection: 'column',
@@ -102,8 +100,10 @@ function AuthPage() {
         <Typography component="h1" variant="h4" sx={{ color: 'primary.main', mb: 3 }}>
           {isLoginView ? 'Login' : 'Cadastro'}
         </Typography>
-        
+
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
+
+          {/* USERNAME — aparece em ambos */}
           <TextField
             margin="normal"
             required
@@ -116,19 +116,46 @@ function AuthPage() {
             value={formData.username}
             onChange={handleChange}
           />
+
+          {/* CAMPOS EXTRAS SÓ NO CADASTRO */}
           {!isLoginView && (
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email"
-              name="email"
-              autoComplete="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
+            <>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="firstName"
+                label="Nome"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+              />
+
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="lastName"
+                label="Sobrenome"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+              />
+
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </>
           )}
+
+          {/* SENHA */}
           <TextField
             margin="normal"
             required
@@ -141,6 +168,8 @@ function AuthPage() {
             value={formData.password}
             onChange={handleChange}
           />
+
+          {/* CONFIRMAR SENHA — só no cadastro */}
           {!isLoginView && (
             <TextField
               margin="normal"
@@ -156,16 +185,17 @@ function AuthPage() {
             />
           )}
 
-          {/* Mostra erros do Redux ou erros locais */}
+          {/* ERROS */}
           {error && status !== 'loading' && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
           {localError && <Alert severity="error" sx={{ mt: 2 }}>{localError}</Alert>}
 
+          {/* BOTÃO */}
           <Button
             type="submit"
             fullWidth
-            variant="contained" 
+            variant="contained"
             sx={{ mt: 3, mb: 2, fontWeight: 'bold' }}
-            disabled={status === 'loading'} 
+            disabled={status === 'loading'}
           >
             {status === 'loading' ? <CircularProgress size={24} /> : (isLoginView ? 'Entrar' : 'Cadastrar')}
           </Button>
