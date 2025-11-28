@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Box, Typography, Grid, Card, CardContent, CardMedia, CircularProgress, Alert, Button } from '@mui/material'; // Importação do Button
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import SettingsIcon from '@mui/icons-material/Settings'; // Ícone para o botão
 
 // URL do seu JSON Server ou endpoint de API
@@ -14,6 +15,7 @@ function CategoriesPage() {
   const [loading, setLoading] = useState(true);
   // 3. Estado para gerenciar erros de requisição
   const [error, setError] = useState(null);
+  const user = useSelector((state) => state.auth.user);
 
   // Hook para carregar os dados quando o componente for montado
   useEffect(() => {
@@ -89,17 +91,19 @@ function CategoriesPage() {
           </Typography>
 
           {/* NOVO: Botão para a Página de Admin */}
-          <Box sx={{ mt: 3 }}> 
-            <Button
-              component={Link}
-              to="/admin/categories/adicionar" // Ajuste o caminho conforme a rota de admin
-              variant="contained"
-              color="secondary" // Usando 'secondary' para destacar a função administrativa
-              startIcon={<SettingsIcon />}
-            >
-              Gerenciar Categorias
-            </Button>
-          </Box>
+          {user?.role === "admin" && (
+              <Box sx={{ mt: 3 }}> 
+                <Button
+                  component={Link}
+                  to="/admin/categories/adicionar"
+                  variant="contained"
+                  color="secondary"
+                  startIcon={<SettingsIcon />}
+                >
+                  Gerenciar Categorias
+                </Button>
+              </Box>
+            )}
         </Container>
       </Box>
 

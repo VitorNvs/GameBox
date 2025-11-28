@@ -12,6 +12,7 @@ const AchievementsPage = () => {
     // Busca os dados dinâmicos e o status do estado do Redux
     const achievements = useSelector((state) => state.achievements.items);
     const status = useSelector((state) => state.achievements.status);
+    const user = useSelector((state) => state.auth.user);
 
     // Dispara a busca pelos dados quando o componente é montado
     useEffect(() => {
@@ -29,9 +30,11 @@ const AchievementsPage = () => {
                 <Typography variant="h6" color="text.secondary" sx={{ maxWidth: '600px', mx: 'auto' }}>
                     Desbloqueie conquistas exclusivas ao participar da nossa comunidade, avaliar jogos e compartilhar suas opiniões!
                 </Typography>
-                <Button component={Link} to="/admin/conquistas" variant="contained" sx={{ mt: 3 }}>
-                    Gerenciar Conquistas
-                </Button>
+                {user?.role === "admin" && (
+                    <Button component={Link} to="/admin/conquistas" variant="contained" sx={{ mt: 3 }}>
+                        Gerenciar Conquistas
+                    </Button>
+)}
             </Box>
 
             {/* Adiciona um indicador de carregamento */}

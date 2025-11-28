@@ -315,27 +315,41 @@ app.delete('/reviews/:id', async (req, res) => {
 // -------------------- AUTENTICAÇÃO --------------------
 
 app.post('/auth/register', async (req, res) => {
-    const { username, email, password } = req.body;
+    const { firstName, lastName, username, email, password } = req.body;
 
     try {
-        if (!username || !email || !password)
-            return res
-                .status(400)
-                .json({ message: 'Por favor, preencha todos os campos.' });
+        if (!firstName || !lastName || !username || !email || !password) {
+            return res.status(400).json({ message: 'Preencha todos os campos.' });
+        }
 
-        if (await User.findOne({ username }))
+        // verifica se já existe username
+        if (await User.findOne({ username })) {
             return res.status(400).json({ message: 'Nome de usuário já existe.' });
+        }
 
-        if (await User.findOne({ email }))
+        // verifica email duplicado
+        if (await User.findOne({ email })) {
             return res.status(400).json({ message: 'E-mail já cadastrado.' });
+        }
 
+        // criptografa senha
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const newUser = new User({ username, email, password: hashedPassword });
+        // cria displayName combinando nome + sobrenome
+        const displayName = `${firstName} ${lastName}`;
+
+        const newUser = new User({
+            username,
+            email,
+            password: hashedPassword,
+            displayName
+        });
+
         await newUser.save();
 
         res.status(201).json({ message: 'Usuário registrado com sucesso!' });
+
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -354,10 +368,10 @@ app.post('/auth/login', async (req, res) => {
             return res.status(400).json({ message: 'Usuário ou senha inválidos.' });
 
         const token = jwt.sign(
-            { id: user._id, username: user.username },
+            { id: user._id, username: user.username, role: user.role },
             JWT_SECRET,
             { expiresIn: '1h' }
-        );
+            );
 
         res.json({
             token,
@@ -365,6 +379,7 @@ app.post('/auth/login', async (req, res) => {
                 id: user._id,
                 username: user.username,
                 email: user.email,
+                role: user.role,
             },
         });
     } catch (err) {
@@ -502,10 +517,17 @@ app.delete('/achievements/:id', async (req, res) => {
 });
 app.get('/perfil', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select('-password');
+        let user = await User.findById(req.user.id).select('-password');
+
+        // se displayName não existir, criar automaticamente
+        if (!user.displayName) {
+            const first = user.firstName || "";
+            const last = user.lastName || "";
+            user.displayName = `${first} ${last}`.trim();
+        }
 
         const reviews = await Review.find({ userId: user._id })
-            .populate('gameId')   // pega título, imagem e tudo do jogo
+            .populate('gameId')
             .sort({ createdAt: -1 });
 
         res.json({

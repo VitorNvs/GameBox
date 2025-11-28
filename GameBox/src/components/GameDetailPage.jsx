@@ -40,6 +40,7 @@ function GameDetailPage() {
     const game = useSelector((state) => state.jogos.selectedGame);
     const status = useSelector((state) => state.jogos.selectedGameStatus);
     const error = useSelector((state) => state.jogos.error);
+    const user = useSelector((state) => state.auth.user);
 
     // ---- Estados globais do hover ----
     const [anchorEl, setAnchorEl] = useState(null);
@@ -122,8 +123,8 @@ const handleEnter = async (event, user) => {
                     <Box display="flex" gap={2} my={2}>
                         <Card variant="outlined">
                             <CardContent sx={{ textAlign: 'center' }}>
-                                <Typography variant="overline">NOTA</Typography>
-                                <Typography variant="h5">{game.rating} / 10</Typography>
+                                <Typography variant="overline">METACRITIC</Typography>
+                                <Typography variant="h5">{game.rating}</Typography>
                             </CardContent>
                         </Card>
 
@@ -146,20 +147,23 @@ const handleEnter = async (event, user) => {
                             <Chip key={tag} label={tag} sx={{ mr: 1, mb: 1 }} />
                         ))}
                     </Box>
-
                     <Box my={2}>
-                        <Typography variant="h5" gutterBottom>Descrição</Typography>
-                        <Typography paragraph color="text.secondary">{game.description}</Typography>
-                    </Box>
-
+                <Typography variant="h5" gutterBottom>Descrição</Typography>
+                <Typography paragraph color="text.secondary">
+                    {game.description}
+                </Typography>
+            </Box>
                     <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-                        <Button variant="contained" component={Link} to={`/review/criar/${gameId}`}>
-                            Escrever Análise
-                        </Button>
-                        <Button variant="outlined" component={Link} to={`/admin/jogo/${gameId}`}>
-                            Editar Jogo (Admin)
-                        </Button>
-                    </Box>
+                            <Button variant="contained" component={Link} to={`/review/criar/${gameId}`}>
+                                Escrever Análise
+                            </Button>
+
+                            {user?.role === "admin" && (
+                                <Button variant="outlined" component={Link} to={`/admin/jogo/${gameId}`}>
+                                    Editar Jogo (Admin)
+                                </Button>
+                            )}
+                        </Box>
                 </Box>
             </Box>
 

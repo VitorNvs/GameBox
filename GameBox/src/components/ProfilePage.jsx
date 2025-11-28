@@ -269,7 +269,7 @@ export default function ProfilePage() {
 
           <Box>
             <Typography variant="h3" fontWeight="700" color="white">
-              {user.username}
+              {user.displayName || user.username}
             </Typography>
             <Typography color="gray">@{user.username.toLowerCase()}</Typography>
           </Box>

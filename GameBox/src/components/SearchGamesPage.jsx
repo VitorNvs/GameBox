@@ -36,6 +36,7 @@ function SearchGamesPage() {
 
     const games = useSelector((state) => state.jogos.items);
     const gameStatus = useSelector((state) => state.jogos.status);
+    const user = useSelector((state) => state.auth.user);
 
     useEffect(() => {
         if (gameStatus === 'idle') {
@@ -111,14 +112,17 @@ function SearchGamesPage() {
                             <Typography variant="h4" component="h2" sx={{ borderLeft: '4px solid', borderColor: 'primary.main', pl: 2 }}>
                                 Resultados
                             </Typography>
-                            <Button
-                                variant="contained"
-                                component={Link}
-                                to="/admin/jogo/adicionar"
-                                startIcon={<AddIcon />}
-                            >
-                                Adicionar Novo Jogo
-                            </Button>
+                           {user?.role === "admin" && (
+                                <Button
+                                    variant="contained"
+                                    component={Link}
+                                    to="/admin/jogo/adicionar"
+                                    startIcon={<AddIcon />}
+                                >
+                                    Adicionar Novo Jogo
+                                </Button>
+                            )}
+
                         </Box>
 
                         {gameStatus === 'loading' && <Box sx={{ display: 'flex', justifyContent: 'center' }}><CircularProgress /></Box>}
