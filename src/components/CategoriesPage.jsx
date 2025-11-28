@@ -43,7 +43,6 @@ function CategoriesPage() {
   }, []); // O array vazio [] garante que o useEffect rode apenas na montagem
 
   // --- Renderização Condicional ---
-
   if (loading) {
     return (
       <Container maxWidth="lg" sx={{ py: 6, textAlign: 'center' }}>
