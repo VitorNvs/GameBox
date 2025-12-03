@@ -134,7 +134,7 @@ const CategorySchema = new mongoose.Schema({
     description: { 
         type: String    
     },
-    imagem: {
+    image: {
         type: String
     },
     alt: { 
@@ -543,26 +543,39 @@ app.get('/perfil', passport.authenticate('jwt', { session: false }), async (req,
 
 app.post('/categories', async (req, res) => {
     try {
-        const category = new Category({ ...req.body });
-        const savedCategory = await category.save();
-        res.status(201).json(savedCategory);   
+        const novaCategoria = await Category.create(req.body);
+        res.json(novaCategoria);
+        //const category = new Category({ ...req.body });
+        //const savedCategory = await category.save();
+        //res.status(201).json(savedCategory);   
     } catch (error) {
-        
+        // Erro de ID mal formatado ou outro erro de servidor
+        res.status(500).json({ message: err.message });
     } 
 });
 
 app.get('/categories', async (req, res) => {
-    const category = await Category.find();
-    res.json(category);
+    try{
+        const category = await Category.find();
+        res.json(category);
+    }catch(error){
+        res.json({ error: error.message });
+    }
+    
 });
 
 app.patch('/categories/:id', async (req, res) => {
-    const updatedCategory = await Category.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true }
-    );
-    res.json(updatedCategory);
+    try {
+        const updatedCategory = await Category.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        res.json(updatedCategory);
+    } catch (error) {
+        res.json({ error: error.message });
+    }
+    
 });
 
 app.delete('/categories/:id', async (req, res) => {
@@ -575,7 +588,7 @@ app.delete('/categories/:id', async (req, res) => {
         }
         
         // Sucesso, item deletado
-        res.status(204).send();
+        res.json(deletedCategory);
 
     } catch (err) {
         // Erro de ID mal formatado ou outro erro de servidor

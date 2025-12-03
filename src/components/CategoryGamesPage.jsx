@@ -63,6 +63,7 @@ function CategoryGamesPage() {
 
     const categoryTitle = categoryName ? decodeURIComponent(categoryName).replace(/%20/g, ' ') : 'Categoria';
 
+
     if (loading) {
         return (
             <Container maxWidth="lg" sx={{ py: 6, textAlign: 'center' }}>
@@ -95,7 +96,7 @@ function CategoryGamesPage() {
             >
                 <Container maxWidth="md">
                     <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 700, color: 'primary.main' }}>
-                        Jogos na Categoria: {categoryTitle}
+                        {categoryTitle}
                     </Typography>
                     <Typography variant="h6" color="text.secondary">
                         {games.length} jogos encontrados.
