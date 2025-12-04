@@ -26,8 +26,8 @@ function AdminCategoriesPage() {
     // Ajuste os campos do formulário para Categoria
     const [formData, setFormData] = useState({
         title: '',
-        description: '' 
-        
+        description: '',
+        image: ''
     });
 
     useEffect(() => {
@@ -63,7 +63,8 @@ function AdminCategoriesPage() {
         // Preenche o formulário com os dados da categoria selecionada
         setFormData({
             title: cat.title,
-            description: cat.description
+            description: cat.description,
+            image: cat.image
             
         });
     };
@@ -71,8 +72,11 @@ function AdminCategoriesPage() {
     const clearForm = () => {
         setIsEditing(false);
         setEditingId(null);
-        setFormData({ title: '',
-        description: ''});
+        setFormData({ 
+            title: '',
+            description: '',
+            image: ''
+        });
     };
 
     if (status === 'loading') {
@@ -87,12 +91,18 @@ function AdminCategoriesPage() {
                 </Typography>
                 
                 <Box component="form" onSubmit={handleSubmit} noValidate>
+                    
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid item size={4}>
                             {/* Campo 'nome' (Título) */}
                             <TextField name="title" label="Nome da Categoria" value={formData.title} onChange={handleChange} required fullWidth />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item size={8}>
+                            {/* Campo 'imagem' (Imagem) */}
+                            <TextField name="image" label="URL da Imagem" value={formData.image} onChange={handleChange} required fullWidth />
+                        </Grid>
+                    
+                        <Grid item size={12}>
                             {/* Campo 'descricao' (Descrição) */}
                             <TextField name="description" label="Descrição da Categoria" value={formData.description} onChange={handleChange} fullWidth multiline rows={3} />
                         </Grid>

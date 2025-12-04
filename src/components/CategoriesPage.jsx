@@ -62,9 +62,45 @@ function CategoriesPage() {
 
   if (categories.length === 0) {
     return (
-      <Container maxWidth="lg" sx={{ py: 6, textAlign: 'center' }}>
-        <Alert severity="info">Nenhuma categoria encontrada.</Alert>
-      </Container>
+      <>
+        {/* Seção do Banner */}
+        <Box 
+          sx={{ 
+              bgcolor: 'background.paper', 
+              py: 6, 
+              textAlign: 'center',
+              borderBottom: '1px solid #374151'
+          }}
+        >
+          <Container maxWidth="md">
+            <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 700, color: 'primary.main' }}>
+              Explore as Categorias de Jogos
+            </Typography>
+            <Typography variant="h6" color="text.secondary">
+              Encontre seus gêneros favoritos e descubra novos jogos para sua jornada.
+            </Typography>
+
+            {/* NOVO: Botão para a Página de Admin */}
+            {user?.role === "admin" && (
+                <Box sx={{ mt: 3 }}> 
+                  <Button
+                    component={Link}
+                    to="/admin/categories/adicionar"
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<SettingsIcon />}
+                  >
+                    Gerenciar Categorias
+                  </Button>
+                </Box>
+              )}
+          </Container>
+        </Box>
+
+        <Container maxWidth="lg" sx={{ py: 6, textAlign: 'center' }}>
+          <Alert severity="info">Nenhuma categoria encontrada.</Alert>
+        </Container>
+      </>
     );
   }
 
