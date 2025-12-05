@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import User from "./models/User.js"; // se teu modelo estiver direto no server, ajusta o caminho
 import passport from "passport";
 
+/*
 const opts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: "seu-segredo-super-secreto-123", // o mesmo do JWT_SECRET
@@ -20,4 +21,4 @@ passport.use(
   })
 );
 
-export default passport;
+export default passport;*/

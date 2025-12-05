@@ -1,6 +1,7 @@
 // src/redux/authSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../api';
+import axios from "axios";
 
 const API_URL = 'http://localhost:8000/auth';
 
@@ -20,7 +21,7 @@ export const register = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await api.post(`${API_URL}/register`, userData);
+      const response = await axios.post(`${API_URL}/register`, userData);
       return response.data;
     } catch (err) {
       const message =
@@ -37,7 +38,7 @@ export const login = createAsyncThunk(
   'auth/login',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await api.post(`${API_URL}/login`, userData);
+      const response = await axios.post(`${API_URL}/login`, userData);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       return response.data;
@@ -53,7 +54,7 @@ export const login = createAsyncThunk(
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState,
+  initialState: {user: null, isAuthenticated: false},
   reducers: {
     logout: (state) => {
       localStorage.removeItem('token');
@@ -63,6 +64,12 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.status = 'idle';
     },
+    setUser: (state, action) => {
+      state.user = action.payload;
+      state.isAuthenticated = true;
+      state.status = 'succeeded';
+      state.error = null;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -103,5 +110,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { setUser, logout } = authSlice.actions;
 export default authSlice.reducer;
