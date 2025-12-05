@@ -25,10 +25,13 @@ function AuthPage() {
   const { status, error, isAuthenticated } = useSelector((state) => state.auth);
   const [localError, setLocalError] = useState('');
 
+  
+  
   useEffect(() => {
     if (isAuthenticated) navigate('/');
   }, [isAuthenticated, navigate]);
-
+  
+  
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
