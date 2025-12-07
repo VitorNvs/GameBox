@@ -58,68 +58,78 @@ function EditListPage() {
     // --- FUNÇÕES DE SALVAR REAIS ---
 
     const handleSaveDetails = async (e) => {
-        e.preventDefault();
-        try {
-            const listData = {
-                id: listId,
-                title,
-                description,
-            };
-            
-            // Chama o thunk de atualização
-            await dispatch(updateListDetails(listData)).unwrap();
-            alert('Detalhes da lista salvos com sucesso!');
-        } catch (error) {
-            console.error("Erro ao salvar detalhes da lista:", error);
-            alert(`Falha ao salvar a lista: ${error}`);
-        }
+  e.preventDefault();
+  if (!list) return;
+
+  try {
+    const currentGameIds = (list.games || []).map(game =>
+      typeof game === 'string' ? game : game._id
+    );
+
+    const listData = {
+      id: listId,
+      title,
+      description,
+      jogos: currentGameIds, // ✅ ESSENCIAL
     };
+
+    await dispatch(updateListDetails(listData)).unwrap();
+
+    alert('Detalhes da lista salvos com sucesso!');
+  } catch (error) {
+    console.error("Erro ao salvar detalhes da lista:", error);
+    alert(`Falha ao salvar a lista: ${error}`);
+  }
+};
+
+
 
         const handleRemoveGame = (gameIdToRemove) => {
-        if (!list) return;
+  if (!list) return;
 
-        // LÓGICA ROBUSTA:
-        // 1. Mapeia a lista de jogos, pegando o ID de cada item
-        //    (seja 'game.id' de um objeto ou 'game' de uma string)
-        const currentGameIds = (list.jogos || []).map(game => 
-            (typeof game === 'string' ? game : game._id)
-        );
-        
-        // 2. Filtra o ID que queremos remover
-        const updatedGameIds = currentGameIds.filter(id => id !== gameIdToRemove);
+  const currentGameIds = (list.games || []).map(game =>
+    typeof game === 'string' ? game : game._id
+  );
 
-        dispatch(updateListGames({ listId, updatedGames: updatedGameIds }));
-    };
+  const updatedGameIds = currentGameIds.filter(id => id !== gameIdToRemove);
+
+  dispatch(updateListGames({ 
+    listId, 
+    updatedJogos: updatedGameIds   // ✅ NOME CERTO
+  }));
+};
+
 
 const handleAddGame = (gameToAdd) => {
-        if (!list) return;
+  if (!list) return;
 
-        // Pega os IDs atuais (de forma robusta)
-        const currentGameIds = (list.jogos || []).map(game => 
-            (typeof game === 'string' ? game : game._id)
-        );
+  const currentGameIds = (list.games || []).map(game =>
+    typeof game === 'string' ? game : game._id
+  );
 
-        // Verifica se o jogo já existe (usando os IDs)
-        if (currentGameIds.includes(gameToAdd.id)) return;
-        
-        // Adiciona o ID do novo jogo
-        const updatedGameIds = [...currentGameIds, gameToAdd._id];
+  if (currentGameIds.includes(gameToAdd._id)) return;
 
-        dispatch(updateListGames({ listId, updatedGames: updatedGameIds }));
-    };
+  const updatedGameIds = [...currentGameIds, gameToAdd._id];
+
+  dispatch(updateListGames({ 
+    listId, 
+    updatedJogos: updatedGameIds   // ✅ NOME CERTO
+  }));
+};
+
 
     // --- LÓGICA DE RENDERIZAÇÃO ---
 
     const availableGames = allGames.filter(game => {
-        if (!list || !list.jogos) return true;
-        return !list.jogos.some(listGame => listGame.id === game._id);
+        if (!list || !list.games) return true;
+        return !list.games.some(listGame => listGame.id === game._id);
     });
 
     // Cria uma lista populada manualmente para a UI.
-    // Isso garante que a UI funcione mesmo se 'list.jogos' for só um array de IDs.
-    const populatedListGames = (list.jogos || []).map(gameOrId => {
+    // Isso garante que a UI funcione mesmo se 'list.jogos' for só um array de IDs. 
+    const populatedListGames = (list.games || []).map(gameOrId => {
         // Descobre o ID, seja de um objeto ou de uma string
-        const gameId = typeof gameOrId === 'string' ? gameOrId : gameOrId.id;
+        const gameId = typeof gameOrId === 'string' ? gameOrId : gameOrId._id;
         // Encontra o objeto completo no estado 'allGames'
         return allGames.find(g => g.id === gameId);
     }).filter(Boolean); // Remove qualquer 'undefined' se um jogo não for encontrado
