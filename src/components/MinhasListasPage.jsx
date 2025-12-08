@@ -23,8 +23,9 @@ function MyListsPage() {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    if (status === 'idle') dispatch(fetchLists());
-  }, [status, dispatch]);
+    //if (status === 'idle') 
+      dispatch(fetchLists());
+  }, []);
 
   const [formData, setFormData] = useState({ title: '', description: '', jogos: [] });
 

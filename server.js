@@ -445,8 +445,8 @@ app.post('/auth/login', async (req, res) => {
 
 app.get('/lists', authMiddleware, async (req, res) => {
     try {
-        const lists = await List.find({ userId: req.user._id}).populate('games');
-        console.log(req.body);
+        const lists = await List.find({ userId: req.user.id}).populate('games');
+        //console.log(req.body);
         res.json(lists);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -460,7 +460,7 @@ app.post('/lists', authMiddleware, async (req, res) => {
         const gamesList = Array.isArray(games) ? games : []; // Garante que é um array
         
         const list = new List({
-            userId: req.user._id,
+            userId: req.user.id,
             title: title.trim(),
             description: (description || '').trim(),
             games: gamesList,
@@ -468,7 +468,7 @@ app.post('/lists', authMiddleware, async (req, res) => {
         });
 
         const saved = await list.save();
-        const populated = await List.findById(saved._id).populate('games');
+        const populated = await List.findById(saved.id).populate('games');
         res.status(201).json(populated);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -491,7 +491,7 @@ app.patch('/lists/:id', authMiddleware, async (req, res) => {
 
         // PASSO 1: Atualiza o documento (sem se preocupar em popular aqui)
         const updatedList = await List.findOneAndUpdate(
-            { _id: req.params.id, userId: req.user._id },
+            { _id: req.params.id, userId: req.user.id },
             updateData,
             { new: true, runValidators: true } 
         );
@@ -522,7 +522,7 @@ app.delete('/lists/:id', authMiddleware, async (req, res) => {
         }
 
         // Use req.params.id (sem o underscore)
-        const deleted = await List.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
+        const deleted = await List.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
         if (!deleted) return res.status(404).json({ message: 'Lista não encontrada ou sem permissão.' });
 
         res.status(204).send();
