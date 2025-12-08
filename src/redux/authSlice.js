@@ -11,9 +11,29 @@ const initialState = {
   user: user || null,
   token: token || null,
   isAuthenticated: !!token,
-  status: 'idle',
+  isAuthChecked: false, 
+  status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
   error: null,
 };
+
+// LOGIN
+export const login = createAsyncThunk(
+  'auth/login',
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`${API_URL}/login`, userData);
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      return response.data;
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        'Erro desconhecido ao fazer login.';
+      return rejectWithValue({ message });
+    }
+  }
+);
 
 // REGISTRO
 export const register = createAsyncThunk(
@@ -32,20 +52,18 @@ export const register = createAsyncThunk(
   }
 );
 
-// LOGIN
-export const login = createAsyncThunk(
-  'auth/login',
-  async (userData, { rejectWithValue }) => {
+// VALIDAÇÃO
+export const validate = createAsyncThunk(
+  'auth/validate',
+  async (userData, {rejectWithValue}) => {
     try {
-      const response = await api.post(`${API_URL}/login`, userData);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      const response = await api.get(`${API_URL}/validate`, userData);
       return response.data;
     } catch (err) {
       const message =
         err.response?.data?.message ||
         err.message ||
-        'Erro desconhecido ao fazer login.';
+        'Erro desconhecido ao validar.';
       return rejectWithValue({ message });
     }
   }
@@ -75,10 +93,13 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload.user;
         state.token = action.payload.token;
+
         state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed';
+        state.isAuthenticated = false;
+
         state.error =
           action.payload?.message ||
           action.error?.message ||
@@ -91,14 +112,38 @@ const authSlice = createSlice({
       })
       .addCase(register.fulfilled, (state) => {
         state.status = 'succeeded';
+
         state.error = null;
       })
       .addCase(register.rejected, (state, action) => {
         state.status = 'failed';
+
         state.error =
           action.payload?.message ||
           action.error?.message ||
           'Erro ao registrar.';
+      })
+
+      // VALIDAÇÃO
+      .addCase(validate.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(validate.fulfilled, (state) => {
+        state.isAuthenticated = true;
+        state.isAuthChecked = true;
+        state.status = 'succeeded';
+
+        state.error = null;
+      })
+      .addCase(validate.rejected, (state, action) => {
+        state.isAuthenticated = false;
+        state.isAuthChecked = true;
+        state.status = 'failed';
+
+        state.error =
+          action.payload?.message ||
+          action.error?.message ||
+          'Erro ao validar autenticação.';
       });
   },
 });

@@ -1,7 +1,7 @@
 // src/components/MyListsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { fetchLists, createList, deleteList } from '../redux/listsSlice';
 import {
   Container, Box, Typography, Grid, Card, CardContent,
@@ -10,8 +10,17 @@ import {
 
 function MyListsPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
   const lists = useSelector((state) => state.lists.items);
   const status = useSelector(state => state.lists.status);
+
+  useEffect(() => {
+    if(!isAuthenticated){
+      navigate("/login");
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (status === 'idle') dispatch(fetchLists());
@@ -44,6 +53,10 @@ function MyListsPage() {
     }
   };
 
+  //Só carrega a página se estiver autenticado
+  if(!isAuthenticated){
+    return
+  }
   return (
     <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
       <Grid container spacing={4}>

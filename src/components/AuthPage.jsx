@@ -186,7 +186,7 @@ function AuthPage() {
           )}
 
           {/* ERROS */}
-          {error && status !== 'loading' && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+          {/*error && status !== 'loading' && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>*/}
           {localError && <Alert severity="error" sx={{ mt: 2 }}>{localError}</Alert>}
 
           {/* BOTÃO */}

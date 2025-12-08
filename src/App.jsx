@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Box, CssBaseline, ThemeProvider } from '@mui/material'; // Importe o ThemeProvider
+import { Box, CssBaseline, ThemeProvider, CircularProgress, Typography } from '@mui/material'; // Importe o ThemeProvider
 import { darkTheme } from './theme'; // Importe nosso tema customizado
 
 import Header from "./components/Header.jsx";
@@ -22,7 +22,46 @@ import ProfilePage from './components/ProfilePage.jsx';
 import AdminAddGamePage from './components/AdminAdGamePage.jsx';
 import CategoryAdminPage from './components/CategoryAdminPage.jsx';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { validate } from './redux/authSlice';
+
 function App() {
+  const dispatch = useDispatch();
+    
+  // Acessa os estados críticos para o controle do fluxo
+  const isChecked = useSelector((state) => state.auth.isAuthChecked);
+  const authStatus = useSelector((state) => state.auth.status);
+
+  // =========================================================
+  // HOOK DE VERIFICAÇÃO ÚNICA (useEffect)
+  // =========================================================
+  useEffect(() => {
+      // Dispara a validação do token SOMENTE na primeira montagem 
+      // ou se o estado ainda não foi checado.
+      if (!isChecked) {
+          dispatch(validate()); 
+      }
+      // O array de dependências vazio [] é geralmente usado,
+      // mas aqui usamos [dispatch, isChecked] para ser mais explícito
+      // sobre a dependência no estado de verificação inicial.
+  }, [dispatch, isChecked]); 
+  // =========================================================
+
+  // =========================================================
+  // LÓGICA DE CARREGAMENTO (Renderização Condicional)
+  // =========================================================
+  // 1. Mostrar tela de carregamento ENQUANTO o token é validado
+  // Verifica se o status está 'loading' E se a verificação inicial ainda não terminou
+  if (authStatus === 'loading' && !isChecked) {
+      return (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0f1720' }}>
+              <CircularProgress color="primary" />
+              <Typography color="white" sx={{ ml: 2 }}>
+                  Verificando sessão...
+              </Typography>
+          </Box>
+      );
+  }
   return (
     // O ThemeProvider envolve toda a aplicação
     <ThemeProvider theme={darkTheme}> 
@@ -59,7 +98,7 @@ function App() {
         </Box>
       </Router>
     </ThemeProvider>
-  );
+  ); 
 }
 
 export default App;

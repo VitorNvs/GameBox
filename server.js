@@ -314,6 +314,60 @@ app.delete('/reviews/:id', async (req, res) => {
 
 // -------------------- AUTENTICAÇÃO --------------------
 
+const authMiddleware = (req, res, next) => {
+    // 1. Obter o cabeçalho Authorization
+    const authHeader = req.header('Authorization');
+
+    // 2. Verificar se o cabeçalho existe e está no formato 'Bearer token'
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.log('Autenticação falhou: Token ausente ou formato inválido.');
+        return res.status(401).json({ message: 'Acesso negado. Token não fornecido ou inválido.' });
+    }
+
+    // 3. Extrair o token (removendo "Bearer ")
+    const token = authHeader.split(' ')[1];
+
+    try {
+        // 4. Verificar e decodificar o token
+        // O método 'verify' lançará um erro se o token for inválido ou expirado.
+        const decoded = jwt.verify(token, JWT_SECRET);
+
+        // 5. Anexar os dados decodificados (payload) à requisição
+        // Assumimos que o payload contém o ID do usuário (ex: { id: 'userID_123' })
+        req.user = decoded;
+        
+        // 6. Prosseguir para o próximo manipulador de rota
+        next();
+
+    } catch (err) {
+        // O token é inválido (expirado, assinado incorretamente, etc.)
+        console.error('Verificação de token falhou:', err.message);
+        return res.status(401).json({ message: 'Token inválido ou expirado. Acesso não autorizado.' });
+    }
+};
+
+app.get("/auth/validate", authMiddleware, async (req, res) =>{
+    try {
+        // Se o middleware 'authMiddleware' passou, significa que o token é válido.
+        // req.user contém o ID do usuário decodificado do token.
+        
+        // Busca o usuário atualizado do banco de dados (sem a senha)
+        const user = await User.findById(req.user.id).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+        
+        // Retorna o objeto do usuário.
+        res.json({ user });
+
+    } catch (error) {
+        // Isso normalmente não é acionado, a menos que o banco falhe, 
+        // pois a falha de token é tratada pelo middleware.
+        res.status(500).json({ message: 'Erro interno do servidor.' });
+    }
+});
+
 app.post('/auth/register', async (req, res) => {
     const { firstName, lastName, username, email, password } = req.body;
 
@@ -389,16 +443,17 @@ app.post('/auth/login', async (req, res) => {
 
 // -------------------- LISTAS --------------------
 
-app.get('/lists', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.get('/lists', authMiddleware, async (req, res) => {
     try {
         const lists = await List.find({ userId: req.user._id}).populate('games');
+        console.log(req.body);
         res.json(lists);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
 
-app.post('/lists', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.post('/lists', authMiddleware, async (req, res) => {
     try {
         const { title, description, games } = req.body;
         // ...
@@ -420,7 +475,7 @@ app.post('/lists', passport.authenticate('jwt', { session: false }), async (req,
     }
 });
 
-app.patch('/lists/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.patch('/lists/:id', authMiddleware, async (req, res) => {
     try {
         if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
             return res.status(400).json({ message: "ID inválido." });
@@ -459,7 +514,7 @@ app.patch('/lists/:id', passport.authenticate('jwt', { session: false }), async 
     }
 });
 // Remover um jogo da lista
-app.delete('/lists/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.delete('/lists/:id', authMiddleware, async (req, res) => {
     try {
         // Use req.params.id (sem o underscore)
         if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
