@@ -68,6 +68,13 @@ async function getCroppedImg(imageSrc, pixelCrop) {
 export default function ProfilePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [profileUser, setProfileUser] = useState(null);
+  api.get("/perfil").then((res) => {
+  setReviews(res.data.reviews || []);
+  setAvatar(res.data.user?.avatar || null);
+  setHeaderImg(res.data.user?.headerImg || null);
+  setProfileUser(res.data.user);
+});
 
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const [reviews, setReviews] = useState([]);
@@ -337,9 +344,13 @@ export default function ProfilePage() {
 
           <Box>
             <Typography variant="h3" fontWeight="700" color="white">
-              {user.displayName || user.username}
-            </Typography>
-            <Typography color="gray">@{user.username.toLowerCase()}</Typography>
+  {profileUser?.displayName}
+</Typography>
+
+<Typography color="gray">
+  @{profileUser?.username}
+</Typography>
+
           </Box>
 
           <Box sx={{ marginLeft: "auto", display: "flex", gap: 6 }}>

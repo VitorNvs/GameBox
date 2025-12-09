@@ -45,7 +45,7 @@ const MiniProfile = ({ user }) => {
                         {user.username}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        @{user._id?.slice(-6)}{/* id curto estilo twitter */}
+                        @{user.username}{/* id curto estilo twitter */}
                     </Typography>
                 </Box>
 

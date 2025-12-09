@@ -1,5 +1,5 @@
 // src/components/Header.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // --- MUDANÇAS ---
 import { useSelector } from 'react-redux'; // Não precisamos mais do useDispatch ou logout aqui
 import { Link } from 'react-router-dom';
@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
-const navItems = [
+const navItemsAuth = [
   { label: 'Início', path: '/' },
   { label: 'Jogos', path: '/jogos' },
   { label: 'Categorias', path: '/categories' },
@@ -18,9 +18,17 @@ const navItems = [
   { label: 'Minhas Listas', path: '/minhas-listas' },
 ];
 
+const navItemsNoAuth = [
+  { label: 'Início', path: '/' },
+  { label: 'Jogos', path: '/jogos' },
+  { label: 'Categorias', path: '/categories' },
+  { label: 'Conquistas', path: '/conquistas' }
+]
+var navItems = [];
 function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  
+
+  const [navItems, setNavItems] = useState(navItemsNoAuth);
   // --- MUDANÇA ---
   // Busca apenas o estado de autenticação
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -30,6 +38,14 @@ function Header() {
     setMobileOpen((prevState) => !prevState);
   };
 
+  useEffect(() => {
+    if(isAuthenticated){
+      setNavItems(navItemsAuth);
+    }else{
+      setNavItems(navItemsNoAuth);
+    }
+  },[isAuthenticated])
+  
   // Conteúdo do menu que aparecerá na gaveta lateral
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center', width: 250 }}>

@@ -314,37 +314,59 @@ app.delete('/reviews/:id', async (req, res) => {
 
 // -------------------- AUTENTICAÇÃO --------------------
 
-const requireAuth = (req, res, next) => {
-    // 1. Acessamos o cabeçalho "authorization" (express padroniza para minúsculas).
-    const headerAuth = req.headers.authorization;
-    
-    // 2. Extrai o token
-    const token = headerAuth && headerAuth.startsWith('Bearer ') ? headerAuth.split(' ')[1] : null;
+const authMiddleware = (req, res, next) => {
+    // 1. Obter o cabeçalho Authorization
+    const authHeader = req.header('Authorization');
 
-    if(!token){
-        console.log("DIAGNÓSTICO MIDDLEWARE: Token ausente. Retornando 401.");
-        // Alterado de 403 para 401 (Unauthorized) que é mais semanticamente correto para falha de autenticação.
-        return res.status(401).json({error: "Não autorizado! Token ausente."});
+    // 2. Verificar se o cabeçalho existe e está no formato 'Bearer token'
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.log('Autenticação falhou: Token ausente ou formato inválido.');
+        return res.status(401).json({ message: 'Acesso negado. Token não fornecido ou inválido.' });
     }
 
-    // 3. Verifica o JWT
-    jwt.verify(
-        token,
-        JWT_SECRET, // Assumindo que JWT_SECRET está disponível
-        (error, payload) => {
-            if(error){
-                console.error("DIAGNÓSTICO MIDDLEWARE: Erro na verificação JWT:", error.message);
-                return res.status(401).json({error: "Não autorizado! Token inválido ou expirado."});
-            }
+    // 3. Extrair o token (removendo "Bearer ")
+    const token = authHeader.split(' ')[1];
 
-            // AQUI É A CHAVE: Anexa o payload decodificado a req.user
-            req.user = payload; 
-            
-            // Continua para o próximo manipulador de rota (o `next` da rota)
-            next();
-        }
-    );
+    try {
+        // 4. Verificar e decodificar o token
+        // O método 'verify' lançará um erro se o token for inválido ou expirado.
+        const decoded = jwt.verify(token, JWT_SECRET);
+
+        // 5. Anexar os dados decodificados (payload) à requisição
+        // Assumimos que o payload contém o ID do usuário (ex: { id: 'userID_123' })
+        req.user = decoded;
+        
+        // 6. Prosseguir para o próximo manipulador de rota
+        next();
+
+    } catch (err) {
+        // O token é inválido (expirado, assinado incorretamente, etc.)
+        console.error('Verificação de token falhou:', err.message);
+        return res.status(401).json({ message: 'Token inválido ou expirado. Acesso não autorizado.' });
+    }
 };
+
+app.get("/auth/validate", authMiddleware, async (req, res) =>{
+    try {
+        // Se o middleware 'authMiddleware' passou, significa que o token é válido.
+        // req.user contém o ID do usuário decodificado do token.
+        
+        // Busca o usuário atualizado do banco de dados (sem a senha)
+        const user = await User.findById(req.user.id).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+        
+        // Retorna o objeto do usuário.
+        res.json({ user });
+
+    } catch (error) {
+        // Isso normalmente não é acionado, a menos que o banco falhe, 
+        // pois a falha de token é tratada pelo middleware.
+        res.status(500).json({ message: 'Erro interno do servidor.' });
+    }
+});
 
 app.post('/auth/register', async (req, res) => {
     const { firstName, lastName, username, email, password } = req.body;
@@ -448,23 +470,24 @@ app.get('/auth/validate', requireAuth, async (req, res) => {
 
 // -------------------- LISTAS --------------------
 
-app.get('/lists', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.get('/lists', authMiddleware, async (req, res) => {
     try {
-        const lists = await List.find({ userId: req.user._id}).populate('games');
+        const lists = await List.find({ userId: req.user.id}).populate('games');
+        //console.log(req.body);
         res.json(lists);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
 
-app.post('/lists', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.post('/lists', authMiddleware, async (req, res) => {
     try {
         const { title, description, games } = req.body;
         // ...
         const gamesList = Array.isArray(games) ? games : []; // Garante que é um array
         
         const list = new List({
-            userId: req.user._id,
+            userId: req.user.id,
             title: title.trim(),
             description: (description || '').trim(),
             games: gamesList,
@@ -472,14 +495,14 @@ app.post('/lists', passport.authenticate('jwt', { session: false }), async (req,
         });
 
         const saved = await list.save();
-        const populated = await List.findById(saved._id).populate('games');
+        const populated = await List.findById(saved.id).populate('games');
         res.status(201).json(populated);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
 
-app.patch('/lists/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.patch('/lists/:id', authMiddleware, async (req, res) => {
     try {
         if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
             return res.status(400).json({ message: "ID inválido." });
@@ -495,7 +518,7 @@ app.patch('/lists/:id', passport.authenticate('jwt', { session: false }), async 
 
         // PASSO 1: Atualiza o documento (sem se preocupar em popular aqui)
         const updatedList = await List.findOneAndUpdate(
-            { _id: req.params.id, userId: req.user._id },
+            { _id: req.params.id, userId: req.user.id },
             updateData,
             { new: true, runValidators: true } 
         );
@@ -518,7 +541,7 @@ app.patch('/lists/:id', passport.authenticate('jwt', { session: false }), async 
     }
 });
 // Remover um jogo da lista
-app.delete('/lists/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.delete('/lists/:id', authMiddleware, async (req, res) => {
     try {
         // Use req.params.id (sem o underscore)
         if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
@@ -526,7 +549,7 @@ app.delete('/lists/:id', passport.authenticate('jwt', { session: false }), async
         }
 
         // Use req.params.id (sem o underscore)
-        const deleted = await List.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
+        const deleted = await List.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
         if (!deleted) return res.status(404).json({ message: 'Lista não encontrada ou sem permissão.' });
 
         res.status(204).send();

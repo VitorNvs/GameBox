@@ -2,162 +2,136 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/lists'; // Verifique se a porta está correta
+const API_URL = 'http://localhost:8000/lists';
 
-// THUNK: Buscar listas
-export const fetchLists = createAsyncThunk(
-    'lists/fetchLists',
-    async (_, { rejectWithValue, getState }) => {
-        try {
-            const token = getState().auth.token; // Pega o token
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}` // Cria o cabeçalho
-                }
-            };
-            const response = await axios.get(API_URL, config); // Envia o config
-            // ...
-            const data = Array.isArray(response.data)
-                ? response.data.map(item => ({ ...item, id: item.id || item._id }))
-                : { ...response.data, id: response.data.id || response.data._id };
-            return data;
-        } catch (err) {
-            return rejectWithValue(err.response?.data?.message || err.message);
-        }
-    }
-);
+// Helper: get token from state and build headers
+const authConfig = (getState) => {
+  const token = getState().auth?.token;
+  return {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : '',
+    },
+  };
+};
 
-// THUNK: Criar lista
-export const createList = createAsyncThunk(
-    'lists/createList',
-    async (newListData, { rejectWithValue, getState }) => {
-        try {
-            const token = getState().auth.token; // Pega o token
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}` // Cria o cabeçalho
-                }
-            };
-            const listToCreate = { 
-                ...newListData, 
-                gamesCount: 0, 
-                games: [] 
-            };
-            const response = await axios.post(API_URL, listToCreate, config); // Envia o config
-            // ...
-            const created = { ...response.data, id: response.data.id || response.data._id };
-            return created;
-        } catch (err) {
-            return rejectWithValue(err.response?.data?.message || err.message);
-        }
-    }
-);
+// Normalize server response to frontend format (jogos / jogosCount / id)
+function normalizeListItem(item) {
+  return {
+    ...item,
+    id: item.id || item._id,
+    games: item.games || [],
+    gamesCount: item.gamesCount ?? item.games?.length ?? 0,
+  };
+}
 
-// THUNK: Deletar lista (IMPLEMENTAÇÃO)
-export const deleteList = createAsyncThunk(
-    'lists/deleteList',
-    async (listId, { rejectWithValue, getState }) => {
-        try {
-            // Assume que você tem um token JWT armazenado em algum lugar do Redux (ex: state.auth.token)
-            const token = getState().auth.token; 
-            
-            await axios.delete(`${API_URL}/${listId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}` // Envia o token para autenticação
-                }
-            });
-            return listId; // Retorna o ID para o reducer remover do estado
-        } catch (err) {
-            return rejectWithValue(err.response?.data?.message || err.message);
-        }
-    }
-);
 
-// THUNK: Atualizar detalhes da lista (título, descrição) (IMPLEMENTAÇÃO)
+// FETCH LISTS
+export const fetchLists = createAsyncThunk('lists/fetchLists', async (_, { rejectWithValue, getState }) => {
+  try {
+    const config = authConfig(getState);
+    const response = await axios.get(API_URL, config);
+    const data = Array.isArray(response.data) ? response.data.map(normalizeListItem) : normalizeListItem(response.data);
+    return data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || err.message);
+  }
+});
+
+// CREATE LIST
+export const createList = createAsyncThunk('lists/createList', async (newListData, { rejectWithValue, getState }) => {
+  try {
+    const config = authConfig(getState);
+    // Ensure we send jogos (array of IDs) to backend
+    const jogosToSend = Array.isArray(newListData.jogos) ? newListData.jogos : [];
+    const payload = {
+      ...newListData,
+      jogos: jogosToSend,
+      jogosCount: jogosToSend.length,
+    };
+    const response = await axios.post(API_URL, payload, config);
+    return normalizeListItem(response.data);
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || err.message);
+  }
+});
+
+// DELETE LIST
+export const deleteList = createAsyncThunk('lists/deleteList', async (listId, { rejectWithValue, getState }) => {
+  try {
+    const config = authConfig(getState);
+    await axios.delete(`${API_URL}/${listId}`, config);
+    return listId;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || err.message);
+  }
+});
+
+// UPDATE DETAILS (title/description)
 export const updateListDetails = createAsyncThunk(
-    'lists/updateListDetails',
-    async ({ id, title, description }, { rejectWithValue, getState }) => {
-        try {
-            const token = getState().auth.token; // Pega o token
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}` // Cria o cabeçalho
-                }
-            };
-            const response = await axios.patch(`${API_URL}/${id}`, { title, description }, config); // Envia o config
-            const updated = { ...response.data, id: response.data.id || response.data._id };
-            return updated;
-        } catch (err) {
-            return rejectWithValue(err.response?.data?.message || err.message);
-        }
+  'lists/updateListDetails',
+  async ({ id, title, description, games:jogos }, { rejectWithValue, getState }) => {
+    try {
+      const config = authConfig(getState);
+
+      const response = await axios.patch(
+        `${API_URL}/${id}`,
+        { title, description, jogos }, // ✅ agora jogos existe
+        config
+      );
+
+      return normalizeListItem(response.data);
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || err.message);
     }
+  }
 );
-// NOVO THUNK: Atualizar os jogos (adicionar/remover)
-export const updateListGames = createAsyncThunk(
-    'lists/updateListGames',
-    async ({ listId, updatedGames }, { rejectWithValue, getState }) => {
-        try {
-            const token = getState().auth.token; // Pega o token
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}` // Cria o cabeçalho
-                }
-            };
-            const response = await axios.patch(`${API_URL}/${listId}`, { 
-                games: updatedGames,
-                gamesCount: updatedGames.length
-            }, config); // Envia o config
-            const updated = { ...response.data, id: response.data.id || response.data._id };
-            return updated;
-        } catch (err) {
-            return rejectWithValue(err.response?.data?.message || err.message);
-        }
-    }
-); 
+
+
+// UPDATE JOGOS (adicionar / remover) - updatedJogos is array of IDs
+export const updateListGames = createAsyncThunk('lists/updateListGames', async ({ listId, updatedJogos }, { rejectWithValue, getState }) => {
+  try {
+    const config = authConfig(getState);
+    const response = await axios.patch(`${API_URL}/${listId}`, { games: updatedJogos, gamesCount: updatedJogos.length }, config);
+    return normalizeListItem(response.data);
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || err.message);
+  }
+});
 
 const listsSlice = createSlice({
-    name: 'lists',
-    initialState: {
-        items: [],
-        status: 'idle',
-        error: null,
-    },
-    reducers: {},
-    extraReducers: (builder) => {
-        builder
-            // Fetch
-            .addCase(fetchLists.pending, (state) => { state.status = 'loading'; })
-            .addCase(fetchLists.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                state.items = action.payload;
-            })
-            .addCase(fetchLists.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload;
-            })
-            // Create
-            .addCase(createList.fulfilled, (state, action) => {
-                state.items.push(action.payload);
-            })
-            // Delete
-            .addCase(deleteList.fulfilled, (state, action) => {
-                state.items = state.items.filter(list => list.id !== action.payload);
-            })
-            // NOVO: Update (Salvar)
-            .addCase(updateListDetails.fulfilled, (state, action) => {
-                const index = state.items.findIndex(list => list.id === action.payload.id);
-                if (index !== -1) {
-                    state.items[index] = action.payload; // Atualiza a lista no store
-                }
-            })
-            // NOVO: Update Games
-            .addCase(updateListGames.fulfilled, (state, action) => {
-                const index = state.items.findIndex(list => list.id === action.payload.id);
-                if (index !== -1) {
-                    state.items[index] = action.payload; // Atualiza a lista no store
-                }
-            });
-    },
+  name: 'lists',
+  initialState: {
+    items: [],
+    status: 'idle',
+    error: null,
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchLists.pending, (state) => { state.status = 'loading'; })
+      .addCase(fetchLists.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.items = action.payload;
+      })
+      .addCase(fetchLists.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+      .addCase(createList.fulfilled, (state, action) => {
+        state.items.push(action.payload);
+      })
+      .addCase(deleteList.fulfilled, (state, action) => {
+        state.items = state.items.filter(list => list.id !== action.payload);
+      })
+      .addCase(updateListDetails.fulfilled, (state, action) => {
+        const idx = state.items.findIndex(l => l.id === action.payload.id);
+        if (idx !== -1) state.items[idx] = action.payload;
+      })
+      .addCase(updateListGames.fulfilled, (state, action) => {
+        const idx = state.items.findIndex(l => l.id === action.payload.id);
+        if (idx !== -1) state.items[idx] = action.payload;
+      });
+  },
 });
 
 export default listsSlice.reducer;
