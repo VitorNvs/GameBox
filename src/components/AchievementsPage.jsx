@@ -34,7 +34,7 @@ const AchievementsPage = () => {
                     <Button component={Link} to="/admin/conquistas" variant="contained" sx={{ mt: 3 }}>
                         Gerenciar Conquistas
                     </Button>
-)}
+                )}
             </Box>
 
             {/* Adiciona um indicador de carregamento */}

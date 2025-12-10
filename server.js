@@ -150,6 +150,52 @@ const CategorySchema = new mongoose.Schema({
 
 const Category = mongoose.model('Category', CategorySchema);
 
+// -------------------- MIDDLEWARES --------------------
+const authMiddleware = (req, res, next) => {
+    // 1. Obter o cabeçalho Authorization
+    const authHeader = req.header('Authorization');
+
+    // 2. Verificar se o cabeçalho existe e está no formato 'Bearer token'
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.log('Autenticação falhou: Token ausente ou formato inválido.');
+        return res.status(401).json({ message: 'Acesso negado. Token não fornecido ou inválido.' });
+    }
+
+    // 3. Extrair o token (removendo "Bearer ")
+    const token = authHeader.split(' ')[1];
+
+    try {
+        // 4. Verificar e decodificar o token
+        // O método 'verify' lançará um erro se o token for inválido ou expirado.
+        const decoded = jwt.verify(token, JWT_SECRET);
+
+        // 5. Anexar os dados decodificados (payload) à requisição
+        // Assumimos que o payload contém o ID do usuário (ex: { id: 'userID_123' })
+        req.user = decoded;
+        
+        // 6. Prosseguir para o próximo manipulador de rota
+        next();
+
+    } catch (err) {
+        // O token é inválido (expirado, assinado incorretamente, etc.)
+        console.error('Verificação de token falhou:', err.message);
+        return res.status(401).json({ message: 'Token inválido ou expirado. Acesso não autorizado.' });
+    }
+}
+
+const adminMiddleware = (req, res, next) => {
+    try {
+        const role = req.user.role;
+        if(role === "admin"){
+            next();
+        }else{
+            return res.status(401).json({message: 'Usuário sem permissão.'});
+        }
+    } catch (error) {
+        return res.status(401).json({message: 'Usuário sem permissão.'});
+    }
+    
+}
 
 // -------------------- JOGOS --------------------
 
@@ -201,7 +247,7 @@ app.get('/jogos/:id', async (req, res) => {
 
 
 
-app.post('/jogos', async (req, res) => {
+app.post('/jogos', authMiddleware, adminMiddleware, async (req, res) => {
     const jogo = new Game({ ...req.body });
     try {
         const savedJogo = await jogo.save();
@@ -211,7 +257,7 @@ app.post('/jogos', async (req, res) => {
     }
 });
 
-app.patch('/jogos/:id', async (req, res) => {
+app.patch('/jogos/:id', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const updatedJogo = await Game.findByIdAndUpdate(
             req.params.id,
@@ -227,7 +273,7 @@ app.patch('/jogos/:id', async (req, res) => {
     }
 });
 
-app.delete('/jogos/:id', async (req, res) => {
+app.delete('/jogos/:id', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const deletedJogo = await Game.findByIdAndDelete(req.params.id);
         if (!deletedJogo)
@@ -266,7 +312,7 @@ app.get('/reviews/:id', async (req, res) => {
 });
 
 // Criar uma review
-app.post('/reviews', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.post('/reviews', authMiddleware, async (req, res) => {
     try {
         const { gameId, rating, text } = req.body;
         const userId = req.user.id;
@@ -288,8 +334,9 @@ app.post('/reviews', passport.authenticate('jwt', { session: false }), async (re
 });
 
 // Reviews do usuário logado
-app.get('/reviews/me', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.get('/reviews/me', authMiddleware, async (req, res) => {
     try {
+        
         const reviews = await Review.find({ userId: req.user.id })
             .populate('gameId')
             .sort({ createdAt: -1 });
@@ -300,8 +347,14 @@ app.get('/reviews/me', passport.authenticate('jwt', { session: false }), async (
     }
 });
 
-app.delete('/reviews/:id', async (req, res) => {
+app.delete('/reviews/:id', authMiddleware, async (req, res) => {
     try {
+        const userId = req.user.id;
+        const review = await Review.findById(req.params.id);
+        const reviewUser = review.userId.toString();
+        if(reviewUser !== userId){
+            return res.status(404).json({ message: 'Um usuário só pode apagar suas próprias reviews!' });
+        } 
         const deleted = await Review.findByIdAndDelete(req.params.id);
         if (!deleted)
             return res.status(404).json({ message: 'Review não encontrada.' });
@@ -314,37 +367,7 @@ app.delete('/reviews/:id', async (req, res) => {
 
 // -------------------- AUTENTICAÇÃO --------------------
 
-const authMiddleware = (req, res, next) => {
-    // 1. Obter o cabeçalho Authorization
-    const authHeader = req.header('Authorization');
 
-    // 2. Verificar se o cabeçalho existe e está no formato 'Bearer token'
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        console.log('Autenticação falhou: Token ausente ou formato inválido.');
-        return res.status(401).json({ message: 'Acesso negado. Token não fornecido ou inválido.' });
-    }
-
-    // 3. Extrair o token (removendo "Bearer ")
-    const token = authHeader.split(' ')[1];
-
-    try {
-        // 4. Verificar e decodificar o token
-        // O método 'verify' lançará um erro se o token for inválido ou expirado.
-        const decoded = jwt.verify(token, JWT_SECRET);
-
-        // 5. Anexar os dados decodificados (payload) à requisição
-        // Assumimos que o payload contém o ID do usuário (ex: { id: 'userID_123' })
-        req.user = decoded;
-        
-        // 6. Prosseguir para o próximo manipulador de rota
-        next();
-
-    } catch (err) {
-        // O token é inválido (expirado, assinado incorretamente, etc.)
-        console.error('Verificação de token falhou:', err.message);
-        return res.status(401).json({ message: 'Token inválido ou expirado. Acesso não autorizado.' });
-    }
-};
 
 app.get("/auth/validate", authMiddleware, async (req, res) =>{
     try {
@@ -565,13 +588,13 @@ app.get('/achievements', async (req, res) => {
     res.json(achievements);
 });
 
-app.post('/achievements', async (req, res) => {
+app.post('/achievements', authMiddleware, adminMiddleware, async (req, res) => {
     const achievement = new Achievement({ ...req.body });
     const savedAchievement = await achievement.save();
     res.status(201).json(savedAchievement);
 });
 
-app.patch('/achievements/:id', async (req, res) => {
+app.patch('/achievements/:id', authMiddleware, adminMiddleware, async (req, res) => {
     const updatedAchievement = await Achievement.findByIdAndUpdate(
         req.params.id,
         req.body,
@@ -580,7 +603,7 @@ app.patch('/achievements/:id', async (req, res) => {
     res.json(updatedAchievement);
 });
 
-app.delete('/achievements/:id', async (req, res) => {
+app.delete('/achievements/:id', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const deletedAchievement = await Achievement.findByIdAndDelete(req.params.id);
         
@@ -597,9 +620,7 @@ app.delete('/achievements/:id', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
-
-app.get('/perfil', requireAuth, async (req, res) => {
-    // req.user agora está disponível e contém {id: '...'} graças ao requireAuth
+app.get('/perfil', authMiddleware, async (req, res) => {
     try {
         // Busca o usuário usando o ID injetado pelo middleware
         let user = await User.findById(req.user.id).select('-password');
@@ -634,7 +655,7 @@ app.get('/perfil', requireAuth, async (req, res) => {
 });
 // -------------------- CATEGORIAS --------------------
 
-app.post('/categories', async (req, res) => {
+app.post('/categories', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const novaCategoria = await Category.create(req.body);
         res.json(novaCategoria);
@@ -657,7 +678,7 @@ app.get('/categories', async (req, res) => {
     
 });
 
-app.patch('/categories/:id', async (req, res) => {
+app.patch('/categories/:id', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const updatedCategory = await Category.findByIdAndUpdate(
             req.params.id,
@@ -671,7 +692,7 @@ app.patch('/categories/:id', async (req, res) => {
     
 });
 
-app.delete('/categories/:id', async (req, res) => {
+app.delete('/categories/:id', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const deletedCategory = await Category.findByIdAndDelete(req.params.id);
         
@@ -707,7 +728,7 @@ const upload = multer({ storage });
 // rota para upload do avatar
 app.post(
     "/upload/avatar",
-    passport.authenticate('jwt', { session: false }),
+    authMiddleware,
     upload.single("avatar"),
     async (req, res) => {
         try {
@@ -727,7 +748,7 @@ app.post(
 // rota para upload do header
 app.post(
     "/upload/header",
-    passport.authenticate('jwt', { session: false }),
+    authMiddleware,
     upload.single("header"),
     async (req, res) => {
         try {

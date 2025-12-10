@@ -17,4 +17,23 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+export const verifyUser = (user) => {
+  if(user !== null){
+    return true;
+  }
+  return false;
+}
+
+export const verifyAdminUser = (user) => {
+  try {
+    if(user.role === "admin"){
+      return true;
+    }
+    return false;
+  } catch (error) {
+    return false;
+  } 
+}
+
+
 export default api;

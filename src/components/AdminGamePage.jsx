@@ -7,6 +7,7 @@ import {
     Container, Box, Typography, TextField, Button, Paper,
     CircularProgress 
 } from '@mui/material';
+import { verifyAdminUser } from '../api';
 
 function AdminGamePage() {
     const { gameId } = useParams();
@@ -16,11 +17,28 @@ function AdminGamePage() {
     const game = useSelector((state) => state.jogos.selectedGame);
     const status = useSelector((state) => state.jogos.selectedGameStatus);
 
+    const user = useSelector((state) => state.auth.user);
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+
     // --- MUDANÇA AQUI ---
     const [formData, setFormData] = useState({
         title: '', description: '', price: '', genre: '', image: '', tags: [], rating: ''
     });
     // --- FIM DA MUDANÇA ---
+
+    // Sai da página se não estiver logado e não for admin
+    useEffect(() => {
+        const handleRedirect = (user) => {
+            if(!isAuthenticated){
+                return "/login";
+            }
+            if(!verifyAdminUser(user)){
+                return "/";
+            }
+        }
+        const page = handleRedirect(user);
+        navigate(page);
+    }, [isAuthenticated]);
 
     useEffect(() => {
         if (gameId) {
@@ -77,6 +95,11 @@ function AdminGamePage() {
 
     if (status === 'loading' || !game) {
         return <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress /></Box>;
+    }
+
+    //Não carrega se não for admin
+    if(!verifyAdminUser(user)){
+        return
     }
 
     return (
