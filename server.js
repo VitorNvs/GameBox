@@ -464,6 +464,33 @@ app.post('/auth/login', async (req, res) => {
     }
 });
 
+app.get('/auth/validate', requireAuth, async (req, res) => {
+    // Se o middleware requireAuth passou, req.user já contém o payload do JWT ({id: '...'}).
+    
+    console.log("-----------------------------------------");
+    console.log("Recebendo requisição /auth/validate...");
+    console.log("Payload decodificado em req.user:", req.user); // req.user.id já está disponível
+    console.log("-----------------------------------------");
+
+    try {
+        // Usa o ID injetado pelo middleware
+        const user = await User.findById(req.user.id).select('-password');
+        
+        if (!user) {
+            console.error("DIAGNÓSTICO: Usuário do token não encontrado no DB:", req.user.id);
+            // Embora o token seja válido, o usuário pode ter sido excluído.
+            return res.status(404).json({ error: "Usuário não encontrado." });
+        }
+
+        console.log("DIAGNÓSTICO: Validação bem-sucedida. Retornando usuário.");
+        return res.json({ message: "Acesso autorizado", user });
+
+    } catch (dbError) {
+        console.error("DIAGNÓSTICO: Erro ao buscar usuário no DB:", dbError.message);
+        return res.status(500).json({ error: "Erro interno do servidor." });
+    }
+});
+
 // -------------------- LISTAS --------------------
 
 app.get('/lists', authMiddleware, async (req, res) => {
@@ -595,15 +622,22 @@ app.delete('/achievements/:id', authMiddleware, adminMiddleware, async (req, res
 });
 app.get('/perfil', authMiddleware, async (req, res) => {
     try {
+        // Busca o usuário usando o ID injetado pelo middleware
         let user = await User.findById(req.user.id).select('-password');
 
-        // se displayName não existir, criar automaticamente
+        if (!user) {
+             // Esta checagem é importante caso o middleware não tenha feito uma checagem completa no DB
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+
+        // Se displayName não existir, criar automaticamente
         if (!user.displayName) {
             const first = user.firstName || "";
             const last = user.lastName || "";
             user.displayName = `${first} ${last}`.trim();
         }
 
+        // Assumindo que Review está disponível no escopo
         const reviews = await Review.find({ userId: user._id })
             .populate('gameId')
             .sort({ createdAt: -1 });
@@ -614,6 +648,8 @@ app.get('/perfil', authMiddleware, async (req, res) => {
         });
 
     } catch (err) {
+        // Retorna 500 para erros de DB ou lógica interna (exclui erros 401/403 que são tratados pelo middleware)
+        console.error('Erro ao carregar dados do perfil:', err.message);
         res.status(500).json({ message: 'Erro ao carregar dados do perfil.' });
     }
 });

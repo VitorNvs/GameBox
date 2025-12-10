@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../redux/authSlice";
+import { setUser } from '../redux/authSlice'; // Assumindo que você tem uma ação setUser no seu authSlice
 import {
   Container,
   Box,
@@ -16,6 +17,7 @@ import {
   Modal,
   Slider,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import { FaHeart, FaThumbsUp, FaTimes } from "react-icons/fa";
 import Cropper from "react-easy-crop";
@@ -77,6 +79,9 @@ export default function ProfilePage() {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const [reviews, setReviews] = useState([]);
 
+  // NOVO ESTADO: Controla se a validação do token pelo API já foi concluída
+  const [isAuthValidating, setIsAuthValidating] = useState(true);
+
   // imagens atuais (da api/user)
   const [avatar, setAvatar] = useState(null);
   const [headerImg, setHeaderImg] = useState(null);
@@ -104,11 +109,63 @@ export default function ProfilePage() {
 
   // autorização / carregar perfil
   useEffect(() => {
+    const validacaoUsuario = async () => {
+      const token = localStorage.getItem("token");
+      if(!token){
+        console.log("Token não encontrado, redirecionando para login.");
+        setIsAuthValidating(false);
+        navigate("/login");
+        return;
+      }
+
+      try {
+      
+        const response = await api.get("auth/validate",{
+          headers:{
+            Authorization : `Bearer ${token}`
+          }
+        });
+        
+        // Se a validação for 200/OK, atualiza o estado do Redux 
+        if (response.data && response.data.user) {
+            console.log("Token válido, atualizando estado Redux.");
+            // DISPATCH CRUCIAL: Atualiza o estado global do usuário com os dados validados
+            dispatch(setUser(response.data.user)); 
+        }
+
+        
+        console.log("Acesso autorizado!",response.data.user.username);
+        
+      } catch (error) {
+        // Se houver erro de validação (token inválido/expirado), limpa o token e redireciona
+        console.error("Erro na validação de token (expirado/inválido).", error.response?.status || error.message);
+        dispatch(logout());
+        // Usamos navigate para redirecionar para login
+        navigate("/login");
+      } finally {
+        // A validação, bem ou mal sucedida, terminou.
+        setIsAuthValidating(false);
+        console.log(`Validação do token concluída. Autenticado: ${isAuthenticated}`);
+      }
+    }
+
+    // Só inicia a validação se o Redux ainda não tiver o usuário, 
+    // ou se o processo de validação não tiver sido concluído.
+    if (!user || isAuthValidating) {
+      validacaoUsuario();
+    }
+  },[navigate, dispatch, user]);
+
+  /*
+  useEffect(() => {
     if (!isAuthenticated) navigate("/login");
   }, [isAuthenticated, navigate]);
+*/
 
   useEffect(() => {
-    if (isAuthenticated) {
+    // Carrega dados do perfil SOMENTE DEPOIS que a validação do token
+    // for concluída E o usuário estiver no Redux.
+    if (!isAuthValidating && isAuthenticated && user) {
       api
         .get("/perfil")
         .then((res) => {
@@ -118,7 +175,7 @@ export default function ProfilePage() {
         })
         .catch((err) => console.error("Erro ao carregar perfil:", err));
     }
-  }, [isAuthenticated]);
+  }, [isAuthValidating, isAuthenticated, user]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -223,7 +280,18 @@ export default function ProfilePage() {
     setShowImageModal(true);
   };
 
-  if (!user) return <Typography>carregando…</Typography>;
+  // RENDERIZAÇÃO CONDICIONAL
+  // Se estiver validando OU se a validação terminou e não temos usuário (algo falhou)
+  if (isAuthValidating || !user){
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0f1720' }}>
+        <CircularProgress color="primary" />
+        <Typography color="white" sx={{ ml: 2 }}>
+          Carregando perfil...
+        </Typography>
+      </Box>
+    );
+  } 
 
   return (
     <Box>
