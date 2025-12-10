@@ -1,6 +1,7 @@
 // src/components/AdminAchievementsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 // Importa a nova ação
 import { fetchAchievements, addNewAchievement, deleteAchievement, updateAchievement } from '../redux/AchievementsSlice';
 import { 
@@ -9,11 +10,18 @@ import {
     CircularProgress, ButtonGroup, Grid
 } from '@mui/material';
 
+import { verifyAdminUser } from '../api';
+
 function AdminAchievementsPage() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     const achievements = useSelector((state) => state.achievements.items);
     const status = useSelector((state) => state.achievements.status);
-    
+
+    const user = useSelector((state) => state.auth.user);
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+
     const [isEditing, setIsEditing] = useState(false);
     const [editingId, setEditingId] = useState(null); // Vai guardar o _id
     const [formData, setFormData] = useState({
@@ -22,6 +30,21 @@ function AdminAchievementsPage() {
         rule: '',
         icon: ''
     });
+
+    // Sai da página se não estiver logado e não for admin
+    useEffect(() => {
+        const handleRedirect = (user) => {
+            if(!isAuthenticated){
+                return "/login";
+            }
+            if(!verifyAdminUser(user)){
+                return "/";
+            }
+        }
+        const page = handleRedirect(user);
+        navigate(page);
+
+    }, [isAuthenticated]);
 
     useEffect(() => {
         if (status === 'idle') {
@@ -71,6 +94,11 @@ function AdminAchievementsPage() {
 
     if (status === 'loading') {
         return <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress /></Box>;
+    }
+
+    //Não carrega se não for admin
+    if(!verifyAdminUser(user)){
+        return
     }
 
     return (

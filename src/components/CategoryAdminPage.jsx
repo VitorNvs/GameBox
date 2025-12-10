@@ -1,6 +1,8 @@
 // src/components/AdminCategoriesPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
 // Ação de CATEGORIAS (Você precisará criar este slice)
 import { 
     fetchCategories, 
@@ -13,13 +15,19 @@ import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     CircularProgress, ButtonGroup, Grid
 } from '@mui/material';
+import { verifyAdminUser } from '../api';
 
 function AdminCategoriesPage() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     // Ajuste o estado do seletor para 'categories'
     const categories = useSelector((state) => state.categories.items);
     const status = useSelector((state) => state.categories.status);
     
+    const user = useSelector((state) => state.auth.user);
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+
     const [isEditing, setIsEditing] = useState(false);
     const [editingId, setEditingId] = useState(null); // Guarda o _id da categoria
     
@@ -29,6 +37,20 @@ function AdminCategoriesPage() {
         description: '',
         image: ''
     });
+
+    // Sai da página se não estiver logado e não for admin
+    useEffect(() => {
+        const handleRedirect = (user) => {
+            if(!isAuthenticated){
+                return "/login";
+            }
+            if(!verifyAdminUser(user)){
+                return "/";
+            }
+        }
+        const page = handleRedirect(user);
+        navigate(page);
+    }, [isAuthenticated]);
 
     useEffect(() => {
         if (status === 'idle') {
@@ -81,6 +103,10 @@ function AdminCategoriesPage() {
 
     if (status === 'loading') {
         return <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress /></Box>;
+    }
+    //Não carrega se não for admin
+    if(!verifyAdminUser(user)){
+        return
     }
 
     return (

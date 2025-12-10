@@ -1,21 +1,39 @@
 // src/components/AdminAddGamePage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addNewGame } from '../redux/gamesSlice'; 
 import { 
     Container, Box, Typography, TextField, Button, Paper
 } from '@mui/material';
+import { verifyAdminUser } from '../api';
 
 function AdminAddGamePage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    const user = useSelector((state) => state.auth.user);
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
 
     // --- MUDANÇA AQUI ---
     const [formData, setFormData] = useState({
         title: '', description: '', price: '', genre: '', image: '', tags: [], rating: ''
     });
     // --- FIM DA MUDANÇA ---
+
+    // Sai da página se não estiver logado e não for admin
+    useEffect(() => {
+        const handleRedirect = (user) => {
+            if(!isAuthenticated){
+                return "/login";
+            }
+            if(!verifyAdminUser(user)){
+                return "/";
+            }
+        }
+        const page = handleRedirect(user);
+        navigate(page);
+    }, [isAuthenticated]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -39,6 +57,11 @@ function AdminAddGamePage() {
                 alert('Erro ao adicionar o jogo: ' + err.message);
             });
     };
+
+    //Não carrega se não for admin
+    if(!verifyAdminUser(user)){
+        return
+    }
 
     return (
         <Container component="main" maxWidth="md" sx={{ py: 4 }}>
