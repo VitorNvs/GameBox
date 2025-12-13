@@ -464,7 +464,7 @@ app.post('/auth/login', async (req, res) => {
     }
 });
 
-app.get('/auth/validate', requireAuth, async (req, res) => {
+app.get('/auth/validate', async (req, res) => {
     // Se o middleware requireAuth passou, req.user já contém o payload do JWT ({id: '...'}).
     
     console.log("-----------------------------------------");

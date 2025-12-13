@@ -139,6 +139,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.isAuthChecked = true;
         state.status = 'succeeded';
+        state.token = localStorage.getItem('token');
 
         state.error = null;
       })
