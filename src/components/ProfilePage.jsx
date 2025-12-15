@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../redux/authSlice";
 import { setUser } from '../redux/authSlice'; // Assumindo que você tem uma ação setUser no seu authSlice
+import ReviewModal from "../components/ReviewModal";
 import {
   Container,
   Box,
@@ -71,6 +72,20 @@ export default function ProfilePage() {
 
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const [reviews, setReviews] = useState([]);
+
+  const [selectedReview, setSelectedReview] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleClickGame = (review) => {
+    console.log(review);
+    setSelectedReview(review.review); // ou game.myReview, depende do nome q vc usa
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedReview(null);
+  };
 
   // NOVO ESTADO: Controla se a validação do token pelo API já foi concluída
   const [isAuthValidating, setIsAuthValidating] = useState(true);
@@ -141,9 +156,7 @@ export default function ProfilePage() {
         console.log(`Validação do token concluída. Autenticado: ${isAuthenticated}`);
       }
     }
-
-    // Só inicia a validação se o Redux ainda não tiver o usuário, 
-    // ou se o processo de validação não tiver sido concluído.
+    
     if (!user || isAuthValidating) {
       validacaoUsuario();
     }
@@ -156,8 +169,6 @@ export default function ProfilePage() {
 */
 
   useEffect(() => {
-    // Carrega dados do perfil SOMENTE DEPOIS que a validação do token
-    // for concluída E o usuário estiver no Redux.
     if (!isAuthValidating && isAuthenticated && user) {
       api
         .get("/perfil")
@@ -174,6 +185,19 @@ export default function ProfilePage() {
     dispatch(logout());
     navigate("/");
   };
+
+  const handleDeleteReview = async (reviewId) => {
+  if (!window.confirm("tem certeza que quer deletar essa review?")) return;
+
+  try {
+    await api.delete(`/reviews/${reviewId}`); 
+    // remove no estado local
+    setReviews((prev) => prev.filter((r) => r._id !== reviewId));
+  } catch (err) {
+    console.error("erro ao deletar review:", err);
+  }
+};
+
 
   const openStatsModal = (type) => {
     setStatsType(type);
@@ -382,32 +406,70 @@ export default function ProfilePage() {
               Jogos Avaliados
             </Typography>
 
-            <Grid container spacing={2}>
-              {reviews.length > 0 ? (
-                reviews.map((review) => (
-                  <Grid item xs={6} sm={4} key={review._id}>
-                    <Card>
-                      <CardMedia
-                        component="img"
-                        height="190"
-                        image={review.gameId?.image || ""}
-                        alt={review.gameId?.title || ""}
-                      />
-                      <CardContent>
-                        <Typography variant="h6">{review.gameId?.title}</Typography>
-                        <Typography color="primary.main">
-                          {review.rating === "love" && <FaHeart />}
-                          {review.rating === "like" && <FaThumbsUp />}
-                          {review.rating === "dislike" && "👎"} {review.rating}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))
-              ) : (
-                <Typography sx={{ ml: 2 }}>Você ainda não fez nenhuma análise.</Typography>
-              )}
-            </Grid>
+            <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              overflowX: "auto",
+              pb: 1,
+              scrollBehavior: "smooth",
+              "&::-webkit-scrollbar": {
+                height: 8,
+              },
+              "&::-webkit-scrollbar-thumb": {
+                background: "#333",
+                borderRadius: 4,
+              },
+            }}
+          >
+            {reviews.length > 0 ? (
+              reviews.map((review) => (
+                <Card
+                  key={review._id}
+                  sx={{
+                    minWidth: 240,
+                    maxWidth: 240,
+                    flexShrink: 0,
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    height="190"
+                    image={review.gameId?.image || ""}
+                    onClick={() => handleClickGame(review)}   // CLICK NA FOTO
+                    sx={{ cursor: "pointer" }}
+                  />
+
+                  <CardContent>
+                    <Typography variant="h6">{review.gameId?.title}</Typography>
+
+                    <Button
+                      variant="contained"
+                      color="error"
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation(); // impede abrir o modal ao clicar no botão
+                        handleDeleteReview(review._id);
+                      }}
+                      sx={{ mt: 1 }}
+                    >
+                      deletar
+                    </Button>
+                  </CardContent>
+</Card>
+
+              ))
+            ) : (
+              <Typography sx={{ ml: 2 }}>você ainda não fez nenhuma análise.</Typography>
+            )}
+          </Box>
+
+          <ReviewModal 
+      open={modalOpen} 
+      onClose={closeModal} 
+      review={selectedReview}
+    />
+
           </Grid>
 
           <Grid item xs={12} md={4}>
