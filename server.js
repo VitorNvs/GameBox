@@ -41,7 +41,7 @@ const List = mongoose.model('List', listSchema);
 passport.use(
     new JwtStrategy(opts, async (jwt_payload, done) => {
         try {
-            const user = await User.findById(jwt_payload.id).select('-password');
+            const user = await User.findById(jwt_payload._id).select('-password');
             if (!user) return done(null, false);
             return done(null, user);
         } catch (err) {
@@ -453,7 +453,7 @@ app.post('/auth/login', async (req, res) => {
         res.json({
             token,
             user: {
-                id: user._id,
+                _id: user._id,
                 username: user.username,
                 email: user.email,
                 role: user.role,
@@ -719,7 +719,7 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname);
-        cb(null, `${req.user.id}_${Date.now()}${ext}`);
+        cb(null, `${req.user._id}_${Date.now()}${ext}`);
     }
 });
 
