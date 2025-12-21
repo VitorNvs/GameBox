@@ -5,6 +5,15 @@ import axios from 'axios';
 // O URL está CORRETO (porta 8000, sem /api)
 const API_URL = 'http://localhost:8000/achievements'; 
 
+const authConfig = (getState) => {
+  const token = getState().auth?.token;
+  return {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : '',
+    },
+  };
+};
+
 // THUNK: Buscar Conquistas
 export const fetchAchievements = createAsyncThunk(
     'achievements/fetchAchievements',
@@ -19,9 +28,10 @@ export const fetchAchievements = createAsyncThunk(
 // THUNK: Adicionar Nova Conquista
 export const addNewAchievement = createAsyncThunk(
     'achievements/addNewAchievement',
-    async (newAchievementData, { rejectWithValue }) => {
+    async (newAchievementData, { rejectWithValue , getState}) => {
         try {
-            const response = await axios.post(API_URL, newAchievementData);
+            const config = authConfig(getState);
+            const response = await axios.post(API_URL, newAchievementData, config);
             return response.data;
         } catch (err) { return rejectWithValue(err.message); }
     }
@@ -30,11 +40,12 @@ export const addNewAchievement = createAsyncThunk(
 // THUNK: ATUALIZAR CONQUISTA (CORRIGIDO)
 export const updateAchievement = createAsyncThunk(
     'achievements/updateAchievement',
-    async (achievementData, { rejectWithValue }) => {
+    async (achievementData, { rejectWithValue , getState}) => {
         try {
             // --- CORREÇÃO 4: Desestruturar '_id' em vez de 'id' ---
             const { _id, ...data } = achievementData; 
-            const response = await axios.patch(`${API_URL}/${_id}`, data);
+            const config = authConfig(getState);
+            const response = await axios.patch(`${API_URL}/${_id}`, data, config);
             return response.data;
         } catch (err) { return rejectWithValue(err.message); }
     }
@@ -43,9 +54,10 @@ export const updateAchievement = createAsyncThunk(
 // THUNK: Apagar Conquista
 export const deleteAchievement = createAsyncThunk(
     'achievements/deleteAchievement',
-    async (id, { rejectWithValue }) => {
+    async (id, { rejectWithValue , getState}) => {
         try {
-            await axios.delete(`${API_URL}/${id}`);
+            const config = authConfig(getState);
+            await axios.delete(`${API_URL}/${id}`, config);
             return id;
         } catch (err) { return rejectWithValue(err.message); }
     }

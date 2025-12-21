@@ -17,6 +17,15 @@ const initialState = {
   error: null,
 };
 
+const authConfig = (getState) => {
+  const token = getState().auth?.token;
+  return {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : '',
+    },
+  };
+};
+
 // LOGIN
 export const login = createAsyncThunk(
   'auth/login',

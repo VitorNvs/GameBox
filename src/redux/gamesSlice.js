@@ -5,6 +5,15 @@ import axios from 'axios';
 // URL base do seu NOVO servidor
 const GAMES_URL = 'http://localhost:8000/jogos'; // Porta 8000
 
+const authConfig = (getState) => {
+  const token = getState().auth?.token;
+  return {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : '',
+    },
+  };
+};
+
 // --- AÇÕES ASSÍNCRONAS ---
 
 export const fetchGames = createAsyncThunk('jogos/fetchGames', async (_, { rejectWithValue }) => {
@@ -25,9 +34,10 @@ export const fetchGameById = createAsyncThunk('jogos/fetchGameById', async (game
     }
 });
 
-export const addNewGame = createAsyncThunk('jogos/addNewGame', async (newGameData, { rejectWithValue }) => {
+export const addNewGame = createAsyncThunk('jogos/addNewGame', async (newGameData, { rejectWithValue , getState}) => {
     try {
-        const response = await axios.post(GAMES_URL, newGameData);
+        const config = authConfig(getState);
+        const response = await axios.post(GAMES_URL, newGameData, config);
         return response.data;
     } catch (err) {
         return rejectWithValue(err.message);
@@ -35,9 +45,10 @@ export const addNewGame = createAsyncThunk('jogos/addNewGame', async (newGameDat
 });
 
 // --- NOVA AÇÃO DE ATUALIZAR ---
-export const updateGame = createAsyncThunk('jogos/updateGame', async ({ id, ...gameData }, { rejectWithValue }) => {
+export const updateGame = createAsyncThunk('jogos/updateGame', async ({ id, ...gameData }, { rejectWithValue , getState}) => {
     try {
-        const response = await axios.patch(`${GAMES_URL}/${id}`, gameData);
+        const config = authConfig(getState);
+        const response = await axios.patch(`${GAMES_URL}/${id}`, gameData, config);
         return response.data;
     } catch (err) {
         return rejectWithValue(err.message);
@@ -45,9 +56,10 @@ export const updateGame = createAsyncThunk('jogos/updateGame', async ({ id, ...g
 });
 
 // --- NOVA AÇÃO DE DELETAR ---
-export const deleteGame = createAsyncThunk('jogos/deleteGame', async (gameId, { rejectWithValue }) => {
+export const deleteGame = createAsyncThunk('jogos/deleteGame', async (gameId, { rejectWithValue , getState}) => {
     try {
-        await axios.delete(`${GAMES_URL}/${gameId}`);
+        const config = authConfig(getState);
+        await axios.delete(`${GAMES_URL}/${gameId}`, config);
         return gameId; // Retorna o ID do jogo deletado
     } catch (err) {
         return rejectWithValue(err.message);

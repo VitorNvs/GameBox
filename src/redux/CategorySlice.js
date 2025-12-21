@@ -4,14 +4,24 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:8000/categories' // A URL do seu backend
 
+const authConfig = (getState) => {
+  const token = getState().auth?.token;
+  return {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : '',
+    },
+  };
+};
+
 // Thunks assíncronos para o CRUD
 export const fetchCategories = createAsyncThunk('categories/fetchCategories', async () => {
     const response = await axios.get(API_URL);
     return response.data;
 });
 
-export const addNewCategory = createAsyncThunk('categories/addNewCategory', async (newCategoryData) => {
-    const response = await axios.post(API_URL, newCategoryData);
+export const addNewCategory = createAsyncThunk('categories/addNewCategory', async (newCategoryData, { getState }) => {
+    const config = authConfig(getState);
+    const response = await axios.post(API_URL, newCategoryData, config);
     return response.data;
 });
 /*
@@ -21,9 +31,10 @@ export const updateCategory = createAsyncThunk('categories/updateCategory', asyn
     return response.data;
 });
 */
-export const updateCategory = createAsyncThunk('categories/updateCategory', async ({_id, ...categoryData }, { rejectWithValue }) => {
+export const updateCategory = createAsyncThunk('categories/updateCategory', async ({_id, ...categoryData }, { rejectWithValue , getState}) => {
     try {
-        const response = await axios.patch(`${API_URL}/${_id}`, categoryData);
+        const config = authConfig(getState);
+        const response = await axios.patch(`${API_URL}/${_id}`, categoryData, config);
         return response.data;
     } catch (err) {
         return rejectWithValue(err.message);
@@ -31,8 +42,9 @@ export const updateCategory = createAsyncThunk('categories/updateCategory', asyn
 });
 
 
-export const deleteCategory = createAsyncThunk('categories/deleteCategory', async (categoryId) => {
-    await axios.delete(`${API_URL}/${categoryId}`);
+export const deleteCategory = createAsyncThunk('categories/deleteCategory', async (categoryId, { getState }) => {
+    const config = authConfig(getState);
+    await axios.delete(`${API_URL}/${categoryId}`, config);
     return categoryId; // Retorna o ID para remover do estado
 });
 
