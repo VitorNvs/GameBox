@@ -1,6 +1,6 @@
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import mongoose from "mongoose";
-import User from "./models/User.js"; // se teu modelo estiver direto no server, ajusta o caminho
+//import User from "./models/User.js"; // se teu modelo estiver direto no server, ajusta o caminho
 import passport from "passport";
 
 /*
